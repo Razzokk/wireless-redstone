@@ -93,7 +93,7 @@ public class RedstoneChannel
 
 	public void updateReceiver(World world, BlockPos pos)
 	{
-		world.scheduleBlockTick(pos, ModBlocks.redstoneReceiver, 2);
+		world.scheduleBlockTick(pos, ModBlocks.redstoneReceiver, WRUtils.TICKS_PER_REDSTONE_TICK);
 	}
 
 	public void updateReceivers(World world)

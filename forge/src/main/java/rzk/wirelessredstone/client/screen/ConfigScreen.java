@@ -7,6 +7,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRConfig;
+import rzk.wirelessredstone.misc.WRUtils;
 
 public class ConfigScreen
 {
@@ -20,8 +21,8 @@ public class ConfigScreen
 		ConfigCategory general = builder.getOrCreateCategory(Text.translatable(TranslationKeys.GUI_CONFIG_CATEGORY_GENERAL));
 
 		general.addEntry(ConfigEntryBuilder.create()
-			.startIntSlider(Text.translatable(TranslationKeys.GUI_CONFIG_SIGNAL_STRENGTH), WRConfig.redstoneReceiverSignalStrength, 1, 15)
-			.setDefaultValue(15)
+			.startIntSlider(Text.translatable(TranslationKeys.GUI_CONFIG_SIGNAL_STRENGTH), WRConfig.redstoneReceiverSignalStrength, 1, WRUtils.MAX_REDSTONE_POWER)
+			.setDefaultValue(WRUtils.MAX_REDSTONE_POWER)
 			.setSaveConsumer(strength -> WRConfig.redstoneReceiverSignalStrength = strength)
 			.build());
 

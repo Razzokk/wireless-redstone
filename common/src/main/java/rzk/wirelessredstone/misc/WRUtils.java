@@ -12,6 +12,9 @@ import net.minecraft.util.math.BlockPos;
 
 public class WRUtils
 {
+	public static final int MAX_REDSTONE_POWER = 15;
+	public static final int TICKS_PER_REDSTONE_TICK = 2;
+
 	public static final int MIN_FREQUENCY = 0;
 	public static final int MAX_FREQUENCY = 99999;
 	public static final int INVALID_FREQUENCY = -1;

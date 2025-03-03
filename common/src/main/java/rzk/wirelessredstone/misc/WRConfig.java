@@ -24,7 +24,7 @@ public class WRConfig
 	private static final String FILE_NAME = WirelessRedstone.MODID + ".json";
 
 	// General
-	public static int redstoneReceiverSignalStrength = 15;
+	public static int redstoneReceiverSignalStrength = WRUtils.MAX_REDSTONE_POWER;
 	public static boolean redstoneReceiverStrongPower = true;
 
 	// Client
@@ -55,8 +55,7 @@ public class WRConfig
 		}
 		catch (IOException | NullPointerException e)
 		{
-			WirelessRedstone.LOGGER.error("Couldn't load Wireless Redstone configs from file");
-			e.printStackTrace();
+			WirelessRedstone.LOGGER.error("Couldn't load Wireless Redstone configs from file", e);
 		}
 	}
 
@@ -81,8 +80,7 @@ public class WRConfig
 		}
 		catch (IOException e)
 		{
-			WirelessRedstone.LOGGER.error("Couldn't save Wireless Redstone configs to file");
-			e.printStackTrace();
+			WirelessRedstone.LOGGER.error("Couldn't save Wireless Redstone configs to file", e);
 		}
 	}
 }
