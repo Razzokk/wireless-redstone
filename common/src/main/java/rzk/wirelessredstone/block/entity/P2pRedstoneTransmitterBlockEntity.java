@@ -42,8 +42,7 @@ public class P2pRedstoneTransmitterBlockEntity extends P2pRedstoneTransceiverBlo
 	{
 		this.link = link;
 		markDirty();
-		var state = getCachedState();
-		world.setBlockState(pos, state.with(LINKED, true));
+		world.setBlockState(pos, getCachedState().with(LINKED, true));
 	}
 
 	@Override
@@ -51,7 +50,6 @@ public class P2pRedstoneTransmitterBlockEntity extends P2pRedstoneTransceiverBlo
 	{
 		link = null;
 		markDirty();
-		var state = getCachedState();
-		world.setBlockState(pos, state.with(LINKED, false));
+		world.setBlockState(pos, getCachedState().with(LINKED, false));
 	}
 }

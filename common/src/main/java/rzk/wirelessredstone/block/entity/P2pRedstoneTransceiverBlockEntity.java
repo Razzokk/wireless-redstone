@@ -6,13 +6,17 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 import rzk.wirelessredstone.WirelessRedstone;
+import rzk.wirelessredstone.api.ChunkLoadListener;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRUtils;
 
-public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity
+import static rzk.wirelessredstone.misc.WRProperties.LINKED;
+
+public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity implements ChunkLoadListener
 {
 	protected BlockPos link;
 
@@ -73,15 +77,54 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity
 
 	public void unlinkOther()
 	{
-		if (world.isClient || link == null) return;
+		if (world.isClient || link == null || !world.isChunkLoaded(link)) return;
 
-		if (world.isChunkLoaded(link) && world.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
+		if (world.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
 			other.onUnlinked();
 	}
 
 	protected abstract void onLinked(BlockPos link);
 
 	protected abstract void onUnlinked();
+
+	private void virtualUnlink()
+	{
+		world.setBlockState(pos, getCachedState().with(LINKED, false));
+	}
+
+	private void virtualLink()
+	{
+		world.setBlockState(pos, getCachedState().with(LINKED, true));
+	}
+
+	@Override
+	public void onChunkLoad(ServerWorld world)
+	{
+		if (world.isClient || link == null) return;
+
+		if (!world.isChunkLoaded(link))
+		{
+			virtualUnlink();
+		}
+		else if (world.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other && pos.equals(other.link))
+		{
+			virtualLink();
+			other.virtualLink();
+		}
+		else
+		{
+			unlink();
+		}
+	}
+
+	@Override
+	public void onChunkUnload(ServerWorld world)
+	{
+		if (world.isClient || link == null || !world.isChunkLoaded(link)) return;
+
+		if (world.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
+			other.virtualUnlink();
+	}
 
 	@Override
 	public void readNbt(NbtCompound nbt)
