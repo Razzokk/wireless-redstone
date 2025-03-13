@@ -5,6 +5,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import rzk.wirelessredstone.WirelessRedstone;
+import rzk.wirelessredstone.block.entity.P2pRedstoneReceiverBlockEntity;
 import rzk.wirelessredstone.block.entity.P2pRedstoneTransmitterBlockEntity;
 import rzk.wirelessredstone.block.entity.RedstoneReceiverBlockEntity;
 import rzk.wirelessredstone.block.entity.RedstoneTransmitterBlockEntity;
@@ -19,7 +20,8 @@ public final class ModBlockEntitiesNeo
 		{
 			ModBlockEntities.redstoneTransmitterBlockEntityType = registerBlockEntityType(helper, "redstone_transmitter_block_entity", BlockEntityType.Builder.create(RedstoneTransmitterBlockEntity::new, ModBlocks.redstoneTransmitter).build(null));
 			ModBlockEntities.redstoneReceiverBlockEntityType = registerBlockEntityType(helper, "redstone_receiver_block_entity", BlockEntityType.Builder.create(RedstoneReceiverBlockEntity::new, ModBlocks.redstoneReceiver).build(null));
-			ModBlockEntities.p2pRedstoneTransmitterBlockEntityType = registerBlockEntityType(helper, "p2p_redstone_receiver_block_entity", BlockEntityType.Builder.create(P2pRedstoneTransmitterBlockEntity::new, ModBlocks.p2pRedstoneTransmitter).build(null));
+			ModBlockEntities.p2pRedstoneTransmitterBlockEntityType = registerBlockEntityType(helper, "p2p_redstone_transmitter_block_entity", BlockEntityType.Builder.create(P2pRedstoneTransmitterBlockEntity::new, ModBlocks.p2pRedstoneTransmitter).build(null));
+			ModBlockEntities.p2pRedstoneReceiverBlockEntityType = registerBlockEntityType(helper, "p2p_redstone_receiver_block_entity", BlockEntityType.Builder.create(P2pRedstoneReceiverBlockEntity::new, ModBlocks.p2pRedstoneReceiver).build(null));
 		});
 	}
 

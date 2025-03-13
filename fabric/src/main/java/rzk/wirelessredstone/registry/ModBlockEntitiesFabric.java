@@ -5,6 +5,7 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import rzk.wirelessredstone.WirelessRedstone;
+import rzk.wirelessredstone.block.entity.P2pRedstoneReceiverBlockEntity;
 import rzk.wirelessredstone.block.entity.P2pRedstoneTransmitterBlockEntity;
 import rzk.wirelessredstone.block.entity.RedstoneReceiverBlockEntity;
 import rzk.wirelessredstone.block.entity.RedstoneTransmitterBlockEntity;
@@ -21,6 +22,8 @@ public final class ModBlockEntitiesFabric
 			BlockEntityType.Builder.create(RedstoneReceiverBlockEntity::new, ModBlocks.redstoneReceiver).build());
 		ModBlockEntities.p2pRedstoneTransmitterBlockEntityType = registerBlockEntity("p2p_redstone_transmitter_block_entity",
 			BlockEntityType.Builder.create(P2pRedstoneTransmitterBlockEntity::new, ModBlocks.p2pRedstoneTransmitter).build());
+		ModBlockEntities.p2pRedstoneReceiverBlockEntityType = registerBlockEntity("p2p_redstone_receiver_block_entity",
+			BlockEntityType.Builder.create(P2pRedstoneReceiverBlockEntity::new, ModBlocks.p2pRedstoneReceiver).build());
 	}
 
 	private static <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(String name, BlockEntityType<T> blockEntityType)

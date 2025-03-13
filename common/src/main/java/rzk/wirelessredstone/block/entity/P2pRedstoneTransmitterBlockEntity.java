@@ -1,83 +1,57 @@
 package rzk.wirelessredstone.block.entity;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockPos;
-import rzk.wirelessredstone.misc.NbtKeys;
+import rzk.wirelessredstone.misc.WRUtils;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 import rzk.wirelessredstone.registry.ModBlocks;
 
 import static net.minecraft.state.property.Properties.POWERED;
 import static rzk.wirelessredstone.misc.WRProperties.LINKED;
 
-public class P2pRedstoneTransmitterBlockEntity extends BlockEntity
+public class P2pRedstoneTransmitterBlockEntity extends P2pRedstoneTransceiverBlockEntity
 {
-	private BlockPos target = null;
-
 	public P2pRedstoneTransmitterBlockEntity(BlockPos pos, BlockState state)
 	{
 		super(ModBlockEntities.p2pRedstoneTransmitterBlockEntityType, pos, state);
 	}
 
-	public void link(BlockPos target)
+	public void scheduleReceiverUpdate()
 	{
-		if (world.isClient) return;
-
-		unlink();
-		this.target = target;
-
-		if (target == null || !world.isChunkLoaded(target)) return;
-
-		var state = getCachedState();
-		var targetState = world.getBlockState(target);
-		var powered = state.get(POWERED);
-
-		world.setBlockState(pos, state.with(LINKED, true), Block.NOTIFY_LISTENERS);
-		world.setBlockState(target, targetState.with(LINKED, true).with(POWERED, powered));
+		if (world.isClient || link == null || !world.isChunkLoaded(link)) return;
+		world.scheduleBlockTick(pos, ModBlocks.p2pRedstoneTransmitter, WRUtils.TICKS_PER_REDSTONE_TICK);
 	}
 
-	public void unlink()
+	public void updateReceiver()
 	{
-		if (world.isClient || target == null) return;
+		if (world.isClient || link == null || !world.isChunkLoaded(link)) return;
+		var state = world.getBlockState(link);
 
-		if (world.isChunkLoaded(target))
+		if (!state.isOf(ModBlocks.p2pRedstoneReceiver))
 		{
-			var targetState = world.getBlockState(target);
-			if (targetState.isOf(ModBlocks.p2pRedstoneReceiver))
-				world.setBlockState(target, targetState.with(LINKED, false).with(POWERED, false));
+			unlink();
+			return;
 		}
 
-		target = null;
+		var powered = getCachedState().get(POWERED);
+		world.setBlockState(link, state.with(POWERED, powered));
+	}
+
+	@Override
+	protected void onLinked(BlockPos link)
+	{
+		this.link = link;
 		markDirty();
-	}
-
-	public void setTargetState(boolean powered)
-	{
-		if (world.isClient || target == null || !world.isChunkLoaded(target)) return;
-
-		var targetState = world.getBlockState(target);
-		if (!targetState.isOf(ModBlocks.p2pRedstoneReceiver) || (targetState.get(POWERED) == powered)) return;
-
-		world.setBlockState(target, targetState.with(POWERED, powered));
+		var state = getCachedState();
+		world.setBlockState(pos, state.with(LINKED, true));
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt)
+	protected void onUnlinked()
 	{
-		super.readNbt(nbt);
-		var targetNbt = nbt.getCompound(NbtKeys.LINKER_TARGET);
-		if (targetNbt != null)
-			target = NbtHelper.toBlockPos(targetNbt);
-	}
-
-	@Override
-	protected void writeNbt(NbtCompound nbt)
-	{
-		super.writeNbt(nbt);
-		if (target != null)
-			nbt.put(NbtKeys.LINKER_TARGET, NbtHelper.fromBlockPos(target));
+		link = null;
+		markDirty();
+		var state = getCachedState();
+		world.setBlockState(pos, state.with(LINKED, false));
 	}
 }
