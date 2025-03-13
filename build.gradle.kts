@@ -55,7 +55,7 @@ val changelogProvider by extra {
 }
 
 val now: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC)
-val isReleaseBuild = System.getenv("GITHUB_REF")?.startsWith("refs/tags/") ?: false
+val isReleaseBuild = modReleaseType != "release" || System.getenv("GITHUB_REF")?.startsWith("refs/tags/") ?: false
 val buildNumber: String = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 val license = file("LICENSE")
 
