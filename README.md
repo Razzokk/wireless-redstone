@@ -18,6 +18,12 @@ you can add/subtract 100 and 1000) or you can just type in your desired frequenc
 color of the frequency display on a receiver/transmitter in the Configs. The same goes for highlighting with the
 Frequency Sniffer!
 
+Transmitter and receiver blocks behave in a lazy-loaded manner with respect to redstone updates in unloaded chunks.
+This means that unloaded chunks will not be actively loaded to make the redstone update, but as soon as the receiver is
+loaded, its redstone state will be updated to match that of its corresponding transmitter.
+
+Currently wireless redstone is dimensional but this might change in the future.
+
 ## Content
 
 ### Redstone Transmitter
@@ -54,6 +60,32 @@ When you right-click the sniffer tool all active transmitters on the set frequen
 wireframe around the transmitter block. There is also a chat message that tells you where all the active transmitters
 are located at by showing the block position. If you are an admin/op, you can also click on the block position to
 teleport there. See example in the screenshot section. You can also change the highlight color in the configs!
+
+### P2P Components
+
+In addition to the classic frequency based transmitter and receiver pair, there are now P2P transmitters and receivers.
+Instead of "connecting" them via a frequency, they are **directly** connected with the help of the [Linker](#Linker),
+thus the name P2P (point to point). This means that there *cannot* be any frequency clashes with other players.
+But you can only connect one transmitter to one receiver and vice versa.
+
+These components have two block states:
+
+- `powered`: Indicating whether the block is being powered (transmitter) or powers something (receiver)
+- `linked`: Indicating if the block is linked with its counterpart. This property can be tested for by using a
+  comparator. It will output redstone power of 15 if linked, and 0 otherwise.
+
+Once the link between a transmitter and receiver pair is established, the `linked` property changes accordingly and
+redstone changes on the transmitter are reflected by the connected receiver. In case one of the two blocks gets
+destroyed or relinked to another block, the link of its counterpart is terminated.
+
+There is however a unique catch to the `linked` property. Once a linked p2p block gets unloaded it will visually be
+unlinked from its counterpart. The redstone state stays the same and the actual link between them is still stored and
+re-established once they are both loaded again. In case the other block gets destroyed or re-linked in the meantime the
+block will unlink completely as soon as it tries to connect to the other block again (meaning both must be loaded).
+This behavior can for example be used detect if certain chunks are loaded or unloaded. I'd like to see what you can come
+up with using this feature.
+
+### Linker
 
 ### Circuit
 

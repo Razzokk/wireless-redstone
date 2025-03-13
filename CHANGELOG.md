@@ -13,9 +13,9 @@ with the minecraft version prepended to it.
 
 ### Added
 
-- P2P redstone transmitter and receiver for direct wireless linkage
-	- Show target of p2p transmitters when picked up with nbt data
-- Linker to link p2p transmitter and receiver
+- **P2P redstone transmitter** and **receiver** for direct wireless linkage
+- **Linker** to link p2p transmitter and receiver
+  - Similar to the sniffer, highlights the targeted block
 
 ### Changed
 

@@ -55,6 +55,26 @@ public class RecipeGenerator extends FabricRecipeProvider
 			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
 			.offerTo(exporter);
 
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneTransmitter)
+			.pattern("IRI")
+			.pattern("RCR")
+			.pattern("IRI")
+			.input('I', Items.COPPER_INGOT)
+			.input('R', Items.REDSTONE_TORCH)
+			.input('C', ModItems.circuit)
+			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
+			.offerTo(exporter);
+
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneReceiver)
+			.pattern("IRI")
+			.pattern("RCR")
+			.pattern("IRI")
+			.input('I', Items.COPPER_INGOT)
+			.input('R', Items.REDSTONE)
+			.input('C', ModItems.circuit)
+			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
+			.offerTo(exporter);
+
 		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModItems.frequencyTool)
 			.pattern("RTR")
 			.pattern("ICI")
@@ -82,6 +102,18 @@ public class RecipeGenerator extends FabricRecipeProvider
 			.pattern("IRI")
 			.input('T', Items.REDSTONE_TORCH)
 			.input('P', Items.ENDER_PEARL)
+			.input('I', Items.IRON_INGOT)
+			.input('C', ModItems.circuit)
+			.input('R', Items.REDSTONE)
+			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
+			.offerTo(exporter);
+
+		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModItems.linker)
+			.pattern("TAT")
+			.pattern("ICI")
+			.pattern("RAR")
+			.input('T', Items.REDSTONE_TORCH)
+			.input('A', Items.AMETHYST_SHARD)
 			.input('I', Items.IRON_INGOT)
 			.input('C', ModItems.circuit)
 			.input('R', Items.REDSTONE)
