@@ -87,6 +87,11 @@ up with using this feature.
 
 ### Linker
 
+You use the **Linker** to link a **P2P Transmitter** and a **P2P Receiver** together. By sneaking and right-clicking on
+a block you select this block for linkage. The selected block is highlighted and can be seen through other blocks,
+the position of it can also be seen in the tooltip of the Linker item. The color of this highlight can be adjusted in
+the configs. To complete the link, simply right-click the blocks counterpart and you are done.
+
 ### Circuit
 
 The **Circuit** is for crafting purposes only.
