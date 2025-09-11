@@ -6,6 +6,10 @@ with the minecraft version appended.
 
 ## [Unreleased]
 
+### Changed
+
+- Remove exception stacktrace from config error log
+
 ## [1.2.0+1.20.4] - 2025-09-11
 
 ### Changed

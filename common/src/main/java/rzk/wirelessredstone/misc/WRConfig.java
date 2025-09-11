@@ -56,7 +56,7 @@ public class WRConfig
 		}
 		catch (IOException | NullPointerException e)
 		{
-			WirelessRedstone.LOGGER.error("Couldn't load Wireless Redstone configs from file", e);
+			WirelessRedstone.LOGGER.error("Couldn't load Wireless Redstone configs from file");
 		}
 	}
 

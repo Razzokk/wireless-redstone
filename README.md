@@ -26,14 +26,12 @@ Currently wireless redstone is dimensional but this might change in the future.
 
 ## Content
 
-### Redstone Transmitter
+### Redstone Transmitter & Receiver
 
 The **Redstone Transmitter** transmits a signal to the Redstone Network when it is turned on by a Redstone signal and
 sets all receivers on the same frequency to high as well. If there is more than one transmitter transmitting on the same
 frequency, all receivers on that frequency will be high as long as at least one transmitter on that frequency is on.
 This block can be right-clicked to set the frequency.
-
-### Redstone Receiver
 
 The **Redstone Receiver** will output a Redstone signal of 15 as long as there is at least one active transmitter on the
 same frequency. This block can be right-clicked to set the frequency.
@@ -61,7 +59,7 @@ wireframe around the transmitter block. There is also a chat message that tells 
 are located at by showing the block position. If you are an admin/op, you can also click on the block position to
 teleport there. See example in the screenshot section. You can also change the highlight color in the configs!
 
-### P2P Components
+### P2P Transmitter & Receiver
 
 In addition to the classic frequency based transmitter and receiver pair, there are now P2P transmitters and receivers.
 Instead of "connecting" them via a frequency, they are **directly** connected with the help of the [Linker](#Linker),
