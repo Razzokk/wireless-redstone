@@ -45,13 +45,5 @@ jobs:
           path: artifacts/*
 
       - name: Publish Fabric to Modrinth & CurseForge
-        if: startsWith(github.ref, 'refs/tags/release/fabric/')
-        run: ./gradlew :fabric:modrinth :fabric:curseforge
-
-      - name: Publish Forge to Modrinth & CurseForge
-        if: startsWith(github.ref, 'refs/tags/release/forge/')
-        run: ./gradlew :forge:modrinth :forge:curseforge
-
-      - name: Publish NeoForge to Modrinth & CurseForge
-        if: startsWith(github.ref, 'refs/tags/release/neoforge/')
-        run: ./gradlew :neoforge:modrinth :neoforge:curseforge
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: ./gradlew publishModrinth publishCurseforge

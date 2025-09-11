@@ -1,7 +1,5 @@
 import mod.gradle.Properties
 import mod.gradle.Versions
-import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 plugins {
@@ -11,17 +9,7 @@ plugins {
 	`maven-publish`
 }
 
-val now: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC)
-val isTaggedBuild = System.getenv("GITHUB_REF")?.startsWith("refs/tags/v") ?: false
-
 base.archivesName.set("${Properties.MOD_ID}-${project.name}")
-group = Properties.GROUP
-version = "${Versions.MOD}+${Versions.MINECRAFT}"
-
-if (!isTaggedBuild) {
-	val buildNumber: String = now.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
-	version = "$version.$buildNumber"
-}
 
 java {
 	toolchain.languageVersion.set(JavaLanguageVersion.of(Versions.JAVA))
@@ -76,7 +64,7 @@ tasks {
 				"Implementation-Title" to "${Properties.MOD_NAME} (${project.name})",
 				"Implementation-Version" to archiveVersion,
 				"Implementation-Vendor" to Properties.MOD_AUTHOR,
-				"Implementation-Timestamp" to now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
+				"Implementation-Timestamp" to Properties.NOW.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
 				"Built-On-Java" to "${System.getProperty("java.vm.version")} (${System.getProperty("java.vm.vendor")})",
 				"Built-On-Minecraft" to Versions.MINECRAFT,
 			))

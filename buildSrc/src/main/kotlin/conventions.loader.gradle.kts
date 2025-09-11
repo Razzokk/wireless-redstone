@@ -1,6 +1,3 @@
-import mod.gradle.Properties
-import mod.gradle.Versions
-
 plugins {
 	id("conventions.common")
 }

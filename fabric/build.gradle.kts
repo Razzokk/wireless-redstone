@@ -76,9 +76,11 @@ tasks {
 }
 
 publishMods {
+	val changelogProvider: Provider<String> by rootProject
+
 	file.set(tasks.named<Jar>("remapJar").get().archiveFile)
 	modLoaders.add("fabric")
-	changelog = rootProject.file("CHANGELOG.md").readText()
+	changelog = changelogProvider
 	displayName = "[Fabric ${Versions.MINECRAFT}] ${Properties.MOD_ID}-${Versions.MOD}"
 	version = "${Versions.MOD}+${Versions.MINECRAFT}-fabric"
 	type = STABLE

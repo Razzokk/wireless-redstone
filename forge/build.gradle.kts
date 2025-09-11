@@ -75,9 +75,11 @@ tasks {
 }
 
 publishMods {
+	val changelogProvider: Provider<String> by rootProject
+
 	file.set(tasks.named<Jar>("jar").get().archiveFile)
 	modLoaders.add("forge")
-	changelog = rootProject.file("CHANGELOG.md").readText()
+	changelog = changelogProvider
 	displayName = "[Forge ${Versions.MINECRAFT}] ${Properties.MOD_ID}-${Versions.MOD}"
 	version = "${Versions.MOD}+${Versions.MINECRAFT}-forge"
 	type = STABLE
