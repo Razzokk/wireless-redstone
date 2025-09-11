@@ -2,40 +2,40 @@ package rzk.wirelessredstone.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricTagProvider;
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.RegistryWrapper;
-import net.minecraft.registry.tag.BlockTags;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
 import rzk.wirelessredstone.registry.ModBlocks;
 
 import java.util.concurrent.CompletableFuture;
 
 public class BlockTagGenerator extends FabricTagProvider.BlockTagProvider
 {
-	public BlockTagGenerator(FabricDataOutput output, CompletableFuture<RegistryWrapper.WrapperLookup> registriesFuture)
+	public BlockTagGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture)
 	{
 		super(output, registriesFuture);
 	}
 
 	@Override
-	protected void configure(RegistryWrapper.WrapperLookup arg)
+	protected void addTags(HolderLookup.Provider arg)
 	{
-		getTagBuilder(BlockTags.PICKAXE_MINEABLE)
+		getOrCreateTagBuilder(BlockTags.MINEABLE_WITH_PICKAXE)
 			.add(getId(ModBlocks.redstoneTransmitter))
 			.add(getId(ModBlocks.redstoneReceiver))
 			.add(getId(ModBlocks.p2pRedstoneTransmitter))
 			.add(getId(ModBlocks.p2pRedstoneReceiver));
 	}
 
-	private static Identifier getId(Block block)
+	private static ResourceLocation getId(Block block)
 	{
-		return Registries.BLOCK.getId(block);
+		return BuiltInRegistries.BLOCK.getKey(block);
 	}
 
-	private static Identifier getId(Item item)
+	private static ResourceLocation getId(Item item)
 	{
-		return Registries.ITEM.getId(item);
+		return BuiltInRegistries.ITEM.getKey(item);
 	}
 }

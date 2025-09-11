@@ -1,20 +1,23 @@
 package rzk.wirelessredstone.block;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.MapColor;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.StateManager;
-import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.level.redstone.Redstone;
+import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.api.RedstoneConnectable;
 import rzk.wirelessredstone.block.entity.P2pRedstoneTransceiverBlockEntity;
 import rzk.wirelessredstone.item.LinkerItem;
@@ -22,72 +25,78 @@ import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRUtils;
 import rzk.wirelessredstone.registry.ModItems;
 
-import static net.minecraft.state.property.Properties.POWERED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 import static rzk.wirelessredstone.misc.WRProperties.LINKED;
 
-public abstract class P2pRedstoneTransceiverBlock extends Block implements RedstoneConnectable, BlockEntityProvider
+public abstract class P2pRedstoneTransceiverBlock extends Block implements EntityBlock, RedstoneConnectable
 {
 	public P2pRedstoneTransceiverBlock()
 	{
-		super(AbstractBlock.Settings.create()
-			.mapColor(MapColor.IRON_GRAY)
-			.solidBlock((state, blockGetter, pos) -> false)
+		super(Properties.of()
+			.mapColor(MapColor.COLOR_LIGHT_GRAY)
+			.isRedstoneConductor((state, blockGetter, pos) -> false)
 			.strength(1.5F, 5.0F)
-			.sounds(BlockSoundGroup.METAL));
+			.sound(SoundType.METAL));
 
-		setDefaultState(stateManager.getDefaultState()
-			.with(LINKED, false)
-			.with(POWERED, false));
+		registerDefaultState(stateDefinition.any()
+			.setValue(LINKED, false)
+			.setValue(POWERED, false));
 	}
 
 	@Override
-	public boolean hasComparatorOutput(BlockState state)
+	public boolean hasAnalogOutputSignal(BlockState state)
 	{
 		return true;
 	}
 
 	@Override
-	public int getComparatorOutput(BlockState state, World world, BlockPos pos)
+	public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos)
 	{
-		return state.get(LINKED) ? WRUtils.MAX_REDSTONE_POWER : 0;
+		return state.getValue(LINKED) ? Redstone.SIGNAL_MAX : 0;
 	}
 
-	protected abstract boolean canLink(BlockState targetState, World world, PlayerEntity player);
+	protected abstract boolean canLink(BlockState targetState, Level level, Player player);
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit)
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
 	{
-		if (player.isSneaking()) return ActionResult.PASS;
+		if (player.isShiftKeyDown()) return InteractionResult.PASS;
 
-		var stack = player.getStackInHand(hand);
-		if (!stack.isOf(ModItems.linker)) return ActionResult.PASS;
+		var stack = player.getItemInHand(hand);
+		if (!stack.is(ModItems.linker)) return InteractionResult.PASS;
 
 		var target = LinkerItem.getTarget(stack);
-		if (target == null) return ActionResult.PASS;
-		if (target == pos) return ActionResult.FAIL;
+		if (target == null) return InteractionResult.PASS;
+		if (target == pos) return InteractionResult.FAIL;
 
-		if (!world.isChunkLoaded(target))
+		if (!level.isLoaded(target) && !level.isClientSide)
 		{
 			var targetText = WRUtils.positionText(target);
 			WRUtils.appendTeleportCommandIfAllowed(targetText, player, target);
-			var text = Text.translatable(TranslationKeys.MESSAGE_P2P_TARGET_UNLOADED, targetText).formatted(Formatting.RED);
-			player.sendMessage(text);
-			return ActionResult.FAIL;
+			var text = Component.translatable(TranslationKeys.MESSAGE_P2P_TARGET_UNLOADED, targetText).withStyle(ChatFormatting.RED);
+			player.sendSystemMessage(text);
+			return InteractionResult.FAIL;
 		}
 
-		var targetState = world.getBlockState(target);
-		if (!canLink(targetState, world, player)) return ActionResult.FAIL;
+		var targetState = level.getBlockState(target);
+		if (!canLink(targetState, level, player)) return InteractionResult.FAIL;
 
-		var blockEntity = world.getBlockEntity(pos);
-		if (!(blockEntity instanceof P2pRedstoneTransceiverBlockEntity p2pEntity)) return ActionResult.PASS;
+		var blockEntity = level.getBlockEntity(pos);
+		if (!(blockEntity instanceof P2pRedstoneTransceiverBlockEntity p2pEntity)) return InteractionResult.PASS;
 
 		var success = p2pEntity.link(target, player);
-		return success ? ActionResult.SUCCESS : ActionResult.FAIL;
+		return success ? InteractionResult.SUCCESS : InteractionResult.FAIL;
 	}
 
 	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
 	{
 		builder.add(LINKED, POWERED);
+	}
+
+	@Override
+	public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction)
+	{
+		return direction != null;
 	}
 }

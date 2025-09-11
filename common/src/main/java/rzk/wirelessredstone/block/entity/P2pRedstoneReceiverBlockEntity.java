@@ -1,11 +1,11 @@
 package rzk.wirelessredstone.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 
-import static net.minecraft.state.property.Properties.POWERED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 import static rzk.wirelessredstone.misc.WRProperties.LINKED;
 
 public class P2pRedstoneReceiverBlockEntity extends P2pRedstoneTransceiverBlockEntity
@@ -19,26 +19,26 @@ public class P2pRedstoneReceiverBlockEntity extends P2pRedstoneTransceiverBlockE
 	protected void onLinked(BlockPos link)
 	{
 		this.link = link;
-		markDirty();
-		var transmitterState = world.getBlockState(this.link);
-		world.setBlockState(pos, getCachedState().with(LINKED, true).with(POWERED, transmitterState.get(POWERED)));
+		setChanged();
+		var transmitterState = level.getBlockState(this.link);
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LINKED, true).setValue(POWERED, transmitterState.getValue(POWERED)));
 	}
 
 	@Override
 	protected void onUnlinked()
 	{
 		link = null;
-		markDirty();
-		world.setBlockState(pos, getCachedState().with(LINKED, false).with(POWERED, false));
+		setChanged();
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LINKED, false).setValue(POWERED, false));
 	}
 
 	@Override
-	public void onChunkLoad(ServerWorld world)
+	public void onChunkLoad(ServerLevel level)
 	{
-		super.onChunkLoad(world);
-		if (world.isClient || link == null) return;
+		super.onChunkLoad(level);
+		if (level.isClientSide || link == null) return;
 
-		var transmitterState = world.getBlockState(link);
-		world.setBlockState(pos, getCachedState().with(POWERED, transmitterState.get(POWERED)));
+		var transmitterState = level.getBlockState(link);
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(POWERED, transmitterState.getValue(POWERED)));
 	}
 }

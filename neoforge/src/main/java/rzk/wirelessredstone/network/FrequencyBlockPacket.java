@@ -1,11 +1,10 @@
 package rzk.wirelessredstone.network;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -14,24 +13,24 @@ import rzk.wirelessredstone.block.RedstoneTransceiverBlock;
 import rzk.wirelessredstone.client.screen.ModScreens;
 import rzk.wirelessredstone.misc.TranslationKeys;
 
-public record FrequencyBlockPacket(int frequency, BlockPos pos) implements CustomPayload
+public record FrequencyBlockPacket(int frequency, BlockPos pos) implements CustomPacketPayload
 {
-	public static final Identifier ID = WirelessRedstone.identifier("frequency_block");
+	public static final ResourceLocation ID = new ResourceLocation(WirelessRedstone.MOD_ID, "frequency_block");
 
-	public FrequencyBlockPacket(PacketByteBuf buf)
+	public FrequencyBlockPacket(FriendlyByteBuf buf)
 	{
 		this(buf.readInt(), buf.readBlockPos());
 	}
 
 	@Override
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeInt(frequency);
 		buf.writeBlockPos(pos);
 	}
 
 	@Override
-	public Identifier id()
+	public ResourceLocation id()
 	{
 		return ID;
 	}
@@ -39,11 +38,11 @@ public record FrequencyBlockPacket(int frequency, BlockPos pos) implements Custo
 	public void handleServer(IPayloadContext ctx)
 	{
 		ctx.workHandler().submitAsync(() -> {
-			World world = ctx.level().orElseThrow();
-			if (world.isAreaLoaded(pos, 0) && world.getBlockState(pos).getBlock() instanceof RedstoneTransceiverBlock block)
-				block.setFrequency(world, pos, frequency);
+			var level = ctx.level().orElseThrow();
+			if (level.isLoaded(pos) && level.getBlockState(pos).getBlock() instanceof RedstoneTransceiverBlock block)
+				block.setFrequency(level, pos, frequency);
 		}).exceptionally(e -> {
-			ctx.packetHandler().disconnect(Text.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
+			ctx.packetHandler().disconnect(Component.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
 			return null;
 		});
 	}
@@ -54,7 +53,7 @@ public record FrequencyBlockPacket(int frequency, BlockPos pos) implements Custo
 			if (FMLEnvironment.dist == Dist.CLIENT)
 				ModScreens.openBlockFrequencyScreen(frequency, pos);
 		}).exceptionally(e -> {
-			ctx.packetHandler().disconnect(Text.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
+			ctx.packetHandler().disconnect(Component.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
 			return null;
 		});
 	}

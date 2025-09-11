@@ -1,37 +1,38 @@
 package rzk.wirelessredstone.mixin;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.RedstoneWireBlock;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.RedStoneWireBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import rzk.wirelessredstone.api.RedstoneConnectable;
 
-@Mixin(RedstoneWireBlock.class)
+@Mixin(RedStoneWireBlock.class)
 public abstract class RedstoneWireMixin
 {
 	@Shadow
-	protected static boolean connectsTo(BlockState state, Direction dir)
+	protected static boolean shouldConnectTo(BlockState state, Direction dir)
 	{
 		return false;
 	}
 
-	@Redirect(method = "getRenderConnectionType(" +
-		"Lnet/minecraft/world/BlockView;" +
-		"Lnet/minecraft/util/math/BlockPos;" +
-		"Lnet/minecraft/util/math/Direction;Z)" +
-		"Lnet/minecraft/block/enums/WireConnection;",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/block/RedstoneWireBlock;" +
-			"connectsTo(Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/Direction;)Z"))
-	private boolean onConnectsTo(BlockState state, Direction side, BlockView world, BlockPos pos, Direction direction)
+	@Redirect(method = "getConnectingSide(" +
+		"Lnet/minecraft/world/level/BlockGetter;" +
+		"Lnet/minecraft/core/BlockPos;" +
+		"Lnet/minecraft/core/Direction;" +
+		"Z" +
+		")Lnet/minecraft/world/level/block/state/properties/RedstoneSide;",
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/RedStoneWireBlock;" +
+			"shouldConnectTo(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/Direction;)Z"))
+	private boolean onShouldConnectTo(BlockState state, Direction side, BlockGetter level, BlockPos pos, Direction direction)
 	{
 		if (!(state.getBlock() instanceof RedstoneConnectable connectable))
-			return connectsTo(state, direction);
+			return shouldConnectTo(state, direction);
 
-		return connectable.connectsToRedstone(state, world, pos.offset(direction), side);
+		return connectable.canConnectRedstone(state, level, pos.relative(direction), side);
 	}
 }

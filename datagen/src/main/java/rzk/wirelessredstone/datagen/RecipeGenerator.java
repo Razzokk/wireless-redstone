@@ -2,10 +2,10 @@ package rzk.wirelessredstone.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
-import net.minecraft.data.server.recipe.RecipeExporter;
-import net.minecraft.data.server.recipe.ShapedRecipeJsonBuilder;
-import net.minecraft.item.Items;
-import net.minecraft.recipe.book.RecipeCategory;
+import net.minecraft.data.recipes.RecipeCategory;
+import net.minecraft.data.recipes.RecipeOutput;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.world.item.Items;
 import rzk.wirelessredstone.registry.ModBlocks;
 import rzk.wirelessredstone.registry.ModItems;
 
@@ -17,107 +17,107 @@ public class RecipeGenerator extends FabricRecipeProvider
 	}
 
 	@Override
-	public void generate(RecipeExporter exporter)
+	public void buildRecipes(RecipeOutput exporter)
 	{
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModItems.circuit, 2)
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.circuit, 2)
 			.pattern("RGR")
 			.pattern("IEI")
 			.pattern("QGQ")
-			.input('R', Items.REDSTONE)
-			.input('G', Items.GLOWSTONE_DUST)
-			.input('I', Items.GOLD_INGOT)
-			.input('E', Items.ENDER_PEARL)
-			.input('Q', Items.QUARTZ)
-			.criterion(hasItem(Items.REDSTONE), conditionsFromItem(Items.REDSTONE))
-			.criterion(hasItem(Items.GLOWSTONE_DUST), conditionsFromItem(Items.GLOWSTONE_DUST))
-			.criterion(hasItem(Items.GOLD_INGOT), conditionsFromItem(Items.GOLD_INGOT))
-			.criterion(hasItem(Items.ENDER_PEARL), conditionsFromItem(Items.ENDER_PEARL))
-			.criterion(hasItem(Items.QUARTZ), conditionsFromItem(Items.QUARTZ))
-			.offerTo(exporter);
+			.define('R', Items.REDSTONE)
+			.define('G', Items.GLOWSTONE_DUST)
+			.define('I', Items.GOLD_INGOT)
+			.define('E', Items.ENDER_PEARL)
+			.define('Q', Items.QUARTZ)
+			.unlockedBy(getHasName(Items.REDSTONE), has(Items.REDSTONE))
+			.unlockedBy(getHasName(Items.GLOWSTONE_DUST), has(Items.GLOWSTONE_DUST))
+			.unlockedBy(getHasName(Items.GOLD_INGOT), has(Items.GOLD_INGOT))
+			.unlockedBy(getHasName(Items.ENDER_PEARL), has(Items.ENDER_PEARL))
+			.unlockedBy(getHasName(Items.QUARTZ), has(Items.QUARTZ))
+			.save(exporter);
 
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModBlocks.redstoneTransmitter)
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.redstoneTransmitter)
 			.pattern("IRI")
 			.pattern("RCR")
 			.pattern("IRI")
-			.input('I', Items.IRON_INGOT)
-			.input('R', Items.REDSTONE_TORCH)
-			.input('C', ModItems.circuit)
-			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
-			.offerTo(exporter);
+			.define('I', Items.IRON_INGOT)
+			.define('R', Items.REDSTONE_TORCH)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
 
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModBlocks.redstoneReceiver)
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.redstoneReceiver)
 			.pattern("IRI")
 			.pattern("RCR")
 			.pattern("IRI")
-			.input('I', Items.IRON_INGOT)
-			.input('R', Items.REDSTONE)
-			.input('C', ModItems.circuit)
-			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
-			.offerTo(exporter);
+			.define('I', Items.IRON_INGOT)
+			.define('R', Items.REDSTONE)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
 
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneTransmitter)
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneTransmitter)
 			.pattern("IRI")
 			.pattern("RCR")
 			.pattern("IRI")
-			.input('I', Items.COPPER_INGOT)
-			.input('R', Items.REDSTONE_TORCH)
-			.input('C', ModItems.circuit)
-			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
-			.offerTo(exporter);
+			.define('I', Items.COPPER_INGOT)
+			.define('R', Items.REDSTONE_TORCH)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
 
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneReceiver)
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneReceiver)
 			.pattern("IRI")
 			.pattern("RCR")
 			.pattern("IRI")
-			.input('I', Items.COPPER_INGOT)
-			.input('R', Items.REDSTONE)
-			.input('C', ModItems.circuit)
-			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
-			.offerTo(exporter);
+			.define('I', Items.COPPER_INGOT)
+			.define('R', Items.REDSTONE)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
 
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModItems.frequencyTool)
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.frequencyTool)
 			.pattern("RTR")
 			.pattern("ICI")
 			.pattern(" I ")
-			.input('R', Items.REDSTONE)
-			.input('T', Items.COMPARATOR)
-			.input('I', Items.IRON_INGOT)
-			.input('C', ModItems.circuit)
-			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
-			.offerTo(exporter);
+			.define('R', Items.REDSTONE)
+			.define('T', Items.COMPARATOR)
+			.define('I', Items.IRON_INGOT)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
 
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModItems.frequencySniffer)
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.frequencySniffer)
 			.pattern("ITI")
 			.pattern("ICI")
 			.pattern("ITI")
-			.input('T', Items.COMPARATOR)
-			.input('I', Items.IRON_INGOT)
-			.input('C', ModItems.circuit)
-			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
-			.offerTo(exporter);
+			.define('T', Items.COMPARATOR)
+			.define('I', Items.IRON_INGOT)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
 
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModItems.remote)
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.remote)
 			.pattern("TPT")
 			.pattern("ICI")
 			.pattern("IRI")
-			.input('T', Items.REDSTONE_TORCH)
-			.input('P', Items.ENDER_PEARL)
-			.input('I', Items.IRON_INGOT)
-			.input('C', ModItems.circuit)
-			.input('R', Items.REDSTONE)
-			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
-			.offerTo(exporter);
+			.define('T', Items.REDSTONE_TORCH)
+			.define('P', Items.ENDER_PEARL)
+			.define('I', Items.IRON_INGOT)
+			.define('C', ModItems.circuit)
+			.define('R', Items.REDSTONE)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
 
-		ShapedRecipeJsonBuilder.create(RecipeCategory.REDSTONE, ModItems.linker)
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.linker)
 			.pattern("TAT")
 			.pattern("ICI")
 			.pattern("RAR")
-			.input('T', Items.REDSTONE_TORCH)
-			.input('A', Items.AMETHYST_SHARD)
-			.input('I', Items.IRON_INGOT)
-			.input('C', ModItems.circuit)
-			.input('R', Items.REDSTONE)
-			.criterion(hasItem(ModItems.circuit), conditionsFromItem(ModItems.circuit))
-			.offerTo(exporter);
+			.define('T', Items.REDSTONE_TORCH)
+			.define('A', Items.AMETHYST_SHARD)
+			.define('I', Items.IRON_INGOT)
+			.define('C', ModItems.circuit)
+			.define('R', Items.REDSTONE)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
 	}
 }

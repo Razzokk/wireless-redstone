@@ -1,12 +1,12 @@
 package rzk.wirelessredstone.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import rzk.wirelessredstone.misc.WRUtils;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 import rzk.wirelessredstone.registry.ModBlocks;
 
-import static net.minecraft.state.property.Properties.POWERED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 import static rzk.wirelessredstone.misc.WRProperties.LINKED;
 
 public class P2pRedstoneTransmitterBlockEntity extends P2pRedstoneTransceiverBlockEntity
@@ -18,38 +18,38 @@ public class P2pRedstoneTransmitterBlockEntity extends P2pRedstoneTransceiverBlo
 
 	public void scheduleReceiverUpdate()
 	{
-		if (world.isClient || link == null || !world.isChunkLoaded(link)) return;
-		world.scheduleBlockTick(pos, ModBlocks.p2pRedstoneTransmitter, WRUtils.TICKS_PER_REDSTONE_TICK);
+		if (level.isClientSide || link == null || !level.isLoaded(link)) return;
+		level.scheduleTick(worldPosition, ModBlocks.p2pRedstoneTransmitter, WRUtils.TICKS_PER_REDSTONE_TICK);
 	}
 
 	public void updateReceiver()
 	{
-		if (world.isClient || link == null || !world.isChunkLoaded(link)) return;
-		var state = world.getBlockState(link);
+		if (level.isClientSide || link == null || !level.isLoaded(link)) return;
+		var state = level.getBlockState(link);
 
-		if (!state.isOf(ModBlocks.p2pRedstoneReceiver))
+		if (!state.is(ModBlocks.p2pRedstoneReceiver))
 		{
 			unlink();
 			return;
 		}
 
-		var powered = getCachedState().get(POWERED);
-		world.setBlockState(link, state.with(POWERED, powered));
+		var powered = getBlockState().getValue(POWERED);
+		level.setBlockAndUpdate(link, state.setValue(POWERED, powered));
 	}
 
 	@Override
 	protected void onLinked(BlockPos link)
 	{
 		this.link = link;
-		markDirty();
-		world.setBlockState(pos, getCachedState().with(LINKED, true));
+		setChanged();
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LINKED, true));
 	}
 
 	@Override
 	protected void onUnlinked()
 	{
 		link = null;
-		markDirty();
-		world.setBlockState(pos, getCachedState().with(LINKED, false));
+		setChanged();
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LINKED, false));
 	}
 }

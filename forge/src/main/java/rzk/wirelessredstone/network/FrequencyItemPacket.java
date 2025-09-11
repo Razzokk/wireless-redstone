@@ -1,26 +1,24 @@
 package rzk.wirelessredstone.network;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.fml.DistExecutor;
 import rzk.wirelessredstone.client.screen.ModScreens;
 import rzk.wirelessredstone.item.FrequencyItem;
 
-public record FrequencyItemPacket(int frequency, Hand hand)
+public record FrequencyItemPacket(int frequency, InteractionHand hand)
 {
-	public FrequencyItemPacket(PacketByteBuf buf)
+	public FrequencyItemPacket(FriendlyByteBuf buf)
 	{
-		this(buf.readInt(), buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND);
+		this(buf.readInt(), buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
 	}
 
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeInt(frequency);
-		buf.writeBoolean(hand == Hand.MAIN_HAND);
+		buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 	}
 
 	public void handle(CustomPayloadEvent.Context ctx)
@@ -31,8 +29,8 @@ public record FrequencyItemPacket(int frequency, Hand hand)
 
 	private void handleServer(CustomPayloadEvent.Context ctx)
 	{
-		ServerPlayerEntity player = ctx.getSender();
-		ItemStack stack = player.getStackInHand(hand);
+		var player = ctx.getSender();
+		var stack = player.getItemInHand(hand);
 		if (stack.getItem() instanceof FrequencyItem item)
 			item.setFrequency(stack, frequency);
 	}

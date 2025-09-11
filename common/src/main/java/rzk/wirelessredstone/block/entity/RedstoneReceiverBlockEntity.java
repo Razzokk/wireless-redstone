@@ -1,8 +1,8 @@
 package rzk.wirelessredstone.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.state.BlockState;
 import rzk.wirelessredstone.api.ChunkLoadListener;
 import rzk.wirelessredstone.ether.RedstoneEther;
 import rzk.wirelessredstone.misc.WRUtils;
@@ -18,26 +18,26 @@ public class RedstoneReceiverBlockEntity extends RedstoneTransceiverBlockEntity 
 	@Override
 	protected void onFrequencyChange(int oldFrequency, int newFrequency)
 	{
-		if (world.isClient) return;
-		RedstoneEther ether = RedstoneEther.getOrCreate((ServerWorld) world);
-		ether.removeReceiver(pos, oldFrequency);
+		if (level.isClientSide) return;
+		RedstoneEther ether = RedstoneEther.getOrCreate((ServerLevel) level);
+		ether.removeReceiver(worldPosition, oldFrequency);
 
 		if (WRUtils.isValidFrequency(newFrequency))
-			ether.addReceiver(world, pos, newFrequency);
+			ether.addReceiver(level, worldPosition, newFrequency);
 	}
 
 	@Override
-	public void onChunkLoad(ServerWorld world)
+	public void onChunkLoad(ServerLevel level)
 	{
-		var ether = RedstoneEther.getOrCreate(world);
-		ether.addReceiver(world, pos, frequency);
+		var ether = RedstoneEther.getOrCreate(level);
+		ether.addReceiver(level, worldPosition, frequency);
 	}
 
 	@Override
-	public void onChunkUnload(ServerWorld world)
+	public void onChunkUnload(ServerLevel level)
 	{
-		var ether = RedstoneEther.get(world);
+		var ether = RedstoneEther.get(level);
 		if (ether == null) return;
-		ether.removeReceiver(pos, frequency);
+		ether.removeReceiver(worldPosition, frequency);
 	}
 }

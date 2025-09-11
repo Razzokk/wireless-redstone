@@ -1,32 +1,31 @@
 package rzk.wirelessredstone.network;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.fml.DistExecutor;
 import rzk.wirelessredstone.client.WRClientEventsForge;
 
-public record SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coords)
+public record SnifferHighlightPacket(long timestamp, InteractionHand hand, BlockPos[] coords)
 {
-	public SnifferHighlightPacket(PacketByteBuf buf)
+	public SnifferHighlightPacket(FriendlyByteBuf buf)
 	{
-		this(buf.readLong(), buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND, readCoords(buf));
+		this(buf.readLong(), buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, readCoords(buf));
 	}
 
-	private static BlockPos[] readCoords(PacketByteBuf buf)
+	private static BlockPos[] readCoords(FriendlyByteBuf buf)
 	{
 		var coords = new BlockPos[buf.readInt()];
-		for (int i = 0; i < coords.length; i++)
-			coords[i] = buf.readBlockPos();
+		for (int i = 0; i < coords.length; i++) coords[i] = buf.readBlockPos();
 		return coords;
 	}
 
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeLong(timestamp);
-		buf.writeBoolean(hand == Hand.MAIN_HAND);
+		buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 		buf.writeInt(coords.length);
 
 		for (BlockPos pos : coords)
@@ -35,6 +34,6 @@ public record SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coord
 
 	public void handle(CustomPayloadEvent.Context ctx)
 	{
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> WRClientEventsForge.handleSnifferHighlightPacket(ctx, timestamp, hand, coords));
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> WRClientEventsForge.handleSnifferHighlightPacket(timestamp, hand, coords));
 	}
 }

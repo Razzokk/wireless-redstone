@@ -1,10 +1,10 @@
 package rzk.wirelessredstone.mixin;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -15,20 +15,18 @@ import rzk.wirelessredstone.api.SelectedItemListener;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity
 {
-	public LivingEntityMixin(EntityType<?> type, World world)
+	public LivingEntityMixin(EntityType<?> type, Level level)
 	{
-		super(type, world);
+		super(type, level);
 	}
 
 	@Shadow
-	protected ItemStack activeItemStack;
+	protected ItemStack useItem;
 
-	@Inject(method = "clearActiveItem", at = @At("HEAD"))
+	@Inject(method = "releaseUsingItem", at = @At("HEAD"))
 	private void clearActiveItem(CallbackInfo ci)
 	{
-		World world = getWorld();
-		ItemStack stack = activeItemStack;
-		if (stack.getItem() instanceof SelectedItemListener listener)
-			listener.onClearActiveItem(stack, world, (LivingEntity) (Object) this);
+		if (useItem.getItem() instanceof SelectedItemListener listener)
+			listener.onStopUsing(useItem, (LivingEntity) (Object) this, useItem.getUseDuration());
 	}
 }

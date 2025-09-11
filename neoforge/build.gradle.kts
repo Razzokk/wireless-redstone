@@ -1,110 +1,106 @@
-import net.darkhax.curseforgegradle.Constants
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
+import mod.gradle.Properties
+import mod.gradle.Versions
+import org.apache.tools.ant.filters.LineContains
 
 plugins {
-	id("com.modrinth.minotaur")
-	id("net.darkhax.curseforgegradle")
-}
-
-val common = project(":common")
-evaluationDependsOn(common.path)
-
-val javaVersion: Int by rootProject
-val debug: Boolean by rootProject
-val mcVersion: String by project
-val modId: String by project
-val modVersion: String by project
-val clothConfigVersion: String by project
-val jeiVersion: String by project
-val neoVersion: String by project
-val parchmentMappings: String by project
-val modrinthProjectId: String by project
-val curseForgeProjectId: String by project
-val changelogProvider: Provider<String> by project
-
-val modReleaseType: String by project
-val modDisplayName = "[NeoForge $mcVersion] $modId-$modVersion"
-
-base {
-	archivesName.set("$modId-neoforge")
+	id("conventions.loader")
+	id("net.neoforged.moddev")
+	id("me.modmuss50.mod-publish-plugin")
 }
 
 repositories {
 	maven("https://maven.shedaniel.me/")	// Cloth config
-	maven("https://maven.blamejared.com/")	// JEI
-	maven("https://maven.neoforged.net/releases")
 }
 
 dependencies {
-	implementation(project(common.path, configuration = common.configurations.namedElements.name))
-	implementation(common.sourceSets["client"].output)
-
-	neoForge("net.neoforged", "neoforge", neoVersion)
-
-	modApi("me.shedaniel.cloth:cloth-config-neoforge:$clothConfigVersion")
-
-	modLocalRuntime("mezz.jei:jei-$mcVersion-neoforge:$jeiVersion")
+	api("me.shedaniel.cloth", "cloth-config-neoforge", Versions.CLOTH_CONFIG)
 }
 
-loom {
+val common = project(":common")
+
+sourceSets {
+	getByName("main") {
+		compileClasspath += common.sourceSets["main"].output
+		runtimeClasspath += common.sourceSets["main"].output
+	}
+}
+
+neoForge {
+	version = Versions.NEOFORGE
+
+	parchment {
+		minecraftVersion = Versions.PARCHMENT_MINECRAFT
+		mappingsVersion = Versions.PARCHMENT
+	}
+
+	val at = common.file("src/main/resources/META-INF/accesstransformer.cfg")
+	if (at.exists()) setAccessTransformers(at)
+	validateAccessTransformers = true
+
 	runs {
 		configureEach {
-			ideConfigGenerated(true)
+			systemProperty("forge.logging.markers", "REGISTRIES")
+			systemProperty("forge.logging.console.level", "debug")
+		}
+
+		create("client") {
+			client()
+			ideName = "NeoForge Client (:${project.name})"
+			gameDirectory.set(file("run/client"))
+			jvmArguments.set(setOf("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true"))
+		}
+
+		create("server") {
+			server()
+			ideName = "NeoForge Server (:${project.name})"
+			gameDirectory.set(file("run/server"))
+			programArgument("--nogui")
+			jvmArguments.set(setOf("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true"))
 		}
 	}
 
 	mods {
-		register(modId) {
-			sourceSet(sourceSets.main.get())
+		register(Properties.MOD_ID) {
+			sourceSet(sourceSets["main"])
 		}
 	}
 }
 
 tasks {
-	// needed for the run configs
-	processResources {
-		from(common.sourceSets.main.get().resources)
-	}
-
-	withType<JavaCompile> {
-		source(common.sourceSets.main.get().allJava)
-		source(common.sourceSets["client"].allJava)
-	}
-
-	sourcesJar {
-		from(common.sourceSets.main.get().allSource)
-		from(common.sourceSets["client"].allSource)
+	named<ProcessResources>("processResources").configure {
+		filesMatching("*.mixins.json") {
+			filter<LineContains>("negate" to true, "contains" to setOf("refmap"))
+		}
 	}
 }
 
-// Publishing
+publishMods {
+	file.set(tasks.named<Jar>("jar").get().archiveFile)
+	modLoaders.add("neoforge")
+	changelog = rootProject.file("CHANGELOG.md").readText()
+	displayName = "[NeoForge ${Versions.MINECRAFT}] ${Properties.MOD_ID}-${Versions.MOD}"
+	version = "${Versions.MOD}+${Versions.MINECRAFT}-neoforge"
+	type = STABLE
 
-modrinth {
-	debugMode.set(debug)
-	token.set(System.getenv("MODRINTH_TOKEN"))
+	curseforge {
+		projectId = Properties.CURSEFORGE_PROJECT_ID
+		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
 
-	projectId.set(modrinthProjectId)
-	versionNumber.set("neoforge-$modVersion")
-	versionName.set(modDisplayName)
-	versionType.set(modReleaseType)
-	uploadFile.set(tasks.remapJar)
-	changelog.set(changelogProvider)
+		minecraftVersions.add(Versions.MINECRAFT)
+		javaVersions.add(JavaVersion.toVersion(Versions.JAVA))
 
-	dependencies {
-		optional.project("cloth-config")
+		clientRequired = true
+		serverRequired = true
+
+		optional("cloth-config")
 	}
-}
 
-tasks.register<TaskPublishCurseForge>("curseforge") {
-	debugMode = debug
-	apiToken = System.getenv("CURSEFORGE_TOKEN")
+	modrinth {
+		projectId = Properties.MODRINTH_PROJECT_ID
+		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
 
-	val file = upload(curseForgeProjectId, tasks.remapJar)
-	file.displayName = modDisplayName
-	file.releaseType = modReleaseType
-	file.changelog = changelogProvider.get()
-	file.changelogType = Constants.CHANGELOG_MARKDOWN
-	file.addJavaVersion("Java $javaVersion")
-	file.addModLoader("neoforge")
-	file.addOptional("cloth-config")
+		minecraftVersions.add(Versions.MINECRAFT)
+
+		optional("cloth-config")
+	}
 }

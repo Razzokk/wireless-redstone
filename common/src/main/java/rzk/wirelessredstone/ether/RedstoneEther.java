@@ -2,59 +2,59 @@ package rzk.wirelessredstone.ether;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.PersistentState;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.saveddata.SavedData;
 import rzk.wirelessredstone.misc.WRUtils;
 
 import java.util.Collections;
 import java.util.Set;
 
-public class RedstoneEther extends PersistentState
+public class RedstoneEther extends SavedData
 {
 	private static final String DATA_NAME = "redstone_ether";
 	private final Int2ObjectMap<RedstoneChannel> channels = new Int2ObjectOpenHashMap<>();
 
-	private static final PersistentState.Type<RedstoneEther> TYPE =
-		new Type<>(RedstoneEther::new, RedstoneEther::new, null);
+	private static final SavedData.Factory<RedstoneEther> TYPE =
+		new SavedData.Factory<>(RedstoneEther::new, RedstoneEther::new, null);
 
 	private RedstoneEther() {}
 
-	private RedstoneEther(NbtCompound nbt)
+	private RedstoneEther(CompoundTag tag)
 	{
-		NbtList channelTags = nbt.getList("channels", NbtElement.COMPOUND_TYPE);
+		ListTag channelTags = tag.getList("channels", Tag.TAG_COMPOUND);
 
-		for (NbtElement channelNbt : channelTags)
+		for (var channelTag : channelTags)
 		{
-			RedstoneChannel channel = new RedstoneChannel((NbtCompound) channelNbt);
+			RedstoneChannel channel = new RedstoneChannel((CompoundTag) channelTag);
 			channels.put(channel.getFrequency(), channel);
 		}
 	}
 
 	@Override
-	public NbtCompound writeNbt(NbtCompound nbt)
+	public CompoundTag save(CompoundTag tag)
 	{
-		NbtList channelNbts = new NbtList();
-		for (RedstoneChannel channel : channels.values())
-			channelNbts.add(channel.save());
-		nbt.put("channels", channelNbts);
+		var channelTags = new ListTag();
+		for (var channel : channels.values())
+			channelTags.add(channel.save());
+		tag.put("channels", channelTags);
 
-		return nbt;
+		return tag;
 	}
 
-	public static RedstoneEther get(ServerWorld world)
+	public static RedstoneEther get(ServerLevel world)
 	{
-		return world.getPersistentStateManager().get(TYPE, DATA_NAME);
+		return world.getDataStorage().get(TYPE, DATA_NAME);
 	}
 
-	public static RedstoneEther getOrCreate(ServerWorld world)
+	public static RedstoneEther getOrCreate(ServerLevel world)
 	{
-		return world.getPersistentStateManager().getOrCreate(TYPE, DATA_NAME);
+		return world.getDataStorage().computeIfAbsent(TYPE, DATA_NAME);
 	}
 
 	private RedstoneChannel getChannel(int frequency)
@@ -75,45 +75,45 @@ public class RedstoneEther extends PersistentState
 		return channel;
 	}
 
-	public void addTransmitter(World world, BlockPos pos, int frequency)
+	public void addTransmitter(Level level, BlockPos pos, int frequency)
 	{
 		if (!WRUtils.isValidFrequency(frequency)) return;
-		getOrCreateChannel(frequency).addTransmitter(world, pos);
-		markDirty();
+		getOrCreateChannel(frequency).addTransmitter(level, pos);
+		setDirty();
 	}
 
-	public void addRemote(World world, LivingEntity owner, int frequency)
+	public void addRemote(Level level, LivingEntity owner, int frequency)
 	{
 		if (!WRUtils.isValidFrequency(frequency)) return;
-		getOrCreateChannel(frequency).addRemote(world, owner);
+		getOrCreateChannel(frequency).addRemote(level, owner);
 	}
 
-	public void addReceiver(World world, BlockPos pos, int frequency)
+	public void addReceiver(Level level, BlockPos pos, int frequency)
 	{
 		if (!WRUtils.isValidFrequency(frequency)) return;
-		getOrCreateChannel(frequency).addReceiver(world, pos);
+		getOrCreateChannel(frequency).addReceiver(level, pos);
 	}
 
-	public void removeTransmitter(World world, BlockPos pos, int frequency)
+	public void removeTransmitter(Level level, BlockPos pos, int frequency)
 	{
 		RedstoneChannel channel = getChannel(frequency);
 		if (channel == null) return;
 
-		channel.removeTransmitter(world, pos);
+		channel.removeTransmitter(level, pos);
 		if (channel.isEmpty()) channels.remove(frequency);
-		markDirty();
+		setDirty();
 	}
 
-	public void removeRemote(World world, LivingEntity owner, int frequency)
+	public void removeRemote(Level level, LivingEntity owner, int frequency)
 	{
 		RedstoneChannel channel = getChannel(frequency);
 		if (channel == null) return;
 
-		channel.removeRemote(world, owner);
+		channel.removeRemote(level, owner);
 		if (channel.isEmpty())
 		{
 			channels.remove(frequency);
-			markDirty();
+			setDirty();
 		}
 	}
 
@@ -126,7 +126,7 @@ public class RedstoneEther extends PersistentState
 		if (channel.isEmpty())
 		{
 			channels.remove(frequency);
-			markDirty();
+			setDirty();
 		}
 	}
 

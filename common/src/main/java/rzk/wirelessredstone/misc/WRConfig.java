@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.minecraft.world.level.redstone.Redstone;
 import rzk.wirelessredstone.WirelessRedstone;
 
 import java.io.BufferedReader;
@@ -21,10 +22,10 @@ public class WRConfig
 		.setPrettyPrinting()
 		.create();
 
-	private static final String FILE_NAME = WirelessRedstone.MODID + ".json";
+	private static final String FILE_NAME = WirelessRedstone.MOD_ID + ".json";
 
 	// General
-	public static int redstoneReceiverSignalStrength = WRUtils.MAX_REDSTONE_POWER;
+	public static int redstoneReceiverSignalStrength = Redstone.SIGNAL_MAX;
 	public static boolean redstoneReceiverStrongPower = true;
 
 	// Client

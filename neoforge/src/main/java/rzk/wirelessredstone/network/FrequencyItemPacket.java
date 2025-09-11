@@ -1,12 +1,10 @@
 package rzk.wirelessredstone.network;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -15,24 +13,24 @@ import rzk.wirelessredstone.client.screen.ModScreens;
 import rzk.wirelessredstone.item.FrequencyItem;
 import rzk.wirelessredstone.misc.TranslationKeys;
 
-public record FrequencyItemPacket(int frequency, Hand hand) implements CustomPayload
+public record FrequencyItemPacket(int frequency, InteractionHand hand) implements CustomPacketPayload
 {
-	public static final Identifier ID = WirelessRedstone.identifier("frequency_item");
+	public static final ResourceLocation ID = new ResourceLocation(WirelessRedstone.MOD_ID, "frequency_item");
 
-	public FrequencyItemPacket(PacketByteBuf buf)
+	public FrequencyItemPacket(FriendlyByteBuf buf)
 	{
-		this(buf.readInt(), buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND);
+		this(buf.readInt(), buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
 	}
 
 	@Override
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeInt(frequency);
-		buf.writeBoolean(hand == Hand.MAIN_HAND);
+		buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 	}
 
 	@Override
-	public Identifier id()
+	public ResourceLocation id()
 	{
 		return ID;
 	}
@@ -40,12 +38,12 @@ public record FrequencyItemPacket(int frequency, Hand hand) implements CustomPay
 	public void handleServer(IPayloadContext ctx)
 	{
 		ctx.workHandler().submitAsync(() -> {
-			PlayerEntity player = ctx.player().orElseThrow();
-			ItemStack stack = player.getStackInHand(hand);
+			var player = ctx.player().orElseThrow();
+			var stack = player.getItemInHand(hand);
 			if (stack.getItem() instanceof FrequencyItem item)
 				item.setFrequency(stack, frequency);
 		}).exceptionally(e -> {
-			ctx.packetHandler().disconnect(Text.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
+			ctx.packetHandler().disconnect(Component.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
 			return null;
 		});
 	}
@@ -56,7 +54,7 @@ public record FrequencyItemPacket(int frequency, Hand hand) implements CustomPay
 			if (FMLEnvironment.dist == Dist.CLIENT)
 				ModScreens.openItemFrequencyScreen(frequency, hand);
 		}).exceptionally(e -> {
-			ctx.packetHandler().disconnect(Text.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
+			ctx.packetHandler().disconnect(Component.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
 			return null;
 		});
 	}

@@ -1,8 +1,6 @@
 package rzk.wirelessredstone;
 
-import net.minecraft.item.ItemGroup;
-import net.minecraft.registry.RegistryKeys;
-import net.minecraft.text.Text;
+import net.minecraft.core.registries.Registries;
 import net.minecraftforge.client.ConfigScreenHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -15,34 +13,35 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
 import rzk.wirelessredstone.client.WirelessRedstoneClientForge;
 import rzk.wirelessredstone.client.screen.ModScreens;
-import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRConfig;
 import rzk.wirelessredstone.misc.WREvents;
-import rzk.wirelessredstone.registry.ModBlockEntitiesForge;
+import rzk.wirelessredstone.network.ModNetworking;
+import rzk.wirelessredstone.registry.ModBlockEntities;
 import rzk.wirelessredstone.registry.ModBlocks;
-import rzk.wirelessredstone.registry.ModBlocksForge;
 import rzk.wirelessredstone.registry.ModItems;
-import rzk.wirelessredstone.registry.ModItemsForge;
-import rzk.wirelessredstone.registry.ModNetworking;
 
-@Mod(WirelessRedstone.MODID)
+@Mod(WirelessRedstone.MOD_ID)
 public class WirelessRedstoneForge
 {
 	public WirelessRedstoneForge()
 	{
 		IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
 
+		modEventBus.addListener(this::registerEvent);
 		modEventBus.addListener(this::commonSetup);
 		modEventBus.addListener(this::loadComplete);
-		modEventBus.addListener(this::onCreativeTabEvent);
 		modEventBus.addListener(WirelessRedstoneClientForge::clientSetup);
 		modEventBus.addListener(WirelessRedstoneClientForge::onRegisterRenderers);
 
-		modEventBus.addListener(ModBlocksForge::registerBlocks);
-		modEventBus.addListener(ModBlockEntitiesForge::registerBlockEntities);
-		modEventBus.addListener(ModItemsForge::registerItems);
-
 		MinecraftForge.EVENT_BUS.register(WREvents.class);
+	}
+
+	private void registerEvent(RegisterEvent event)
+	{
+		event.register(Registries.BLOCK, helper -> ModBlocks.register());
+		event.register(Registries.BLOCK_ENTITY_TYPE, helper -> ModBlockEntities.register());
+		event.register(Registries.ITEM, helper -> ModItems.register());
+		event.register(Registries.CREATIVE_MODE_TAB, helper -> WirelessRedstone.registerCreativeTab());
 	}
 
 	private void commonSetup(FMLCommonSetupEvent event)
@@ -57,26 +56,5 @@ public class WirelessRedstoneForge
 		if (ModList.get().isLoaded("cloth_config"))
 			ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
 				() -> new ConfigScreenHandler.ConfigScreenFactory(ModScreens::getConfigScreen));
-	}
-
-	private void onCreativeTabEvent(RegisterEvent event)
-	{
-		event.register(RegistryKeys.ITEM_GROUP, helper ->
-			helper.register(WirelessRedstone.identifier("item_group"), ItemGroup.builder()
-				.displayName(Text.translatable(TranslationKeys.ITEM_GROUP_WIRELESS_REDSTONE))
-				.icon(() -> ModBlocks.redstoneTransmitter.asItem().getDefaultStack())
-				.entries((params, output) ->
-				{
-					output.add(ModBlocks.redstoneTransmitter);
-					output.add(ModBlocks.redstoneReceiver);
-					output.add(ModBlocks.p2pRedstoneTransmitter);
-					output.add(ModBlocks.p2pRedstoneReceiver);
-					output.add(ModItems.circuit);
-					output.add(ModItems.frequencyTool);
-					output.add(ModItems.frequencySniffer);
-					output.add(ModItems.remote);
-					output.add(ModItems.linker);
-				})
-				.build()));
 	}
 }

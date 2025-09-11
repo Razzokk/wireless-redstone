@@ -1,15 +1,14 @@
 package rzk.wirelessredstone.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.state.property.Properties;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import rzk.wirelessredstone.ether.RedstoneEther;
 import rzk.wirelessredstone.misc.WRUtils;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 
-import static net.minecraft.state.property.Properties.POWERED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 
 public class RedstoneTransmitterBlockEntity extends RedstoneTransceiverBlockEntity
 {
@@ -21,25 +20,26 @@ public class RedstoneTransmitterBlockEntity extends RedstoneTransceiverBlockEnti
 	@Override
 	protected void onFrequencyChange(int oldFrequency, int newFrequency)
 	{
-		if (world.isClient || !getCachedState().get(Properties.POWERED)) return;
-		RedstoneEther ether = RedstoneEther.getOrCreate((ServerWorld) world);
-		ether.removeTransmitter(world, pos, oldFrequency);
+		if (level.isClientSide || !getBlockState().getValue(POWERED)) return;
+
+		var ether = RedstoneEther.getOrCreate((ServerLevel) level);
+		ether.removeTransmitter(level, worldPosition, oldFrequency);
 
 		if (WRUtils.isValidFrequency(newFrequency))
-			ether.addTransmitter(world, pos, newFrequency);
+			ether.addTransmitter(level, worldPosition, newFrequency);
 	}
 
-	public void onBlockPlaced(BlockState state, World world, BlockPos pos)
+	public void onBlockPlaced(BlockState state, Level level, BlockPos pos)
 	{
-		if (world.isClient || !state.get(POWERED) || !WRUtils.isValidFrequency(frequency)) return;
-		RedstoneEther ether = RedstoneEther.getOrCreate((ServerWorld) world);
-		ether.addTransmitter(world, pos, frequency);
+		if (level.isClientSide || !state.getValue(POWERED) || !WRUtils.isValidFrequency(frequency)) return;
+		RedstoneEther ether = RedstoneEther.getOrCreate((ServerLevel) level);
+		ether.addTransmitter(level, pos, frequency);
 	}
 
-	public void onBlockRemoved(BlockState state, World world, BlockPos pos)
+	public void onBlockRemoved(BlockState state, Level level, BlockPos pos)
 	{
-		if (world.isClient || !state.get(POWERED) || !WRUtils.isValidFrequency(frequency)) return;
-		RedstoneEther ether = RedstoneEther.getOrCreate((ServerWorld) world);
-		ether.removeTransmitter(world, pos, frequency);
+		if (level.isClientSide || !state.getValue(POWERED) || !WRUtils.isValidFrequency(frequency)) return;
+		RedstoneEther ether = RedstoneEther.getOrCreate((ServerLevel) level);
+		ether.removeTransmitter(level, pos, frequency);
 	}
 }

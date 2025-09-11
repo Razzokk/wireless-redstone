@@ -1,14 +1,14 @@
 package rzk.wirelessredstone.block;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.block.entity.P2pRedstoneReceiverBlockEntity;
 import rzk.wirelessredstone.block.entity.P2pRedstoneTransceiverBlockEntity;
@@ -17,59 +17,58 @@ import rzk.wirelessredstone.misc.WRConfig;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 import rzk.wirelessredstone.registry.ModBlocks;
 
-import static net.minecraft.state.property.Properties.POWERED;
+import static net.minecraft.world.level.SignalGetter.DIRECTIONS;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 
 public class P2pRedstoneReceiverBlock extends P2pRedstoneTransceiverBlock
 {
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved)
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston)
 	{
+
 		if (state.getBlock() != newState.getBlock())
 		{
-			world.getBlockEntity(pos, ModBlockEntities.p2pRedstoneReceiverBlockEntityType)
+			level.getBlockEntity(pos, ModBlockEntities.p2pRedstoneReceiverBlockEntityType)
 				.ifPresent(P2pRedstoneTransceiverBlockEntity::unlinkOther);
 		}
 
-		if (!world.isClient && WRConfig.redstoneReceiverStrongPower)
+		if (!level.isClientSide && WRConfig.redstoneReceiverStrongPower)
 			for (Direction direction : DIRECTIONS)
-				world.updateNeighborsExcept(pos.offset(direction), this, direction.getOpposite());
+				level.updateNeighborsAtExceptFromFacing(pos.relative(direction), this, direction.getOpposite());
 
-		super.onStateReplaced(state, world, pos, newState, moved);
+		super.onRemove(state, level, pos, newState, movedByPiston);
 	}
 
 	@Override
-	public int getWeakRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction)
+	public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
 	{
-		return state.get(POWERED) && connectsToRedstone(state, world, pos, direction) ?
+		return state.getValue(POWERED) && this.canConnectRedstone(state, level, pos, direction) ?
 			WRConfig.redstoneReceiverSignalStrength : 0;
 	}
 
 	@Override
-	public int getStrongRedstonePower(BlockState state, BlockView world, BlockPos pos, Direction direction)
+	public int getDirectSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
 	{
-		return WRConfig.redstoneReceiverStrongPower ? getWeakRedstonePower(state, world, pos, direction) : 0;
+		return WRConfig.redstoneReceiverStrongPower ? getSignal(state, level, pos, direction) : 0;
 	}
 
 	@Override
-	protected boolean canLink(BlockState targetState, World world, PlayerEntity player)
+	protected boolean canLink(BlockState targetState, Level level, Player player)
 	{
-		if (targetState.isOf(ModBlocks.p2pRedstoneTransmitter)) return true;
+		if (targetState.is(ModBlocks.p2pRedstoneTransmitter)) return true;
 
-		if (!world.isClient)
+		if (!level.isClientSide)
 		{
-			var receiverTranslated = Text
-				.translatable(ModBlocks.p2pRedstoneTransmitter.getTranslationKey())
-				.formatted(Formatting.AQUA);
-			var text = Text.translatable(TranslationKeys.MESSAGE_P2P_WRONG_TARGET, receiverTranslated);
-			player.sendMessage(text);
+			var receiverTranslated = ModBlocks.p2pRedstoneTransmitter.getName().withStyle(ChatFormatting.AQUA);
+			var text = Component.translatable(TranslationKeys.MESSAGE_P2P_WRONG_TARGET, receiverTranslated);
+			player.sendSystemMessage(text);
 		}
 
 		return false;
 	}
 
-	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockPos pos, BlockState state)
+	public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state)
 	{
 		return new P2pRedstoneReceiverBlockEntity(pos, state);
 	}

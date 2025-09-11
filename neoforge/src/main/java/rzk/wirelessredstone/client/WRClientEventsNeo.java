@@ -1,21 +1,19 @@
 package rzk.wirelessredstone.client;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.InteractionHand;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+import rzk.wirelessredstone.client.render.WorldOverlayRenderer;
 import rzk.wirelessredstone.item.SnifferItem;
-import rzk.wirelessredstone.render.WorldOverlayRenderer;
 
 public class WRClientEventsNeo
 {
-	public static void handleSnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coords)
+	public static void handleSnifferHighlightPacket(long timestamp, InteractionHand hand, BlockPos[] coords)
 	{
-		PlayerEntity player = MinecraftClient.getInstance().player;
-		ItemStack stack = player.getStackInHand(hand);
+		var player = Minecraft.getInstance().player;
+		var stack = player.getItemInHand(hand);
 		SnifferItem.setHighlightedBlocks(timestamp, stack, coords);
 	}
 
@@ -23,7 +21,7 @@ public class WRClientEventsNeo
 	public static void renderWorld(RenderLevelStageEvent event)
 	{
 		if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
-		var world = MinecraftClient.getInstance().world;
-		WorldOverlayRenderer.render(world, event.getCamera().getPos(), event.getPoseStack(), event.getPartialTick());
+		var level = Minecraft.getInstance().level;
+		WorldOverlayRenderer.render(level, event.getCamera().getPosition(), event.getPoseStack(), event.getPartialTick());
 	}
 }

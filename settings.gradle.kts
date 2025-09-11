@@ -1,23 +1,30 @@
 pluginManagement {
 	repositories {
+		gradlePluginPortal()
+		mavenCentral()
 		maven("https://maven.fabricmc.net/") {
 			name = "Fabric"
+		}
+		maven("https://maven.neoforged.net/releases") {
+			name = "NeoForge"
 		}
 		maven("https://maven.minecraftforge.net/") {
 			name = "Forge"
 		}
-		maven("https://maven.neoforged.net/releases") {
-			name = "NeoForged"
+		maven("https://repo.spongepowered.org/repository/maven-public/") {
+			name = "Sponge Snapshots"
 		}
-		maven("https://maven.architectury.dev/") {
-			name = "Architectury"
-		}
-		mavenCentral()
-		gradlePluginPortal()
 	}
 }
 
-val modName: String by extra
-rootProject.name = modName
+plugins {
+	id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
 
-include("common", "datagen", "fabric", "forge", "neoforge")
+rootProject.name = "wireless-redstone"
+
+include("common")
+include("datagen")
+include("fabric")
+include("neoforge")
+include("forge")

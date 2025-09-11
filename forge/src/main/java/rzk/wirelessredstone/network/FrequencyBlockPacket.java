@@ -1,8 +1,7 @@
 package rzk.wirelessredstone.network;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.fml.DistExecutor;
@@ -11,12 +10,12 @@ import rzk.wirelessredstone.client.screen.ModScreens;
 
 public record FrequencyBlockPacket(int frequency, BlockPos pos)
 {
-	public FrequencyBlockPacket(PacketByteBuf buf)
+	public FrequencyBlockPacket(FriendlyByteBuf buf)
 	{
 		this(buf.readInt(), buf.readBlockPos());
 	}
 
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeInt(frequency);
 		buf.writeBlockPos(pos);
@@ -30,9 +29,9 @@ public record FrequencyBlockPacket(int frequency, BlockPos pos)
 
 	private void handleServer(CustomPayloadEvent.Context ctx)
 	{
-		World world = ctx.getSender().getWorld();
-		if (world.isChunkLoaded(pos) && world.getBlockState(pos).getBlock() instanceof RedstoneTransceiverBlock block)
-			block.setFrequency(world, pos, frequency);
+		var level = ctx.getSender().level();
+		if (level.isLoaded(pos) && level.getBlockState(pos).getBlock() instanceof RedstoneTransceiverBlock block)
+			block.setFrequency(level, pos, frequency);
 	}
 
 	private void handleClient(CustomPayloadEvent.Context ctx)

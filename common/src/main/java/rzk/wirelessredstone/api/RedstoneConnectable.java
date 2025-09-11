@@ -1,40 +1,37 @@
 package rzk.wirelessredstone.api;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.world.BlockView;
-import net.minecraft.world.WorldAccess;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 
-import static net.minecraft.world.RedstoneView.DIRECTIONS;
+import static net.minecraft.world.level.SignalGetter.DIRECTIONS;
 
 public interface RedstoneConnectable
 {
 	/**
-	 * For the same purpose as {@link net.minecraft.block.AbstractBlock#emitsRedstonePower(BlockState)}
-	 * but differentiating sides.
+	 * For the same purpose as {@link net.minecraft.world.level.block.state.BlockBehaviour#isSignalSource(BlockState)}
+	 * but differentiating sides. Needs to match signature from neoforge/forge {@code IBlockExtension.canConnectRedstone}
 	 */
-	default boolean connectsToRedstone(BlockState state, BlockView world, BlockPos pos, @Nullable Direction direction)
-	{
-		return direction != null;
-	}
+	boolean canConnectRedstone(BlockState state, BlockGetter blockGetter, BlockPos pos, @Nullable Direction direction);
 
 	/**
 	 * Determines if the block is receiving redstone power on the given side/direction
 	 */
-	default boolean isPoweredOnSide(BlockState state, WorldAccess world, BlockPos pos, Direction direction)
+	default boolean isPoweredOnSide(BlockState state, LevelAccessor levelAccessor, BlockPos pos, Direction direction)
 	{
-		return connectsToRedstone(state, world, pos, direction) && world.isEmittingRedstonePower(pos.offset(direction), direction);
+		return canConnectRedstone(state, levelAccessor, pos, direction) && levelAccessor.hasSignal(pos.relative(direction), direction);
 	}
 
 	/**
 	 * Determines if the block is receiving redstone power
 	 */
-	default boolean isReceivingRedstonePower(BlockState state, WorldAccess world, BlockPos pos)
+	default boolean isReceivingRedstonePower(BlockState state, LevelAccessor levelAccessor, BlockPos pos)
 	{
 		for (Direction side : DIRECTIONS)
-			if (isPoweredOnSide(state, world, pos, side)) return true;
+			if (isPoweredOnSide(state, levelAccessor, pos, side)) return true;
 		return false;
 	}
 }

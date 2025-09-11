@@ -1,28 +1,18 @@
 package rzk.wirelessredstone.api;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public interface SelectedItemListener
 {
 	/**
-	 * Called only on server side.
-	 *
-	 * @param stack  stack which got dropped
-	 * @param world  world
-	 * @param player player who held the stack
+	 * Needs to match the signature of neoforge/forge {@code IItemExtension.onDroppedByPlayer}
 	 */
-	void onSelectedItemDropped(ItemStack stack, ServerWorld world, ServerPlayerEntity player);
+	boolean onDroppedByPlayer(ItemStack stack, Player player);
 
 	/**
-	 * Called on server and client side.
-	 *
-	 * @param stack stack which was potentially active
-	 * @param world the world
-	 * @param user  living entity this stack belongs to
+	 * Needs to match the signature of neoforge/forge {@code IItemExtension.onStopUsing}
 	 */
-	void onClearActiveItem(ItemStack stack, World world, LivingEntity user);
+	void onStopUsing(ItemStack stack, LivingEntity user, int count);
 }

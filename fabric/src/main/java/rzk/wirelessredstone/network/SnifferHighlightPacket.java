@@ -2,23 +2,24 @@ package rzk.wirelessredstone.network;
 
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import rzk.wirelessredstone.WirelessRedstone;
 
-public record SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coords) implements FabricPacket
+public record SnifferHighlightPacket(long timestamp, InteractionHand hand, BlockPos[] coords) implements FabricPacket
 {
 	public static final PacketType<SnifferHighlightPacket> TYPE = PacketType.create(
-		WirelessRedstone.identifier("sniffer_highlight"),
+		new ResourceLocation(WirelessRedstone.MOD_ID, "sniffer_highlight"),
 		SnifferHighlightPacket::new);
 
-	public SnifferHighlightPacket(PacketByteBuf buf)
+	public SnifferHighlightPacket(FriendlyByteBuf buf)
 	{
-		this(buf.readLong(), buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND, readCoords(buf));
+		this(buf.readLong(), buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, readCoords(buf));
 	}
 
-	private static BlockPos[] readCoords(PacketByteBuf buf)
+	private static BlockPos[] readCoords(FriendlyByteBuf buf)
 	{
 		var coords = new BlockPos[buf.readInt()];
 		for (int i = 0; i < coords.length; i++)
@@ -27,10 +28,10 @@ public record SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coord
 	}
 
 	@Override
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeLong(timestamp);
-		buf.writeBoolean(hand == Hand.MAIN_HAND);
+		buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 		buf.writeInt(coords.length);
 
 		for (BlockPos pos : coords)

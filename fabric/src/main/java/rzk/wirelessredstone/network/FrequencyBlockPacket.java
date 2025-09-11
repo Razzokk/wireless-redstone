@@ -2,23 +2,24 @@ package rzk.wirelessredstone.network;
 
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import rzk.wirelessredstone.WirelessRedstone;
 
 public record FrequencyBlockPacket(int frequency, BlockPos pos) implements FabricPacket
 {
 	public static final PacketType<FrequencyBlockPacket> TYPE = PacketType.create(
-		WirelessRedstone.identifier("frequency_block"),
+		new ResourceLocation(WirelessRedstone.MOD_ID, "frequency_block"),
 		FrequencyBlockPacket::new);
 
-	public FrequencyBlockPacket(PacketByteBuf buf)
+	public FrequencyBlockPacket(FriendlyByteBuf buf)
 	{
 		this(buf.readInt(), buf.readBlockPos());
 	}
 
 	@Override
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeInt(frequency);
 		buf.writeBlockPos(pos);

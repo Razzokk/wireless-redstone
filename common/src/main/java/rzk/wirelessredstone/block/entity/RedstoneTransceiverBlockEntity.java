@@ -1,14 +1,14 @@
 package rzk.wirelessredstone.block.entity;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.network.listener.ClientPlayPacketListener;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.s2c.play.BlockEntityUpdateS2CPacket;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.misc.WRUtils;
 
@@ -33,37 +33,36 @@ public abstract class RedstoneTransceiverBlockEntity extends BlockEntity
 		if (frequency == this.frequency) return;
 		onFrequencyChange(this.frequency, frequency);
 		this.frequency = frequency;
-		markDirty();
-		var state = getCachedState();
-		world.updateListeners(pos, state, state, Block.NOTIFY_LISTENERS);
-	}
-
-	@Nullable
-	@Override
-	public Packet<ClientPlayPacketListener> toUpdatePacket()
-	{
-		return BlockEntityUpdateS2CPacket.create(this);
+		setChanged();
+		var state = getBlockState();
+		level.sendBlockUpdated(worldPosition, state, state, Block.UPDATE_CLIENTS);
 	}
 
 	@Override
-	public NbtCompound toInitialChunkDataNbt()
+	public @Nullable Packet<ClientGamePacketListener> getUpdatePacket()
 	{
-		NbtCompound nbt = new NbtCompound();
-		WRUtils.writeFrequency(nbt, frequency);
-		return nbt;
+		return ClientboundBlockEntityDataPacket.create(this);
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt)
+	public CompoundTag getUpdateTag()
 	{
-		super.readNbt(nbt);
-		frequency = WRUtils.readFrequency(nbt);
+		CompoundTag tag = new CompoundTag();
+		WRUtils.writeFrequency(tag, frequency);
+		return tag;
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt)
+	public void load(CompoundTag tag)
 	{
-		super.writeNbt(nbt);
-		WRUtils.writeFrequency(nbt, frequency);
+		super.load(tag);
+		frequency = WRUtils.readFrequency(tag);
+	}
+
+	@Override
+	protected void saveAdditional(CompoundTag tag)
+	{
+		super.saveAdditional(tag);
+		WRUtils.writeFrequency(tag, frequency);
 	}
 }

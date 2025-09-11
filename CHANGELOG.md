@@ -2,9 +2,21 @@
 
 Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
-with the minecraft version prepended to it.
+with the minecraft version appended.
 
 ## [Unreleased]
+
+### Changed
+
+- Versioning Scheme:
+	- Before: `<mcversion>-<version>`, e.g. `1.20.4-1.2.0`
+    - After: `<version>+<mcversion>`, e.g. `1.2.0+1.20.4`
+- Dev only
+	- use [ParchmentMC](https://parchmentmc.org/) for mappings and adjust/re-write code accordingly
+	- refactor code to be more in common module
+	- improve project structure (multi-loader) with help of:
+		- [MultiLoader-Template](https://github.com/jaredlll08/MultiLoader-Template)
+		- [greenhouse-multiloader-template](https://github.com/GreenhouseModding/greenhouse-multiloader-template)
 
 ## [1.20.4-1.2.0-beta] - 2025-03-13
 
@@ -17,7 +29,7 @@ with the minecraft version prepended to it.
 
 - **P2P redstone transmitter** and **receiver** for direct wireless linkage
 - **Linker** to link p2p transmitter and receiver
-  - Similar to the sniffer, highlights the targeted block
+	- Similar to the sniffer, highlights the targeted block
 
 ### Changed
 

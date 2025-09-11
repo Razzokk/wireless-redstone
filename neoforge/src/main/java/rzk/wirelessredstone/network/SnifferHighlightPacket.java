@@ -1,11 +1,11 @@
 package rzk.wirelessredstone.network;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.network.packet.CustomPayload;
-import net.minecraft.text.Text;
-import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -13,16 +13,16 @@ import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.client.WRClientEventsNeo;
 import rzk.wirelessredstone.misc.TranslationKeys;
 
-public record SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coords) implements CustomPayload
+public record SnifferHighlightPacket(long timestamp, InteractionHand hand, BlockPos[] coords) implements CustomPacketPayload
 {
-	public static final Identifier ID = WirelessRedstone.identifier("sniffer_highlight");
+	public static final ResourceLocation ID = new ResourceLocation(WirelessRedstone.MOD_ID, "sniffer_highlight");
 
-	public SnifferHighlightPacket(PacketByteBuf buf)
+	public SnifferHighlightPacket(FriendlyByteBuf buf)
 	{
-		this(buf.readLong(), buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND, readCoords(buf));
+		this(buf.readLong(), buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, readCoords(buf));
 	}
 
-	private static BlockPos[] readCoords(PacketByteBuf buf)
+	private static BlockPos[] readCoords(FriendlyByteBuf buf)
 	{
 		var coords = new BlockPos[buf.readInt()];
 		for (int i = 0; i < coords.length; i++) coords[i] = buf.readBlockPos();
@@ -30,10 +30,10 @@ public record SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coord
 	}
 
 	@Override
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeLong(timestamp);
-		buf.writeBoolean(hand == Hand.MAIN_HAND);
+		buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 		buf.writeInt(coords.length);
 
 		for (BlockPos pos : coords)
@@ -41,7 +41,7 @@ public record SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coord
 	}
 
 	@Override
-	public Identifier id()
+	public ResourceLocation id()
 	{
 		return ID;
 	}
@@ -52,7 +52,7 @@ public record SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coord
 			if (FMLEnvironment.dist == Dist.CLIENT)
 				WRClientEventsNeo.handleSnifferHighlightPacket(timestamp, hand, coords);
 		}).exceptionally(e -> {
-			ctx.packetHandler().disconnect(Text.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
+			ctx.packetHandler().disconnect(Component.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
 			return null;
 		});
 	}

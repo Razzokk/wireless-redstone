@@ -1,17 +1,16 @@
 package rzk.wirelessredstone.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.block.entity.P2pRedstoneTransceiverBlockEntity;
 import rzk.wirelessredstone.block.entity.P2pRedstoneTransmitterBlockEntity;
@@ -19,84 +18,80 @@ import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 import rzk.wirelessredstone.registry.ModBlocks;
 
-import static net.minecraft.state.property.Properties.POWERED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 
-public class P2pRedstoneTransmitterBlock extends P2pRedstoneTransceiverBlock implements BlockEntityProvider
+public class P2pRedstoneTransmitterBlock extends P2pRedstoneTransceiverBlock
 {
-	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx)
+	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
 	{
-		var world = ctx.getWorld();
-		var pos = ctx.getBlockPos();
-		var state = getDefaultState();
-
-		return state.with(POWERED, isReceivingRedstonePower(state, world, pos));
+		var world = context.getLevel();
+		var pos = context.getClickedPos();
+		var state = defaultBlockState();
+		return state.setValue(POWERED, isReceivingRedstonePower(state, world, pos));
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify)
+	public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston)
 	{
-		if (!state.get(POWERED)) return;
+		if (!state.getValue(POWERED)) return;
 
-		world.getBlockEntity(pos, ModBlockEntities.p2pRedstoneTransmitterBlockEntityType)
+		level.getBlockEntity(pos, ModBlockEntities.p2pRedstoneTransmitterBlockEntityType)
 			.ifPresent(P2pRedstoneTransmitterBlockEntity::scheduleReceiverUpdate);
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved)
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston)
 	{
 		if (state.getBlock() != newState.getBlock())
 		{
-			world.getBlockEntity(pos, ModBlockEntities.p2pRedstoneTransmitterBlockEntityType)
+			level.getBlockEntity(pos, ModBlockEntities.p2pRedstoneTransmitterBlockEntityType)
 				.ifPresent(P2pRedstoneTransceiverBlockEntity::unlinkOther);
 		}
-		else if (state.get(POWERED))
+		else if (state.getValue(POWERED))
 		{
-			world.getBlockEntity(pos, ModBlockEntities.p2pRedstoneTransmitterBlockEntityType)
+			level.getBlockEntity(pos, ModBlockEntities.p2pRedstoneTransmitterBlockEntityType)
 				.ifPresent(P2pRedstoneTransmitterBlockEntity::scheduleReceiverUpdate);
 		}
 
-		super.onStateReplaced(state, world, pos, newState, moved);
+		super.onRemove(state, level, pos, newState, movedByPiston);
 	}
 
 	@Override
-	public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random)
+	public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random)
 	{
-		world.getBlockEntity(pos, ModBlockEntities.p2pRedstoneTransmitterBlockEntityType)
+
+		level.getBlockEntity(pos, ModBlockEntities.p2pRedstoneTransmitterBlockEntityType)
 			.ifPresent(P2pRedstoneTransmitterBlockEntity::updateReceiver);
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify)
+	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston)
 	{
-		if (world.isClient) return;
-		var powered = isReceivingRedstonePower(state, world, pos);
+		if (level.isClientSide) return;
+		var powered = isReceivingRedstonePower(state, level, pos);
 
-		if (state.get(POWERED) == powered) return;
-		world.setBlockState(pos, state.with(POWERED, powered), NOTIFY_LISTENERS);
+		if (state.getValue(POWERED) == powered) return;
+		level.setBlock(pos, state.setValue(POWERED, powered), UPDATE_CLIENTS);
 	}
 
 	@Override
-	protected boolean canLink(BlockState targetState, World world, PlayerEntity player)
+	protected boolean canLink(BlockState targetState, Level level, Player player)
 	{
-		if (targetState.isOf(ModBlocks.p2pRedstoneReceiver)) return true;
+		if (targetState.is(ModBlocks.p2pRedstoneReceiver)) return true;
 
-		if (!world.isClient)
+		if (!level.isClientSide)
 		{
-			var receiverTranslated = Text
-				.translatable(ModBlocks.p2pRedstoneReceiver.getTranslationKey())
-				.formatted(Formatting.AQUA);
-			var text = Text.translatable(TranslationKeys.MESSAGE_P2P_WRONG_TARGET, receiverTranslated);
-			player.sendMessage(text);
+			var receiverTranslated = ModBlocks.p2pRedstoneReceiver.getName().withStyle(ChatFormatting.AQUA);
+			var text = Component.translatable(TranslationKeys.MESSAGE_P2P_WRONG_TARGET, receiverTranslated);
+			player.sendSystemMessage(text);
 		}
 
 		return false;
 	}
 
-	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockPos pos, BlockState state)
+	public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state)
 	{
 		return new P2pRedstoneTransmitterBlockEntity(pos, state);
 	}

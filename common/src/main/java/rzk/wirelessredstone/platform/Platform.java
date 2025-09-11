@@ -1,22 +1,29 @@
 package rzk.wirelessredstone.platform;
 
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 
 import java.io.File;
+import java.util.ServiceLoader;
 
 public interface Platform
 {
+	static Platform load()
+	{
+		var platforms = ServiceLoader.load(Platform.class);
+		return platforms.findFirst().orElseThrow(() -> new RuntimeException("Couldn't find wireless redstone platform!"));
+	}
+
 	PlatformLoader getLoader();
 
 	File getConfigDir();
 
 	boolean isModLoaded(String modId);
 
-	void sendFrequencyItemPacket(ServerPlayerEntity player, int frequency, Hand hand);
+	void sendFrequencyItemPacket(ServerPlayer player, int frequency, InteractionHand hand);
 
-	void sendFrequencyBlockPacket(ServerPlayerEntity player, int frequency, BlockPos pos);
+	void sendFrequencyBlockPacket(ServerPlayer player, int frequency, BlockPos pos);
 
-	void sendSniffer(ServerPlayerEntity player, long time, Hand hand, BlockPos[] transmitters);
+	void sendSniffer(ServerPlayer player, long time, InteractionHand hand, BlockPos[] transmitters);
 }

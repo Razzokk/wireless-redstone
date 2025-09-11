@@ -1,23 +1,23 @@
 package rzk.wirelessredstone.item;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemUsageContext;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.text.Texts;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Formatting;
-import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.level.Level;
 import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.ether.RedstoneEther;
 import rzk.wirelessredstone.misc.NbtKeys;
@@ -31,68 +31,68 @@ import java.util.Set;
 
 public class SnifferItem extends FrequencyItem
 {
-	public SnifferItem(Settings settings)
+	public SnifferItem(Properties properties)
 	{
-		super(settings);
+		super(properties);
 	}
 
 	public static BlockPos[] getHighlightedBlocks(ItemStack stack)
 	{
-		if (!stack.isOf(ModItems.frequencySniffer)) return null;
+		if (!stack.is(ModItems.frequencySniffer)) return null;
 
-		var nbt = stack.getNbt();
-		if (nbt == null) return null;
+		var tag = stack.getTag();
+		if (tag == null) return null;
 
-		var list = nbt.getList(NbtKeys.HIGHLIGHTS, NbtElement.COMPOUND_TYPE);
+		var list = tag.getList(NbtKeys.HIGHLIGHTS, Tag.TAG_COMPOUND);
 		if (list.isEmpty()) return null;
 
 		var coords = new BlockPos[list.size()];
 		for (int i = 0; i < list.size(); ++i)
-			coords[i] = NbtHelper.toBlockPos(list.getCompound(i));
+			coords[i] = NbtUtils.readBlockPos(list.getCompound(i));
 
 		return coords;
 	}
 
 	public static void setHighlightedBlocks(long timestamp, ItemStack stack, BlockPos[] coords)
 	{
-		if (!stack.isOf(ModItems.frequencySniffer)) return;
+		if (!stack.is(ModItems.frequencySniffer)) return;
 
-		var nbt = stack.getOrCreateNbt();
-		nbt.putLong(NbtKeys.TIMESTAMP, timestamp);
+		var tag = stack.getOrCreateTag();
+		tag.putLong(NbtKeys.TIMESTAMP, timestamp);
 
-		var list = new NbtList();
+		var list = new ListTag();
 		for (var pos : coords)
-			list.add(NbtHelper.fromBlockPos(pos));
-		nbt.put(NbtKeys.HIGHLIGHTS, list);
+			list.add(NbtUtils.writeBlockPos(pos));
+		tag.put(NbtKeys.HIGHLIGHTS, list);
 	}
 
 	private static void removeHighlightBlocks(ItemStack stack)
 	{
-		var nbt = stack.getNbt();
-		if (nbt == null) return;
+		var tag = stack.getTag();
+		if (tag == null) return;
 
-		nbt.remove("timestamp");
-		nbt.remove("highlights");
+		tag.remove("timestamp");
+		tag.remove("highlights");
 	}
 
 	@Override
-	public ActionResult useOnBlock(ItemUsageContext context)
+	public InteractionResult useOn(UseOnContext context)
 	{
-		if (!context.getPlayer().isSneaking())
-			return ActionResult.PASS;
-		return super.useOnBlock(context);
+		if (!context.getPlayer().isShiftKeyDown())
+			return InteractionResult.PASS;
+		return super.useOn(context);
 	}
 
-	private Text buildActiveTransmittersMessage(PlayerEntity player, Set<BlockPos> transmitters, Text frequencyText)
+	private Component buildActiveTransmittersMessage(Player player, Set<BlockPos> transmitters, Component frequencyText)
 	{
-		var texts = new ArrayList<Text>();
-		texts.add(Text.translatable(TranslationKeys.MESSAGE_TRANSMITTERS_ACTIVE, frequencyText, transmitters.size()));
+		var texts = new ArrayList<Component>();
+		texts.add(Component.translatable(TranslationKeys.MESSAGE_TRANSMITTERS_ACTIVE, frequencyText, transmitters.size()));
 
 		for (var pos : transmitters)
 		{
 			if (texts.size() > 20)
 			{
-				texts.add(Text.literal("..."));
+				texts.add(Component.literal("..."));
 				break;
 			}
 
@@ -101,35 +101,34 @@ public class SnifferItem extends FrequencyItem
 			texts.add(text);
 		}
 
-		return Texts.join(texts, Text.literal("\n"));
+		return ComponentUtils.formatList(texts, Component.literal("\n"));
 	}
 
 	@Override
-	public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand)
+	public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand usedHand)
 	{
-		if (player.isSneaking())
-			return super.use(world, player, hand);
+		if (player.isShiftKeyDown())  return super.use(level, player, usedHand);
 
-		ItemStack stack = player.getStackInHand(hand);
+		ItemStack stack = player.getItemInHand(usedHand);
 		int frequency = getFrequency(stack);
 
 		if (!WRUtils.isValidFrequency(frequency))
 		{
-			if (world.isClient)
-				player.sendMessage(Text.translatable(TranslationKeys.MESSAGE_NO_FREQUENCY).formatted(Formatting.RED), true);
-			return TypedActionResult.fail(stack);
+			if (level.isClientSide)
+				player.displayClientMessage(Component.translatable(TranslationKeys.MESSAGE_NO_FREQUENCY).withStyle(ChatFormatting.RED), true);
+			return InteractionResultHolder.fail(stack);
 		}
 
-		player.getItemCooldownManager().set(this, SharedConstants.TICKS_PER_SECOND);
-		var result = TypedActionResult.success(stack);
-		if (world.isClient) return result;
+		player.getCooldowns().addCooldown(this, SharedConstants.TICKS_PER_SECOND);
+		var result = InteractionResultHolder.success(stack);
+		if (level.isClientSide) return result;
 
 		var frequencyText = WRUtils.frequencyText(frequency);
-		var ether = RedstoneEther.get((ServerWorld) world);
+		var ether = RedstoneEther.get((ServerLevel) level);
 
 		if (ether == null)
 		{
-			player.sendMessage(Text.translatable(TranslationKeys.MESSAGE_TRANSMITTERS_EMPTY, frequencyText));
+			player.sendSystemMessage(Component.translatable(TranslationKeys.MESSAGE_TRANSMITTERS_EMPTY, frequencyText));
 			return result;
 		}
 
@@ -137,27 +136,27 @@ public class SnifferItem extends FrequencyItem
 
 		if (transmitters.isEmpty())
 		{
-			player.sendMessage(Text.translatable(TranslationKeys.MESSAGE_TRANSMITTERS_EMPTY, frequencyText));
+			player.sendSystemMessage(Component.translatable(TranslationKeys.MESSAGE_TRANSMITTERS_EMPTY, frequencyText));
 			removeHighlightBlocks(stack);
 		}
 		else
 		{
 			var message = buildActiveTransmittersMessage(player, transmitters, frequencyText);
-			player.sendMessage(message);
-			WirelessRedstone.PLATFORM.sendSniffer((ServerPlayerEntity) player, world.getTime(), hand, transmitters.toArray(BlockPos[]::new));
+			player.sendSystemMessage(message);
+			WirelessRedstone.PLATFORM.sendSniffer((ServerPlayer) player, level.getGameTime(), usedHand, transmitters.toArray(BlockPos[]::new));
 		}
 
 		return result;
 	}
 
 	@Override
-	public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected)
+	public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected)
 	{
-		var nbt = stack.getNbt();
-		if (!selected || !world.isClient || nbt == null) return;
+		var tag = stack.getTag();
+		if (!isSelected || !level.isClientSide || tag == null) return;
 
 		var timeOffset = (long) WRConfig.highlightTimeSeconds * SharedConstants.TICKS_PER_SECOND;
-		if (world.getTime() >= nbt.getLong("timestamp") + timeOffset)
+		if (level.getGameTime() >= tag.getLong("timestamp") + timeOffset)
 			removeHighlightBlocks(stack);
 	}
 }

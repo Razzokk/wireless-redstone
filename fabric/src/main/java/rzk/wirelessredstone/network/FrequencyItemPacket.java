@@ -2,26 +2,27 @@ package rzk.wirelessredstone.network;
 
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Hand;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import rzk.wirelessredstone.WirelessRedstone;
 
-public record FrequencyItemPacket(int frequency, Hand hand) implements FabricPacket
+public record FrequencyItemPacket(int frequency, InteractionHand hand) implements FabricPacket
 {
 	public static final PacketType<FrequencyItemPacket> TYPE = PacketType.create(
-		WirelessRedstone.identifier("frequency_item"),
+		new ResourceLocation(WirelessRedstone.MOD_ID, "frequency_item"),
 		FrequencyItemPacket::new);
 
-	public FrequencyItemPacket(PacketByteBuf buf)
+	public FrequencyItemPacket(FriendlyByteBuf buf)
 	{
-		this(buf.readInt(), buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND);
+		this(buf.readInt(), buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
 	}
 
 	@Override
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeInt(frequency);
-		buf.writeBoolean(hand == Hand.MAIN_HAND);
+		buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 	}
 
 	@Override

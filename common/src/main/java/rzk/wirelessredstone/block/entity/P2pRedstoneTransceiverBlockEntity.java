@@ -1,14 +1,14 @@
 package rzk.wirelessredstone.block.entity;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BlockEntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.api.ChunkLoadListener;
 import rzk.wirelessredstone.misc.TranslationKeys;
@@ -25,7 +25,7 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 		super(type, pos, state);
 	}
 
-	public boolean link(BlockPos link, PlayerEntity player)
+	public boolean link(BlockPos link, Player player)
 	{
 		if (link == null)
 		{
@@ -35,32 +35,32 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 
 		if (link.equals(this.link))
 		{
-			var targetText = WRUtils.positionText(pos);
+			var targetText = WRUtils.positionText(worldPosition);
 			WRUtils.appendTeleportCommandIfAllowed(targetText, player, this.link);
-			var text = Text.translatable(TranslationKeys.MESSAGE_P2P_ALREADY_LINKED, targetText);
-			player.sendMessage(text);
+			var text = Component.translatable(TranslationKeys.MESSAGE_P2P_ALREADY_LINKED, targetText);
+			player.sendSystemMessage(text);
 			return false;
 		}
 
-		if (!world.isChunkLoaded(link))
+		if (!level.isLoaded(link))
 		{
 			WirelessRedstone.LOGGER.error("Block position should be loaded");
 			return false;
 		}
 
-		if (this.link != null && !world.isClient) unlink();
+		if (this.link != null && !level.isClientSide) unlink();
 
-		if (world.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
+		if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
 		{
-			if (world.isClient) return true;
+			if (level.isClientSide) return true;
 			if (other.link != null) other.unlink();
 
 			onLinked(link);
-			other.onLinked(pos);
+			other.onLinked(worldPosition);
 			var targetText = WRUtils.positionText(link);
 			WRUtils.appendTeleportCommandIfAllowed(targetText, player, link);
-			var text = Text.translatable(TranslationKeys.MESSAGE_P2P_LINKED, targetText);
-			player.sendMessage(text);
+			var text = Component.translatable(TranslationKeys.MESSAGE_P2P_LINKED, targetText);
+			player.sendSystemMessage(text);
 
 			return true;
 		}
@@ -77,9 +77,9 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 
 	public void unlinkOther()
 	{
-		if (world.isClient || link == null || !world.isChunkLoaded(link)) return;
+		if (level.isClientSide || link == null || !level.isLoaded(link)) return;
 
-		if (world.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
+		if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
 			other.onUnlinked();
 	}
 
@@ -89,24 +89,24 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 
 	private void virtualUnlink()
 	{
-		world.setBlockState(pos, getCachedState().with(LINKED, false));
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LINKED, false));
 	}
 
 	private void virtualLink()
 	{
-		world.setBlockState(pos, getCachedState().with(LINKED, true));
+		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LINKED, true));
 	}
 
 	@Override
-	public void onChunkLoad(ServerWorld world)
+	public void onChunkLoad(ServerLevel level)
 	{
-		if (world.isClient || link == null) return;
+		if (level.isClientSide || link == null) return;
 
-		if (!world.isChunkLoaded(link))
+		if (!level.isLoaded(link))
 		{
 			virtualUnlink();
 		}
-		else if (world.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other && pos.equals(other.link))
+		else if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other && worldPosition.equals(other.link))
 		{
 			virtualLink();
 			other.virtualLink();
@@ -118,26 +118,27 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 	}
 
 	@Override
-	public void onChunkUnload(ServerWorld world)
+	public void onChunkUnload(ServerLevel level)
 	{
-		if (world.isClient || link == null || !world.isChunkLoaded(link)) return;
+		if (level.isClientSide || link == null || !level.isLoaded(link)) return;
 
-		if (world.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
+		if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
 			other.virtualUnlink();
 	}
 
 	@Override
-	public void readNbt(NbtCompound nbt)
+	protected void saveAdditional(CompoundTag tag)
 	{
-		super.readNbt(nbt);
-		var linkedPosNbt = nbt.getCompound("link");
-		if (linkedPosNbt != null) link = NbtHelper.toBlockPos(linkedPosNbt);
+		super.saveAdditional(tag);
+		if (link == null) return;
+		tag.put("link", NbtUtils.writeBlockPos(link));
 	}
 
 	@Override
-	protected void writeNbt(NbtCompound nbt)
+	public void load(CompoundTag tag)
 	{
-		super.writeNbt(nbt);
-		if (link != null) nbt.put("link", NbtHelper.fromBlockPos(link));
+		super.load(tag);
+		if (!tag.contains("link")) return;
+		link = NbtUtils.readBlockPos(tag.getCompound("link"));
 	}
 }

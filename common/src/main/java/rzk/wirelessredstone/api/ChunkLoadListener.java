@@ -1,10 +1,10 @@
 package rzk.wirelessredstone.api;
 
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 
 public interface ChunkLoadListener
 {
-	void onChunkLoad(ServerWorld world);
+	void onChunkLoad(ServerLevel level);
 
-	void onChunkUnload(ServerWorld world);
+	void onChunkUnload(ServerLevel level);
 }
