@@ -1,42 +1,33 @@
 package rzk.wirelessredstone.network;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.NetworkEvent;
-import rzk.wirelessredstone.client.render.SnifferHighlightRenderer;
+import rzk.wirelessredstone.client.WRClientEventsForge;
 
 import java.util.function.Supplier;
 
-public class SnifferHighlightPacket
+public record SnifferHighlightPacket(long timestamp, InteractionHand hand, BlockPos[] coords)
 {
-	public final long timestamp;
-	public final Hand hand;
-	public final BlockPos[] coords;
-
-	public SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coords)
+	public SnifferHighlightPacket(FriendlyByteBuf buf)
 	{
-		this.timestamp = timestamp;
-		this.hand = hand;
-		this.coords = coords;
+		this(buf.readLong(), buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, readCoords(buf));
 	}
 
-	public SnifferHighlightPacket(PacketByteBuf buf)
+	private static BlockPos[] readCoords(FriendlyByteBuf buf)
 	{
-		timestamp = buf.readLong();
-		hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
-		coords = new BlockPos[buf.readInt()];
-
-		for (int i = 0; i < coords.length; i++)
-			coords[i] = buf.readBlockPos();
+		var coords = new BlockPos[buf.readInt()];
+		for (int i = 0; i < coords.length; i++) coords[i] = buf.readBlockPos();
+		return coords;
 	}
 
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeLong(timestamp);
-		buf.writeBoolean(hand == Hand.MAIN_HAND);
+		buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 		buf.writeInt(coords.length);
 
 		for (BlockPos pos : coords)
@@ -45,6 +36,6 @@ public class SnifferHighlightPacket
 
 	public void handle(Supplier<NetworkEvent.Context> ctx)
 	{
-		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> SnifferHighlightRenderer.handleSnifferHighlightPacket(ctx, timestamp, hand, coords));
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> WRClientEventsForge.handleSnifferHighlightPacket(timestamp, hand, coords));
 	}
 }

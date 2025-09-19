@@ -1,14 +1,14 @@
 package rzk.wirelessredstone.ether;
 
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import rzk.wirelessredstone.block.ModBlocks;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
 import rzk.wirelessredstone.misc.WRUtils;
+import rzk.wirelessredstone.registry.ModBlocks;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -30,46 +30,46 @@ public class RedstoneChannel
 		this.frequency = frequency;
 	}
 
-	public RedstoneChannel(NbtCompound nbt)
+	public RedstoneChannel(CompoundTag tag)
 	{
-		frequency = WRUtils.readFrequency(nbt);
+		frequency = WRUtils.readFrequency(tag);
 
-		NbtList transmitterNbts = nbt.getList("transmitters", NbtElement.COMPOUND_TYPE);
-		for (NbtElement transmitterNbt : transmitterNbts)
-			transmitters.add(NbtHelper.toBlockPos((NbtCompound) transmitterNbt));
+		ListTag transmitterTags = tag.getList("transmitters", Tag.TAG_COMPOUND);
+		for (var transmitterTag : transmitterTags)
+			transmitters.add(NbtUtils.readBlockPos((CompoundTag) transmitterTag));
 	}
 
-	public NbtCompound save()
+	public CompoundTag save()
 	{
-		NbtCompound nbt = new NbtCompound();
-		WRUtils.writeFrequency(nbt, frequency);
+		CompoundTag tag = new CompoundTag();
+		WRUtils.writeFrequency(tag, frequency);
 
-		NbtList transmitterNbts = new NbtList();
+		ListTag transmitterTags = new ListTag();
 		for (BlockPos pos : transmitters)
-			transmitterNbts.add(NbtHelper.fromBlockPos(pos));
-		nbt.put("transmitters", transmitterNbts);
+			transmitterTags.add(NbtUtils.writeBlockPos(pos));
+		tag.put("transmitters", transmitterTags);
 
-		return nbt;
+		return tag;
 	}
 
-	public void addTransmitter(World world, BlockPos pos)
+	public void addTransmitter(Level level, BlockPos pos)
 	{
 		boolean empty = !isActive();
 		transmitters.add(pos);
-		if (empty) updateReceivers(world);
+		if (empty) updateReceivers(level);
 	}
 
-	public void removeTransmitter(World world, BlockPos pos)
+	public void removeTransmitter(Level level, BlockPos pos)
 	{
 		transmitters.remove(pos);
 		if (!isActive())
-			updateReceivers(world);
+			updateReceivers(level);
 	}
 
-	public void addReceiver(World world, BlockPos pos)
+	public void addReceiver(Level level, BlockPos pos)
 	{
 		receivers.add(pos);
-		updateReceiver(world, pos);
+		updateReceiver(level, pos);
 	}
 
 	public void removeReceiver(BlockPos pos)
@@ -77,29 +77,29 @@ public class RedstoneChannel
 		receivers.remove(pos);
 	}
 
-	public void addRemote(World world, LivingEntity owner)
+	public void addRemote(Level level, LivingEntity owner)
 	{
 		boolean empty = !isActive();
 		remotes.add(owner);
-		if (empty) updateReceivers(world);
+		if (empty) updateReceivers(level);
 	}
 
-	public void removeRemote(World world, LivingEntity owner)
+	public void removeRemote(Level level, LivingEntity owner)
 	{
 		remotes.remove(owner);
 		if (!isActive())
-			updateReceivers(world);
+			updateReceivers(level);
 	}
 
-	public void updateReceiver(World world, BlockPos pos)
+	public void updateReceiver(Level level, BlockPos pos)
 	{
-		world.scheduleBlockTick(pos, ModBlocks.redstoneReceiver, 2);
+		level.scheduleTick(pos, ModBlocks.redstoneReceiver, WRUtils.TICKS_PER_REDSTONE_TICK);
 	}
 
-	public void updateReceivers(World world)
+	public void updateReceivers(Level level)
 	{
 		for (BlockPos receiver : receivers)
-			updateReceiver(world, receiver);
+			updateReceiver(level, receiver);
 	}
 
 	public int getFrequency()

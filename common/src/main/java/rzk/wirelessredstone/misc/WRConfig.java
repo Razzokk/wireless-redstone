@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.minecraft.world.level.redstone.Redstone;
 import rzk.wirelessredstone.WirelessRedstone;
 
 import java.io.BufferedReader;
@@ -21,16 +22,17 @@ public class WRConfig
 		.setPrettyPrinting()
 		.create();
 
-	private static final String FILE_NAME = WirelessRedstone.MODID + ".json";
+	private static final String FILE_NAME = WirelessRedstone.MOD_ID + ".json";
 
 	// General
-	public static int redstoneReceiverSignalStrength = 15;
+	public static int redstoneReceiverSignalStrength = Redstone.SIGNAL_MAX;
 	public static boolean redstoneReceiverStrongPower = true;
 
 	// Client
 	public static int frequencyDisplayColor = 0;
 	public static int highlightColor = 0xFF3F3F;
 	public static int highlightTimeSeconds = 10;
+	public static int linkerTargetColor = 0x32C8FF;
 
 	public static void load()
 	{
@@ -50,11 +52,11 @@ public class WRConfig
 			frequencyDisplayColor = config.getAsJsonPrimitive("display_color").getAsInt();
 			highlightColor = config.getAsJsonPrimitive("highlight_color").getAsInt();
 			highlightTimeSeconds = config.getAsJsonPrimitive("highlight_time").getAsInt();
+			linkerTargetColor = config.getAsJsonPrimitive("linker_target_color").getAsInt();
 		}
-		catch (IOException e)
+		catch (IOException | NullPointerException e)
 		{
 			WirelessRedstone.LOGGER.error("Couldn't load Wireless Redstone configs from file");
-			e.printStackTrace();
 		}
 	}
 
@@ -71,6 +73,7 @@ public class WRConfig
 		config.addProperty("display_color", frequencyDisplayColor);
 		config.addProperty("highlight_color", highlightColor);
 		config.addProperty("highlight_time", highlightTimeSeconds);
+		config.addProperty("linker_target_color", linkerTargetColor);
 
 		try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file)))
 		{
@@ -78,8 +81,7 @@ public class WRConfig
 		}
 		catch (IOException e)
 		{
-			WirelessRedstone.LOGGER.error("Couldn't save Wireless Redstone configs to file");
-			e.printStackTrace();
+			WirelessRedstone.LOGGER.error("Couldn't save Wireless Redstone configs to file", e);
 		}
 	}
 }

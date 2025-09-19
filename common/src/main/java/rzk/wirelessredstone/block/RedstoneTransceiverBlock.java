@@ -1,71 +1,96 @@
 package rzk.wirelessredstone.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.MapColor;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.BlockSoundGroup;
-import net.minecraft.state.StateManager;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.material.MapColor;
+import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.WirelessRedstone;
+import rzk.wirelessredstone.api.RedstoneConnectable;
 import rzk.wirelessredstone.block.entity.RedstoneTransceiverBlockEntity;
 import rzk.wirelessredstone.item.FrequencyItem;
+import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRUtils;
 
-import static net.minecraft.state.property.Properties.POWERED;
+import java.util.List;
 
-public abstract class RedstoneTransceiverBlock extends Block implements BlockEntityProvider
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
+
+public abstract class RedstoneTransceiverBlock extends Block implements EntityBlock, RedstoneConnectable
 {
 	public RedstoneTransceiverBlock()
 	{
-		super(Settings.create()
-			.mapColor(MapColor.IRON_GRAY)
-			.solidBlock((state, blockGetter, pos) -> false)
+		super(Properties.of()
+			.mapColor(MapColor.COLOR_LIGHT_GRAY)
+			.isRedstoneConductor((state, blockGetter, pos) -> false)
 			.strength(1.5F, 5.0F)
-			.sounds(BlockSoundGroup.METAL));
-		setDefaultState(stateManager.getDefaultState().with(POWERED, false));
+			.sound(SoundType.METAL));
+
+		registerDefaultState(stateDefinition.any().setValue(POWERED, false));
 	}
 
-	public void setFrequency(World world, BlockPos pos, int frequency)
+	public void setFrequency(Level level, BlockPos pos, int frequency)
 	{
-		if (WRUtils.isValidFrequency(frequency) && world.getBlockEntity(pos) instanceof RedstoneTransceiverBlockEntity transceiver)
+		if (WRUtils.isValidFrequency(frequency) && level.getBlockEntity(pos) instanceof RedstoneTransceiverBlockEntity transceiver)
 			transceiver.setFrequency(frequency);
 	}
 
-	public int getFrequency(World world, BlockPos pos)
+	public int getFrequency(Level level, BlockPos pos)
 	{
-		if (world.getBlockEntity(pos) instanceof RedstoneTransceiverBlockEntity transceiver)
+		if (level.getBlockEntity(pos) instanceof RedstoneTransceiverBlockEntity transceiver)
 			return transceiver.getFrequency();
 		return 0;
 	}
 
 	@Override
-	public boolean emitsRedstonePower(BlockState state)
+	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
 	{
-		return true;
+		var item = player.getItemInHand(hand).getItem();
+
+		if (item instanceof FrequencyItem)
+			return InteractionResult.PASS;
+
+		if (!level.isClientSide)
+			WirelessRedstone.PLATFORM.sendFrequencyBlockPacket((ServerPlayer) player, getFrequency(level, pos), pos);
+
+		return InteractionResult.SUCCESS;
 	}
 
 	@Override
-	public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit)
-	{
-		if (player.getStackInHand(hand).getItem() instanceof FrequencyItem)
-			return ActionResult.PASS;
-
-		if (!world.isClient)
-			WirelessRedstone.PLATFORM.sendFrequencyBlockPacket((ServerPlayerEntity) player, getFrequency(world, pos), pos);
-
-		return ActionResult.SUCCESS;
-	}
-
-	@Override
-	protected void appendProperties(StateManager.Builder<Block, BlockState> builder)
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
 	{
 		builder.add(POWERED);
+	}
+
+	@Override
+	public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag)
+	{
+		var frequency = WRUtils.readFrequency(BlockItem.getBlockEntityData(stack));
+		if (!WRUtils.isValidFrequency(frequency)) return;
+
+		var frequencyComponent = Component.literal(String.valueOf(frequency)).withStyle(ChatFormatting.AQUA);
+		tooltip.add(Component.translatable(TranslationKeys.TOOLTIP_FREQUENCY, frequencyComponent).withStyle(ChatFormatting.GRAY));
+	}
+
+	@Override
+	public boolean canConnectRedstone(BlockState state, BlockGetter blockGetter, BlockPos pos, @Nullable Direction direction)
+	{
+		return direction != null;
 	}
 }

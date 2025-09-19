@@ -1,75 +1,46 @@
 package rzk.wirelessredstone.network;
 
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Hand;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import rzk.wirelessredstone.client.screen.ModScreens;
 import rzk.wirelessredstone.item.FrequencyItem;
 
 import java.util.function.Supplier;
 
-public abstract class FrequencyItemPacket extends FrequencyPacket
+public record FrequencyItemPacket(int frequency, InteractionHand hand)
 {
-	public final Hand hand;
-
-	public FrequencyItemPacket(int frequency, Hand hand)
+	public FrequencyItemPacket(FriendlyByteBuf buf)
 	{
-		super(frequency);
-		this.hand = hand;
+		this(buf.readInt(), buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
 	}
 
-	public FrequencyItemPacket(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
-		super(buf);
-		hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
+		buf.writeInt(frequency);
+		buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 	}
 
-	@Override
-	public void writeAdditional(PacketByteBuf buf)
+	public void handle(Supplier<NetworkEvent.Context> context)
 	{
-		buf.writeBoolean(hand == Hand.MAIN_HAND);
+		var ctx = context.get();
+		if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) handleServer(ctx);
+		else handleClient(ctx);
 	}
 
-	public static class SetFrequency extends FrequencyItemPacket
+	private void handleServer(NetworkEvent.Context ctx)
 	{
-		public SetFrequency(int frequency, Hand hand)
-		{
-			super(frequency, hand);
-		}
-
-		public SetFrequency(PacketByteBuf buf)
-		{
-			super(buf);
-		}
-
-		public void handle(Supplier<NetworkEvent.Context> ctx)
-		{
-			ServerPlayerEntity player = ctx.get().getSender();
-			ItemStack stack = player.getStackInHand(hand);
-			if (stack.getItem() instanceof FrequencyItem item)
-				item.setFrequency(stack, frequency);
-		}
+		var player = ctx.getSender();
+		var stack = player.getItemInHand(hand);
+		if (stack.getItem() instanceof FrequencyItem item)
+			item.setFrequency(stack, frequency);
 	}
 
-	public static class OpenScreen extends FrequencyItemPacket
+	private void handleClient(NetworkEvent.Context ctx)
 	{
-		public OpenScreen(int frequency, Hand hand)
-		{
-			super(frequency, hand);
-		}
-
-		public OpenScreen(PacketByteBuf buf)
-		{
-			super(buf);
-		}
-
-		public void handle(Supplier<NetworkEvent.Context> ctx)
-		{
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ModScreens.openItemFrequencyScreen(frequency, hand));
-		}
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ModScreens.openItemFrequencyScreen(frequency, hand));
 	}
 }

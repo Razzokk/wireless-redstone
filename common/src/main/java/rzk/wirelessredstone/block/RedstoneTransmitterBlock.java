@@ -1,55 +1,54 @@
 package rzk.wirelessredstone.block;
 
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.item.ItemPlacementContext;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-import rzk.wirelessredstone.block.entity.ModBlockEntities;
 import rzk.wirelessredstone.block.entity.RedstoneTransmitterBlockEntity;
+import rzk.wirelessredstone.registry.ModBlockEntities;
 
-import static net.minecraft.state.property.Properties.POWERED;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 
 public class RedstoneTransmitterBlock extends RedstoneTransceiverBlock
 {
-	@Nullable
 	@Override
-	public BlockState getPlacementState(ItemPlacementContext ctx)
+	public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston)
 	{
-		World world = ctx.getWorld();
-		BlockPos pos = ctx.getBlockPos();
-		return getDefaultState().with(POWERED, world.isReceivingRedstonePower(pos));
+		level.getBlockEntity(pos, ModBlockEntities.redstoneTransmitterBlockEntityType)
+			.ifPresent(entity -> entity.onBlockPlaced(state, level, pos));
 	}
 
 	@Override
-	public void onBlockAdded(BlockState state, World world, BlockPos pos, BlockState oldState, boolean notify)
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston)
 	{
-		world.getBlockEntity(pos, ModBlockEntities.redstoneTransmitterBlockEntityType)
-			.ifPresent(entity -> entity.onBlockPlaced(state, world, pos));
+		level.getBlockEntity(pos, ModBlockEntities.redstoneTransmitterBlockEntityType)
+			.ifPresent(entity -> entity.onBlockRemoved(state, level, pos));
+		super.onRemove(state, level, pos, newState, movedByPiston);
 	}
 
 	@Override
-	public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved)
+	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
 	{
-		world.getBlockEntity(pos, ModBlockEntities.redstoneTransmitterBlockEntityType)
-			.ifPresent(entity -> entity.onBlockRemoved(state, world, pos));
-		super.onStateReplaced(state, world, pos, newState, moved);
+		var world = context.getLevel();
+		var pos = context.getClickedPos();
+		var state = defaultBlockState();
+		return state.setValue(POWERED, isReceivingRedstonePower(state, world, pos));
 	}
 
 	@Override
-	public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify)
+	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston)
 	{
-		if (world.isClient) return;
-		boolean powered = world.isReceivingRedstonePower(pos);
-		if (state.get(POWERED) == powered) return;
-		world.setBlockState(pos, state.with(POWERED, powered), Block.NOTIFY_LISTENERS);
+		if (level.isClientSide) return;
+		boolean powered = isReceivingRedstonePower(state, level, pos);
+		if (state.getValue(POWERED) == powered) return;
+		level.setBlock(pos, state.setValue(POWERED, powered), Block.UPDATE_CLIENTS);
 	}
 
-	@Nullable
 	@Override
-	public BlockEntity createBlockEntity(BlockPos pos, BlockState state)
+	public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state)
 	{
 		return new RedstoneTransmitterBlockEntity(pos, state);
 	}

@@ -1,20 +1,26 @@
 pluginManagement {
 	repositories {
+		gradlePluginPortal()
+		mavenCentral()
 		maven("https://maven.fabricmc.net/") {
 			name = "Fabric"
 		}
 		maven("https://maven.minecraftforge.net/") {
 			name = "Forge"
 		}
-		maven("https://maven.architectury.dev/") {
-			name = "Architectury"
+		maven("https://repo.spongepowered.org/repository/maven-public/") {
+			name = "Sponge Snapshots"
 		}
-		mavenCentral()
-		gradlePluginPortal()
 	}
 }
 
-val modName: String by extra
-rootProject.name = modName
+plugins {
+	id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+}
 
-include("common", "fabric", "forge")
+rootProject.name = "wireless-redstone"
+
+include("common")
+include("datagen")
+include("fabric")
+include("forge")

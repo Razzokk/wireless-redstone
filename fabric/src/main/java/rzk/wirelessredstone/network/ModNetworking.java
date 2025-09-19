@@ -2,13 +2,10 @@ package rzk.wirelessredstone.network;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.World;
 import rzk.wirelessredstone.block.RedstoneTransceiverBlock;
 import rzk.wirelessredstone.item.FrequencyItem;
-import rzk.wirelessredstone.item.ModItems;
 import rzk.wirelessredstone.item.RemoteItem;
+import rzk.wirelessredstone.registry.ModItems;
 
 public class ModNetworking
 {
@@ -16,24 +13,24 @@ public class ModNetworking
 	{
 		ServerPlayNetworking.registerGlobalReceiver(FrequencyBlockPacket.TYPE, (packet, player, responseSender) ->
 		{
-			World world = player.getWorld();
-			if (world.getBlockState(packet.pos).getBlock() instanceof RedstoneTransceiverBlock block)
-				block.setFrequency(world, packet.pos, packet.frequency);
+			var level = player.level();
+			if (level.getBlockState(packet.pos()).getBlock() instanceof RedstoneTransceiverBlock block)
+				block.setFrequency(level, packet.pos(), packet.frequency());
 		});
 
 		ServerPlayNetworking.registerGlobalReceiver(FrequencyItemPacket.TYPE, (packet, player, responseSender) ->
 		{
-			ItemStack stack = player.getStackInHand(packet.hand);
+			var stack = player.getItemInHand(packet.hand());
 			if (stack.getItem() instanceof FrequencyItem item)
-				item.setFrequency(stack, packet.frequency);
+				item.setFrequency(stack, packet.frequency());
 		});
 
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
 		{
-			ServerPlayerEntity player = handler.player;
-			ItemStack stack = player.getActiveItem();
-			if (!stack.isOf(ModItems.remote)) return;
-			((RemoteItem) stack.getItem()).onDeactivation(stack, player.getWorld(), player);
+			var player = handler.player;
+			var stack = player.getUseItem();
+			if (!stack.is(ModItems.remote)) return;
+			((RemoteItem) stack.getItem()).onDeactivation(stack, player.level(), player);
 		});
 	}
 }

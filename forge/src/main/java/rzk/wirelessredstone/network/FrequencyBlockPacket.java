@@ -1,73 +1,45 @@
 package rzk.wirelessredstone.network;
 
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
+import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import rzk.wirelessredstone.block.RedstoneTransceiverBlock;
 import rzk.wirelessredstone.client.screen.ModScreens;
 
 import java.util.function.Supplier;
 
-public abstract class FrequencyBlockPacket extends FrequencyPacket
+public record FrequencyBlockPacket(int frequency, BlockPos pos)
 {
-	public final BlockPos pos;
-
-	public FrequencyBlockPacket(int frequency, BlockPos pos)
+	public FrequencyBlockPacket(FriendlyByteBuf buf)
 	{
-		super(frequency);
-		this.pos = pos;
+		this(buf.readInt(), buf.readBlockPos());
 	}
 
-	public FrequencyBlockPacket(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
-		super(buf);
-		pos = buf.readBlockPos();
-	}
-
-	@Override
-	public void writeAdditional(PacketByteBuf buf)
-	{
+		buf.writeInt(frequency);
 		buf.writeBlockPos(pos);
 	}
 
-	public static class SetFrequency extends FrequencyBlockPacket
+	public void handle(Supplier<NetworkEvent.Context> context)
 	{
-		public SetFrequency(int frequency, BlockPos pos)
-		{
-			super(frequency, pos);
-		}
-
-		public SetFrequency(PacketByteBuf buf)
-		{
-			super(buf);
-		}
-
-		public void handle(Supplier<NetworkEvent.Context> ctx)
-		{
-			World world = ctx.get().getSender().getWorld();
-			if (world.isChunkLoaded(pos) && world.getBlockState(pos).getBlock() instanceof RedstoneTransceiverBlock block)
-				block.setFrequency(world, pos, frequency);
-		}
+		var ctx = context.get();
+		if (ctx.getDirection() == NetworkDirection.PLAY_TO_SERVER) handleServer(ctx);
+		else handleClient(ctx);
 	}
 
-	public static class OpenScreen extends FrequencyBlockPacket
+	private void handleServer(NetworkEvent.Context ctx)
 	{
-		public OpenScreen(int frequency, BlockPos pos)
-		{
-			super(frequency, pos);
-		}
+		var level = ctx.getSender().level();
+		if (level.isLoaded(pos) && level.getBlockState(pos).getBlock() instanceof RedstoneTransceiverBlock block)
+			block.setFrequency(level, pos, frequency);
+	}
 
-		public OpenScreen(PacketByteBuf buf)
-		{
-			super(buf);
-		}
-
-		public void handle(Supplier<NetworkEvent.Context> ctx)
-		{
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ModScreens.openBlockFrequencyScreen(frequency, pos));
-		}
+	private void handleClient(NetworkEvent.Context ctx)
+	{
+		DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ModScreens.openBlockFrequencyScreen(frequency, pos));
 	}
 }

@@ -6,6 +6,8 @@ with the minecraft version prepended to it.
 
 ## [Unreleased]
 
+Back-port from **1.2.1+1.20.4**
+
 ## [1.20.1-1.1.3] - 2024-07-09
 
 Skip for Fabric

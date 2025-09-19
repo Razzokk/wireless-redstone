@@ -1,0 +1,5 @@
+// 1.20.4	2025-08-10T13:53:25.994156905	Wireless Redstone/Block Loot Tables
+7cfff0b804b377120a98f0a4983cd850cadada7e data/wirelessredstone/loot_tables/blocks/redstone_transmitter.json
+064b384b4b4477dc35bf2e705925bfa21241563c data/wirelessredstone/loot_tables/blocks/p2p_redstone_receiver.json
+314d2717f603381670dd1ce63c9b0aa99af38542 data/wirelessredstone/loot_tables/blocks/p2p_redstone_transmitter.json
+b583d805942b6af696f984fd95d7ea55fb42d745 data/wirelessredstone/loot_tables/blocks/redstone_receiver.json

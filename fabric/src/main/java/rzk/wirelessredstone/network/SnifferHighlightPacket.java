@@ -2,43 +2,36 @@ package rzk.wirelessredstone.network;
 
 import net.fabricmc.fabric.api.networking.v1.FabricPacket;
 import net.fabricmc.fabric.api.networking.v1.PacketType;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.InteractionHand;
 import rzk.wirelessredstone.WirelessRedstone;
 
-public class SnifferHighlightPacket implements FabricPacket
+public record SnifferHighlightPacket(long timestamp, InteractionHand hand, BlockPos[] coords) implements FabricPacket
 {
 	public static final PacketType<SnifferHighlightPacket> TYPE = PacketType.create(
-		WirelessRedstone.identifier("networking/sniffer_highlight_packet"),
+		new ResourceLocation(WirelessRedstone.MOD_ID, "sniffer_highlight"),
 		SnifferHighlightPacket::new);
 
-	public final long timestamp;
-	public final Hand hand;
-	public final BlockPos[] coords;
-
-	public SnifferHighlightPacket(long timestamp, Hand hand, BlockPos[] coords)
+	public SnifferHighlightPacket(FriendlyByteBuf buf)
 	{
-		this.timestamp = timestamp;
-		this.hand = hand;
-		this.coords = coords;
+		this(buf.readLong(), buf.readBoolean() ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND, readCoords(buf));
 	}
 
-	public SnifferHighlightPacket(PacketByteBuf buf)
+	private static BlockPos[] readCoords(FriendlyByteBuf buf)
 	{
-		timestamp = buf.readLong();
-		hand = buf.readBoolean() ? Hand.MAIN_HAND : Hand.OFF_HAND;
-		coords = new BlockPos[buf.readInt()];
-
+		var coords = new BlockPos[buf.readInt()];
 		for (int i = 0; i < coords.length; i++)
 			coords[i] = buf.readBlockPos();
+		return coords;
 	}
 
 	@Override
-	public void write(PacketByteBuf buf)
+	public void write(FriendlyByteBuf buf)
 	{
 		buf.writeLong(timestamp);
-		buf.writeBoolean(hand == Hand.MAIN_HAND);
+		buf.writeBoolean(hand == InteractionHand.MAIN_HAND);
 		buf.writeInt(coords.length);
 
 		for (BlockPos pos : coords)

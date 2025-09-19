@@ -1,22 +1,39 @@
 package rzk.wirelessredstone.misc;
 
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.ChunkEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import rzk.wirelessredstone.item.ModItems;
+import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.item.RemoteItem;
+import rzk.wirelessredstone.registry.ModItems;
 
 public class WREvents
 {
 	@SubscribeEvent
 	public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event)
 	{
-		PlayerEntity player = event.getEntity();
-		World world = player.getWorld();
-		ItemStack stack = player.getActiveItem();
-		if (world.isClient || !stack.isOf(ModItems.remote)) return;
-		((RemoteItem) stack.getItem()).onDeactivation(stack, world, player);
+		var player = event.getEntity();
+		var level = player.level();
+		var stack = player.getUseItem();
+		if (level.isClientSide || !stack.is(ModItems.remote)) return;
+		((RemoteItem) stack.getItem()).onDeactivation(stack, level, player);
+	}
+
+	@SubscribeEvent
+	public static void onChunkLoad(ChunkEvent.Load event)
+	{
+		if (!(event.getLevel() instanceof ServerLevel level)) return;
+		if (!(event.getChunk() instanceof LevelChunk chunk)) return;
+		WirelessRedstone.onChunkLoad(level, chunk);
+	}
+
+	@SubscribeEvent
+	public static void onChunkUnload(ChunkEvent.Unload event)
+	{
+		if (!(event.getLevel() instanceof ServerLevel level)) return;
+		if (!(event.getChunk() instanceof LevelChunk chunk)) return;
+		WirelessRedstone.onChunkUnload(level, chunk);
 	}
 }
