@@ -6,6 +6,8 @@ with the minecraft version prepended to it.
 
 ## [Unreleased]
 
+## [1.2.1+1.20.1] - 2025-09-20
+
 Back-port from **1.2.1+1.20.4**
 
 ## [1.20.1-1.1.3] - 2024-07-09
@@ -88,11 +90,12 @@ Port to MC 1.20.1
 
 - Increased contrast of T and R letters on transmitter and receiver texture
 
-[Unreleased]: https://github.com/Razzokk/wireless-redstone/compare/release/1.20.1-1.1.3...HEAD
-[1.20.1-1.1.2]: https://github.com/Razzokk/wireless-redstone/compare/release/1.20.1-1.1.1...release/1.20.1-1.1.2
-[1.20.1-1.1.0]: https://github.com/Razzokk/wireless-redstone/compare/release/1.20.1-1.0.2...release/1.20.1-1.1.0
-[1.20.1-1.0.2]: https://github.com/Razzokk/wireless-redstone/compare/release/1.20.1-1.0.1...release/1.20.1-1.0.2
-[1.20.1-1.0.1]: https://github.com/Razzokk/wireless-redstone/compare/release/1.20.1-1.0.0...release/1.20.1-1.0.1
-[1.20.1-1.0.0]: https://github.com/Razzokk/wireless-redstone/commits/release/1.20.1-1.0.0
-[1.20.1-1.1.1]: https://github.com/Razzokk/wireless-redstone/compare/release/1.20.1-1.1.0...release/1.20.1-1.1.1
-[1.20.1-1.1.3]: https://github.com/Razzokk/wireless-redstone/compare/release/1.20.1-1.1.2...release/1.20.1-1.1.3
+[Unreleased]: https://github.com/Razzokk/wireless-redstone/compare/v1.2.1+1.20.1...HEAD
+[1.20.1-1.1.3]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.1.2...v1.20.1-1.1.3
+[1.20.1-1.1.2]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.1.1...v1.20.1-1.1.2
+[1.20.1-1.1.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.1.0...v1.20.1-1.1.1
+[1.20.1-1.1.0]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.0.2...v1.20.1-1.1.0
+[1.20.1-1.0.2]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.0.1...v1.20.1-1.0.2
+[1.20.1-1.0.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.0.0...v1.20.1-1.0.1
+[1.20.1-1.0.0]: https://github.com/Razzokk/wireless-redstone/commits/v1.20.1-1.0.0
+[1.2.1+1.20.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.1.3...v1.2.1+1.20.1
