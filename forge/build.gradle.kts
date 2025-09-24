@@ -72,6 +72,10 @@ tasks {
 			filter<LineContains>("negate" to true, "contains" to setOf("refmap"))
 		}
 	}
+
+	jar {
+		finalizedBy("reobfJar")
+	}
 }
 
 publishMods {
