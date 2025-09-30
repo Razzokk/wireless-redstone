@@ -80,7 +80,7 @@ publishMods {
 	file.set(tasks.named<Jar>("jar").get().archiveFile)
 	modLoaders.add("forge")
 	changelog = changelogProvider
-	displayName = "[Forge ${Versions.MINECRAFT}] ${Properties.MOD_ID}-${Versions.MOD}"
+	displayName = "[Forge ${Versions.MINECRAFT}] ${Versions.MOD} ${Properties.MOD_NAME}"
 	version = "${Versions.MOD}+${Versions.MINECRAFT}-forge"
 	type = STABLE
 

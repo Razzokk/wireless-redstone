@@ -6,6 +6,18 @@ with the minecraft version appended.
 
 ## [Unreleased]
 
+## [1.2.2+1.20.4] - 2025-09-30
+
+### Changed
+
+- Shorten display name on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/wirelessredstone) and [Modrinth]():
+	- before: `[<loader> <mc-version>] wirelessredstone-<mod-version>` e.g. **[Forge 1.20.1] wirelessredstone-1.2.2**
+	- now: `[<loader> <mc-version>] <mod-version> Wireless Redstone` e.g. **[Forge 1.20.1] 1.2.2 Wireless Redstone**
+
+### Fixed
+
+- Linker highlight not showing when held in off-hand
+
 ## [1.2.1+1.20.4] - 2025-09-19
 
 ### Changed
@@ -172,7 +184,7 @@ Port to MC 1.20.1
 
 - Increased contrast of T and R letters on transmitter and receiver texture
 
-[Unreleased]: https://github.com/Razzokk/wireless-redstone/compare/v1.2.1+1.20.4...HEAD
+[Unreleased]: https://github.com/Razzokk/wireless-redstone/compare/v1.2.2+1.20.4...HEAD
 [1.20.4-1.2.0-beta]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.4-1.1.5...v1.20.4-1.2.0-beta
 [1.20.4-1.1.5]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.4-1.1.4...v1.20.4-1.1.5
 [1.20.4-1.1.4]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.4-1.1.3...v1.20.4-1.1.4
@@ -184,5 +196,6 @@ Port to MC 1.20.1
 [1.20.1-1.0.2]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.0.1...v1.20.1-1.0.2
 [1.20.1-1.0.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.0.0...v1.20.1-1.0.1
 [1.20.1-1.0.0]: https://github.com/Razzokk/wireless-redstone/commits/v1.20.1-1.0.0
+[1.2.2+1.20.4]: https://github.com/Razzokk/wireless-redstone/compare/v1.2.1+1.20.4...v1.2.2+1.20.4
 [1.2.1+1.20.4]: https://github.com/Razzokk/wireless-redstone/compare/v1.2.0+1.20.4...v1.2.1+1.20.4
 [1.2.0+1.20.4]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.4-1.2.0-beta...v1.2.0+1.20.4

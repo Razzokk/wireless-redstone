@@ -2,7 +2,7 @@ package mod.gradle
 
 object Versions
 {
-	const val MOD = "1.2.1"
+	const val MOD = "1.2.2"
 
 	const val MINECRAFT = "1.20.4"
 	const val PARCHMENT_MINECRAFT = "1.20.4"
