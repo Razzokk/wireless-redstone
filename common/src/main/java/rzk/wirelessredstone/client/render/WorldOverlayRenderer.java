@@ -87,7 +87,7 @@ public class WorldOverlayRenderer
 	private static void renderLinkerTarget(Level level, Player player, ItemStack stack, Vec3 cameraPosition, PoseStack poseStack, float tickDelta)
 	{
 		BlockPos target = LinkerItem.getTarget(stack);
-		if (target == null) LinkerItem.getTarget(player.getOffhandItem());
+		if (target == null) target = LinkerItem.getTarget(player.getOffhandItem());
 		if (target == null || !player.shouldRender(target.getX(), target.getY(), target.getZ())) return;
 
 		var red = ((WRConfig.linkerTargetColor >> 16) & 0xFF) / 256.0f;

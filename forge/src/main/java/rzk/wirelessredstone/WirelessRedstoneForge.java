@@ -38,10 +38,10 @@ public class WirelessRedstoneForge
 
 	private void registerEvent(RegisterEvent event)
 	{
-		event.register(Registries.BLOCK, helper -> ModBlocks.register());
-		event.register(Registries.BLOCK_ENTITY_TYPE, helper -> ModBlockEntities.register());
-		event.register(Registries.ITEM, helper -> ModItems.register());
-		event.register(Registries.CREATIVE_MODE_TAB, helper -> WirelessRedstone.registerCreativeTab());
+		event.register(Registries.BLOCK, helper -> ModBlocks.register(helper::register));
+		event.register(Registries.BLOCK_ENTITY_TYPE, helper -> ModBlockEntities.register(helper::register));
+		event.register(Registries.ITEM, helper -> ModItems.register(helper::register));
+		event.register(Registries.CREATIVE_MODE_TAB, helper -> WirelessRedstone.registerCreativeTab(helper::register));
 	}
 
 	private void commonSetup(FMLCommonSetupEvent event)
