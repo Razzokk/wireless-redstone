@@ -21,7 +21,7 @@ public class LinkerItem extends Item
 {
 	public LinkerItem(Properties properties)
 	{
-		super(properties);
+		super(properties.stacksTo(1));
 	}
 
 	private static void setTarget(ItemStack stack, BlockPos pos)
@@ -52,7 +52,6 @@ public class LinkerItem extends Item
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag isAdvanced)
 	{
-
 		var target = getTarget(stack);
 		if (target == null) return;
 

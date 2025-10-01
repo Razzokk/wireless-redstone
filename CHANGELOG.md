@@ -6,6 +6,10 @@ with the minecraft version appended.
 
 ## [Unreleased]
 
+### Fixed
+
+- Sniffer stack size is supposed to be 1
+
 ## [1.2.2+1.20.4] - 2025-09-30
 
 ### Changed
