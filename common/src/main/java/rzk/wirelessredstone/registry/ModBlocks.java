@@ -7,7 +7,9 @@ import net.minecraft.world.level.block.Block;
 import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.block.P2pRedstoneReceiverBlock;
 import rzk.wirelessredstone.block.P2pRedstoneTransmitterBlock;
+import rzk.wirelessredstone.block.RedstoneReceiverAttachmentBlock;
 import rzk.wirelessredstone.block.RedstoneReceiverBlock;
+import rzk.wirelessredstone.block.RedstoneTransmitterAttachmentBlock;
 import rzk.wirelessredstone.block.RedstoneTransmitterBlock;
 
 public final class ModBlocks
@@ -17,12 +19,18 @@ public final class ModBlocks
 	public static Block p2pRedstoneTransmitter;
 	public static Block p2pRedstoneReceiver;
 
+	public static Block redstoneTransmitterAttachment;
+	public static Block redstoneReceiverAttachment;
+
 	public static void register()
 	{
 		redstoneTransmitter = registerBlock("redstone_transmitter", new RedstoneTransmitterBlock());
 		redstoneReceiver = registerBlock("redstone_receiver", new RedstoneReceiverBlock());
 		p2pRedstoneTransmitter = registerBlock("p2p_redstone_transmitter", new P2pRedstoneTransmitterBlock());
 		p2pRedstoneReceiver = registerBlock("p2p_redstone_receiver", new P2pRedstoneReceiverBlock());
+
+		redstoneTransmitterAttachment = registerBlock("redstone_transmitter_attachment", new RedstoneTransmitterAttachmentBlock());
+		redstoneReceiverAttachment = registerBlock("redstone_receiver_attachment", new RedstoneReceiverAttachmentBlock());
 	}
 
 	private static Block registerBlock(String name, Block block)

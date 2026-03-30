@@ -30,6 +30,9 @@ public final class ModItems
 		registerBlockItem(ModBlocks.p2pRedstoneTransmitter);
 		registerBlockItem(ModBlocks.p2pRedstoneReceiver);
 
+		registerBlockItem(ModBlocks.redstoneTransmitterAttachment);
+		registerBlockItem(ModBlocks.redstoneReceiverAttachment);
+
 		// Items
 		circuit = registerItem("circuit", new Item(new Properties()));
 		frequencyTool = registerItem("frequency_tool", new FrequencyItem(new Properties()));

@@ -21,9 +21,9 @@ public class ModBlockEntities
 	public static void register()
 	{
 		redstoneTransmitterBlockEntityType = registerBlockEntity("redstone_transmitter_block_entity",
-			BlockEntityType.Builder.of(RedstoneTransmitterBlockEntity::new, ModBlocks.redstoneTransmitter).build(null));
+			BlockEntityType.Builder.of(RedstoneTransmitterBlockEntity::new, ModBlocks.redstoneTransmitter, ModBlocks.redstoneTransmitterAttachment).build(null));
 		redstoneReceiverBlockEntityType = registerBlockEntity("redstone_receiver_block_entity",
-			BlockEntityType.Builder.of(RedstoneReceiverBlockEntity::new, ModBlocks.redstoneReceiver).build(null));
+			BlockEntityType.Builder.of(RedstoneReceiverBlockEntity::new, ModBlocks.redstoneReceiver, ModBlocks.redstoneReceiverAttachment).build(null));
 		p2pRedstoneTransmitterBlockEntityType = registerBlockEntity("p2p_redstone_transmitter_block_entity",
 			BlockEntityType.Builder.of(P2pRedstoneTransmitterBlockEntity::new, ModBlocks.p2pRedstoneTransmitter).build(null));
 		p2pRedstoneReceiverBlockEntityType = registerBlockEntity("p2p_redstone_receiver_block_entity",

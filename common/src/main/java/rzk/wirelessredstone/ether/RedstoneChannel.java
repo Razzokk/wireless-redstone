@@ -7,8 +7,8 @@ import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import rzk.wirelessredstone.block.RedstoneReceiverBlock;
 import rzk.wirelessredstone.misc.WRUtils;
-import rzk.wirelessredstone.registry.ModBlocks;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -93,7 +93,9 @@ public class RedstoneChannel
 
 	public void updateReceiver(Level level, BlockPos pos)
 	{
-		level.scheduleTick(pos, ModBlocks.redstoneReceiver, WRUtils.TICKS_PER_REDSTONE_TICK);
+		var block = level.getBlockState(pos).getBlock();
+		if (!(block instanceof RedstoneReceiverBlock)) return;
+		level.scheduleTick(pos, block, WRUtils.TICKS_PER_REDSTONE_TICK);
 	}
 
 	public void updateReceivers(Level level)

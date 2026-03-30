@@ -31,6 +31,8 @@ public final class WirelessRedstone
 			entries.accept(ModBlocks.redstoneReceiver);
 			entries.accept(ModBlocks.p2pRedstoneTransmitter);
 			entries.accept(ModBlocks.p2pRedstoneReceiver);
+			entries.accept(ModBlocks.redstoneTransmitterAttachment);
+			entries.accept(ModBlocks.redstoneReceiverAttachment);
 			entries.accept(ModItems.circuit);
 			entries.accept(ModItems.frequencyTool);
 			entries.accept(ModItems.frequencySniffer);

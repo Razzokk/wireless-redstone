@@ -22,7 +22,9 @@ public interface RedstoneConnectable
 	 */
 	default boolean isPoweredOnSide(BlockState state, LevelAccessor levelAccessor, BlockPos pos, Direction direction)
 	{
-		return canConnectRedstone(state, levelAccessor, pos, direction) && levelAccessor.hasSignal(pos.relative(direction), direction);
+		if (!canConnectRedstone(state, levelAccessor, pos, direction)) return false;
+		var accessDirection = direction.getOpposite();
+		return levelAccessor.hasSignal(pos.relative(direction), accessDirection);
 	}
 
 	/**

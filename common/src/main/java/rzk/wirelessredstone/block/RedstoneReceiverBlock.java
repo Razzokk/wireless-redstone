@@ -41,7 +41,7 @@ public class RedstoneReceiverBlock extends RedstoneTransceiverBlock
 	@Override
 	public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
 	{
-		return state.getValue(POWERED) && canConnectRedstone(state, level, pos, direction) ?
+		return state.getValue(POWERED) && canConnectRedstone(state, level, pos, direction.getOpposite()) ?
 			WRConfig.redstoneReceiverSignalStrength : 0;
 	}
 
