@@ -7,9 +7,8 @@
 	},
 	"display": {
 		"gui": {
-			"rotation": [ 120, 0, 315 ],
-			"translation": [ 0, 0, 0],
-			"scale":[ 0.625, 0.625, 0.625 ]
+			"rotation": [ 30, 45, 0 ],
+			"scale": [ 0.625, 0.625, 0.625 ]
 		}
 	},
 	"elements": [

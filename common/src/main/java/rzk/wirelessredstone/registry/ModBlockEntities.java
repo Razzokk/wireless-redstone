@@ -25,9 +25,9 @@ public class ModBlockEntities
 		redstoneReceiverBlockEntityType = registerBlockEntity("redstone_receiver_block_entity",
 			BlockEntityType.Builder.of(RedstoneReceiverBlockEntity::new, ModBlocks.redstoneReceiver, ModBlocks.redstoneReceiverAttachment).build(null));
 		p2pRedstoneTransmitterBlockEntityType = registerBlockEntity("p2p_redstone_transmitter_block_entity",
-			BlockEntityType.Builder.of(P2pRedstoneTransmitterBlockEntity::new, ModBlocks.p2pRedstoneTransmitter).build(null));
+			BlockEntityType.Builder.of(P2pRedstoneTransmitterBlockEntity::new, ModBlocks.p2pRedstoneTransmitter, ModBlocks.p2pRedstoneTransmitterAttachment).build(null));
 		p2pRedstoneReceiverBlockEntityType = registerBlockEntity("p2p_redstone_receiver_block_entity",
-			BlockEntityType.Builder.of(P2pRedstoneReceiverBlockEntity::new, ModBlocks.p2pRedstoneReceiver).build(null));
+			BlockEntityType.Builder.of(P2pRedstoneReceiverBlockEntity::new, ModBlocks.p2pRedstoneReceiver, ModBlocks.p2pRedstoneReceiverAttachment).build(null));
 	}
 
 	private static <T extends BlockEntity> BlockEntityType<T> registerBlockEntity(String name, BlockEntityType<T> blockEntityType)

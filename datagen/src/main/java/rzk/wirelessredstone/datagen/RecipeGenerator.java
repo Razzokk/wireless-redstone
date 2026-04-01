@@ -75,6 +75,42 @@ public class RecipeGenerator extends FabricRecipeProvider
 			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
 			.save(exporter);
 
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.redstoneTransmitterAttachment)
+			.pattern(" I ")
+			.pattern("RCR")
+			.define('I', Items.IRON_INGOT)
+			.define('R', Items.REDSTONE_TORCH)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.redstoneReceiverAttachment)
+			.pattern(" I ")
+			.pattern("RCR")
+			.define('I', Items.IRON_INGOT)
+			.define('R', Items.REDSTONE)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneTransmitterAttachment)
+			.pattern(" I ")
+			.pattern("RCR")
+			.define('I', Items.COPPER_INGOT)
+			.define('R', Items.REDSTONE_TORCH)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneReceiverAttachment)
+			.pattern(" I ")
+			.pattern("RCR")
+			.define('I', Items.COPPER_INGOT)
+			.define('R', Items.REDSTONE)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
+
 		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.frequencyTool)
 			.pattern("RTR")
 			.pattern("ICI")

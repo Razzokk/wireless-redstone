@@ -78,7 +78,7 @@ public class P2pRedstoneTransmitterBlock extends P2pRedstoneTransceiverBlock
 	@Override
 	protected boolean canLink(BlockState targetState, Level level, Player player)
 	{
-		if (targetState.is(ModBlocks.p2pRedstoneReceiver)) return true;
+		if (targetState.is(ModBlocks.p2pRedstoneReceiver) || targetState.is(ModBlocks.p2pRedstoneReceiverAttachment)) return true;
 
 		if (!level.isClientSide)
 		{

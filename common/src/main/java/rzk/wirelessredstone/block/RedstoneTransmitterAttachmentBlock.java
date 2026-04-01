@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.ATTACH_FACE;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
+import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 
 public class RedstoneTransmitterAttachmentBlock extends RedstoneTransmitterBlock
 {
@@ -33,7 +34,11 @@ public class RedstoneTransmitterAttachmentBlock extends RedstoneTransmitterBlock
 	@Override
 	public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx)
 	{
-		return Attachment.getStateForPlacement(defaultBlockState(), ctx);
+		var world = ctx.getLevel();
+		var pos = ctx.getClickedPos();
+		var state = Attachment.getStateForPlacement(defaultBlockState(), ctx);
+		var powered = isReceivingRedstonePower(state, world, pos);
+		return state.setValue(POWERED, powered);
 	}
 
 	@Override

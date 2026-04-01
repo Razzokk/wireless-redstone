@@ -50,6 +50,8 @@ public class ModelGenerator extends FabricModelProvider
 		transceiverAttachmentBlock(generators, ModBlocks.redstoneReceiverAttachment);
 		p2pTransceiverBlock(generators, ModBlocks.p2pRedstoneTransmitter);
 		p2pTransceiverBlock(generators, ModBlocks.p2pRedstoneReceiver);
+		p2pTransceiverAttachmentBlock(generators, ModBlocks.p2pRedstoneTransmitterAttachment);
+		p2pTransceiverAttachmentBlock(generators, ModBlocks.p2pRedstoneReceiverAttachment);
 	}
 
 	@Override
@@ -133,6 +135,46 @@ public class ModelGenerator extends FabricModelProvider
 					.select(false, true, Variant.variant().with(VariantProperties.MODEL, unlinkedOn))
 					.select(true, false, Variant.variant().with(VariantProperties.MODEL, linkedOff))
 					.select(true, true, Variant.variant().with(VariantProperties.MODEL, linkedOn))));
+
+		generators.delegateItemModel(block, unlinkedOff);
+	}
+
+	private static void p2pTransceiverAttachmentBlock(BlockModelGenerators generators, Block block)
+	{
+		BiFunction<String, String, TextureMapping> textureMap = (linked, state) -> new TextureMapping()
+			.put(TextureSlot.SIDE, TextureMapping.getBlockTexture(block, "/side_" + linked + "_" + state))
+			.put(TextureSlot.BOTTOM, TextureMapping.getBlockTexture(block, "/bottom_" + linked + "_" + state))
+			.put(TextureSlot.TOP, TextureMapping.getBlockTexture(block, "/top_" + linked + "_" + state));
+
+		var base = new ModelTemplate(Optional.of(new ResourceLocation(WirelessRedstone.MOD_ID, "block/template/attachment")), Optional.empty(), TextureSlot.TOP, TextureSlot.BOTTOM, TextureSlot.SIDE);
+		var unlinkedOff = base.create(ModelLocationUtils.getModelLocation(block, "_unlinked_off"), textureMap.apply("unlinked", "off"), generators.modelOutput);
+		var unlinkedOn = base.create(ModelLocationUtils.getModelLocation(block, "_unlinked_on"), textureMap.apply("unlinked", "on"), generators.modelOutput);
+		var linkedOff = base.create(ModelLocationUtils.getModelLocation(block, "_linked_off"), textureMap.apply("linked", "off"), generators.modelOutput);
+		var linkedOn = base.create(ModelLocationUtils.getModelLocation(block, "_linked_on"), textureMap.apply("linked", "on"), generators.modelOutput);
+
+		generators.blockStateOutput.accept(MultiVariantGenerator.multiVariant(block)
+			.with(PropertyDispatch.properties(LINKED, POWERED)
+				.select(false, false, Variant.variant().with(VariantProperties.MODEL, unlinkedOff))
+				.select(false, true, Variant.variant().with(VariantProperties.MODEL, unlinkedOn))
+				.select(true, false, Variant.variant().with(VariantProperties.MODEL, linkedOff))
+				.select(true, true, Variant.variant().with(VariantProperties.MODEL, linkedOn)))
+			.with(PropertyDispatch.properties(ATTACH_FACE, HORIZONTAL_FACING)
+				.select(AttachFace.FLOOR, Direction.EAST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
+				.select(AttachFace.FLOOR, Direction.WEST, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
+				.select(AttachFace.FLOOR, Direction.SOUTH, Variant.variant().with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
+				.select(AttachFace.FLOOR, Direction.NORTH, Variant.variant())
+				.select(AttachFace.CEILING, Direction.EAST, Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R180).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
+				.select(AttachFace.CEILING, Direction.WEST, Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R180).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
+				.select(AttachFace.CEILING, Direction.SOUTH, Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R180))
+				.select(AttachFace.CEILING, Direction.NORTH, Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R180).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))
+				.select(AttachFace.WALL, Direction.EAST,
+					Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R270).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R270))
+				.select(AttachFace.WALL, Direction.WEST,
+					Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R270).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R90))
+				.select(AttachFace.WALL, Direction.SOUTH,
+					Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R270))
+				.select(AttachFace.WALL, Direction.NORTH,
+					Variant.variant().with(VariantProperties.X_ROT, VariantProperties.Rotation.R270).with(VariantProperties.Y_ROT, VariantProperties.Rotation.R180))));
 
 		generators.delegateItemModel(block, unlinkedOff);
 	}

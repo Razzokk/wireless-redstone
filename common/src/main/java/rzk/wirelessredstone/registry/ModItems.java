@@ -32,6 +32,8 @@ public final class ModItems
 
 		registerBlockItem(ModBlocks.redstoneTransmitterAttachment);
 		registerBlockItem(ModBlocks.redstoneReceiverAttachment);
+		registerBlockItem(ModBlocks.p2pRedstoneTransmitterAttachment);
+		registerBlockItem(ModBlocks.p2pRedstoneReceiverAttachment);
 
 		// Items
 		circuit = registerItem("circuit", new Item(new Properties()));
