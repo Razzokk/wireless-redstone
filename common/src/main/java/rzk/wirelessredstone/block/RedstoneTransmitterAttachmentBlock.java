@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -32,12 +33,19 @@ public class RedstoneTransmitterAttachmentBlock extends RedstoneTransmitterBlock
 	}
 
 	@Override
+	protected boolean hasSignal(BlockState state, Level level, BlockPos pos)
+	{
+		var direction = Attachment.getFacing(state).getOpposite();
+		return level.hasSignal(pos.relative(direction), direction);
+	}
+
+	@Override
 	public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx)
 	{
 		var world = ctx.getLevel();
 		var pos = ctx.getClickedPos();
 		var state = Attachment.getStateForPlacement(defaultBlockState(), ctx);
-		var powered = isReceivingRedstonePower(state, world, pos);
+		var powered = hasSignal(state, world, pos);
 		return state.setValue(POWERED, powered);
 	}
 

@@ -1,5 +1,7 @@
 import mod.gradle.Properties
 import mod.gradle.Versions
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 plugins {
@@ -64,7 +66,7 @@ tasks {
 				"Implementation-Title" to "${Properties.MOD_NAME} (${project.name})",
 				"Implementation-Version" to archiveVersion,
 				"Implementation-Vendor" to Properties.MOD_AUTHOR,
-				"Implementation-Timestamp" to Properties.NOW.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
+				"Implementation-Timestamp" to OffsetDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
 				"Built-On-Java" to "${System.getProperty("java.vm.version")} (${System.getProperty("java.vm.vendor")})",
 				"Built-On-Minecraft" to Versions.MINECRAFT,
 			))

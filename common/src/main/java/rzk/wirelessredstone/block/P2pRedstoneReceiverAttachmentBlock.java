@@ -31,6 +31,13 @@ public class P2pRedstoneReceiverAttachmentBlock extends P2pRedstoneReceiverBlock
 	}
 
 	@Override
+	public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
+	{
+		if (direction != Attachment.getFacing(state)) return 0;
+		return super.getSignal(state, level, pos, direction);
+	}
+
+	@Override
 	public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx)
 	{
 		return Attachment.getStateForPlacement(defaultBlockState(), ctx);

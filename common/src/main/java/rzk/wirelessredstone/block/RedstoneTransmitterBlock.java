@@ -14,6 +14,11 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 public class RedstoneTransmitterBlock extends RedstoneTransceiverBlock
 {
+	protected boolean hasSignal(BlockState state, Level level, BlockPos pos)
+	{
+		return level.hasNeighborSignal(pos);
+	}
+
 	@Override
 	public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston)
 	{
@@ -35,14 +40,14 @@ public class RedstoneTransmitterBlock extends RedstoneTransceiverBlock
 		var world = context.getLevel();
 		var pos = context.getClickedPos();
 		var state = defaultBlockState();
-		return state.setValue(POWERED, isReceivingRedstonePower(state, world, pos));
+		return state.setValue(POWERED, hasSignal(state, world, pos));
 	}
 
 	@Override
 	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston)
 	{
 		if (level.isClientSide) return;
-		boolean powered = isReceivingRedstonePower(state, level, pos);
+		boolean powered = hasSignal(state, level, pos);
 		if (state.getValue(POWERED) == powered) return;
 		level.setBlock(pos, state.setValue(POWERED, powered), Block.UPDATE_CLIENTS);
 	}

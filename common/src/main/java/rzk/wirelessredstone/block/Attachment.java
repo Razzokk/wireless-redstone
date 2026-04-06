@@ -36,13 +36,16 @@ public class Attachment
 		};
 	}
 
-	public static boolean canConnectRedstone(BlockState state, Direction direction)
-	{
+	public static boolean canConnectRedstone(BlockState state, Direction direction) {
+		return getFacing(state) == direction;
+	}
+
+	public static Direction getFacing(BlockState state) {
 		return switch (state.getValue(ATTACH_FACE))
 		{
-			case FLOOR -> direction == Direction.DOWN;
-			case CEILING -> direction == Direction.UP;
-			case WALL -> direction == state.getValue(HORIZONTAL_FACING).getOpposite();
+			case FLOOR -> Direction.UP;
+			case CEILING -> Direction.DOWN;
+			case WALL -> state.getValue(HORIZONTAL_FACING);
 		};
 	}
 

@@ -18,6 +18,4 @@ object Properties
 	const val MODRINTH_PROJECT_ID = "2mBYHHZ5"
 	const val DISCORD_URL = "https://discord.gg/4f2sFD53XK"
 	const val REPOSITORY_URL = "https://github.com/Razzokk/wireless-redstone"
-
-	val NOW: OffsetDateTime = OffsetDateTime.now(ZoneOffset.UTC)
 }

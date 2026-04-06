@@ -22,13 +22,18 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 public class P2pRedstoneTransmitterBlock extends P2pRedstoneTransceiverBlock
 {
+	protected boolean hasSignal(BlockState state, Level level, BlockPos pos)
+	{
+		return level.hasNeighborSignal(pos);
+	}
+
 	@Override
 	public @Nullable BlockState getStateForPlacement(BlockPlaceContext context)
 	{
 		var world = context.getLevel();
 		var pos = context.getClickedPos();
 		var state = defaultBlockState();
-		return state.setValue(POWERED, isReceivingRedstonePower(state, world, pos));
+		return state.setValue(POWERED, hasSignal(state, world, pos));
 	}
 
 	@Override
@@ -69,7 +74,7 @@ public class P2pRedstoneTransmitterBlock extends P2pRedstoneTransceiverBlock
 	public void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston)
 	{
 		if (level.isClientSide) return;
-		var powered = isReceivingRedstonePower(state, level, pos);
+		var powered = hasSignal(state, level, pos);
 
 		if (state.getValue(POWERED) == powered) return;
 		level.setBlock(pos, state.setValue(POWERED, powered), UPDATE_CLIENTS);

@@ -1,6 +1,8 @@
 import mod.gradle.Properties
 import mod.gradle.Versions
 import org.jetbrains.changelog.Changelog
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 plugins {
@@ -26,7 +28,7 @@ allprojects {
 	version = "${Versions.MOD}+${Versions.MINECRAFT}"
 
 	if (!isReleaseBuild) {
-		val buildNumber: String = Properties.NOW.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
+		val buildNumber: String = OffsetDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
 		version = "$version.$buildNumber"
 	}
 }
