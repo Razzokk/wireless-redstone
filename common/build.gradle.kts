@@ -1,9 +1,8 @@
-import mod.gradle.Properties
 import mod.gradle.Versions
 
 plugins {
 	id("conventions.common")
-	id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
+	id("net.neoforged.moddev")
 }
 
 dependencies {
@@ -20,11 +19,16 @@ sourceSets {
 	}
 }
 
-minecraft {
-	version(Versions.MINECRAFT)
+neoForge {
+	neoFormVersion = Versions.NEOFORM
 
-	val aw = file("src/main/resources/${Properties.MOD_ID}.accesswidener")
-	if (aw.exists()) accessWideners(aw)
+	parchment {
+		minecraftVersion = Versions.PARCHMENT_MINECRAFT
+		mappingsVersion = Versions.PARCHMENT
+	}
+
+	accessTransformers.from("src/main/resources/META-INF/accesstransformer-common.cfg")
+	validateAccessTransformers = true
 }
 
 configurations {
