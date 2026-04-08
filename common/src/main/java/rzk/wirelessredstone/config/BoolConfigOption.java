@@ -18,6 +18,8 @@ public class BoolConfigOption implements ConfigOption {
 		this.defaultValue = defaultValue;
 		this.name = name;
 		this.translationKey = translationKey;
+
+		value = this.defaultValue;
 	}
 
 	@Override

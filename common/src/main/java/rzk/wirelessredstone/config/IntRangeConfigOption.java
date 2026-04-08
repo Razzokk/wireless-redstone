@@ -24,6 +24,8 @@ public class IntRangeConfigOption implements ConfigOption {
 		this.max = max;
 		this.name = name;
 		this.translationKey = translationKey;
+
+		value = this.defaultValue;
 	}
 
 	@Override

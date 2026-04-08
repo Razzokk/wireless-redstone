@@ -10,7 +10,7 @@ public class WRModMenu implements ModMenuApi
 	@Override
 	public ConfigScreenFactory<?> getModConfigScreenFactory()
 	{
-		if (WirelessRedstone.PLATFORM.isModLoaded("cloth_config")) {
+		if (WirelessRedstone.PLATFORM.isModLoaded("cloth-config")) {
 			return ClothConfigScreen::create;
 		}
 		return null;
