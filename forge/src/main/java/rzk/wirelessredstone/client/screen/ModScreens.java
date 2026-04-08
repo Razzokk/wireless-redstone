@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
+import rzk.wirelessredstone.client.integration.ClothConfigScreen;
 
 public class ModScreens
 {
@@ -19,6 +20,6 @@ public class ModScreens
 
 	public static Screen getConfigScreen(Minecraft minecraft, Screen parent)
 	{
-		return ConfigScreen.get(parent);
+		return ClothConfigScreen.create(parent);
 	}
 }

@@ -5,10 +5,16 @@ plugins {
 	id("net.neoforged.moddev")
 }
 
+repositories {
+	maven("https://maven.shedaniel.me/") // Cloth config
+}
+
 dependencies {
 	compileOnly("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
 	annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
 	compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
+
+	compileOnly("me.shedaniel.cloth:cloth-config-neoforge:${Versions.CLOTH_CONFIG}")
 }
 
 sourceSets {

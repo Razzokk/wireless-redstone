@@ -22,7 +22,7 @@ public class RedstoneReceiverBlock extends RedstoneTransceiverBlock
 	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston)
 	{
-		if (!level.isClientSide && WRConfig.redstoneReceiverStrongPower)
+		if (!level.isClientSide && WRConfig.redstoneReceiverStrongPower.value)
 			for (Direction direction : DIRECTIONS)
 				level.updateNeighborsAtExceptFromFacing(pos.relative(direction), this, direction.getOpposite());
 		super.onRemove(state, level, pos, newState, movedByPiston);
@@ -41,13 +41,13 @@ public class RedstoneReceiverBlock extends RedstoneTransceiverBlock
 	@Override
 	public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
 	{
-		return state.getValue(POWERED) ? WRConfig.redstoneReceiverSignalStrength : 0;
+		return state.getValue(POWERED) ? WRConfig.redstoneReceiverSignalStrength.value : 0;
 	}
 
 	@Override
 	public int getDirectSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
 	{
-		return WRConfig.redstoneReceiverStrongPower ? getSignal(state, level, pos, direction) : 0;
+		return WRConfig.redstoneReceiverStrongPower.value ? getSignal(state, level, pos, direction) : 0;
 	}
 
 	@Override

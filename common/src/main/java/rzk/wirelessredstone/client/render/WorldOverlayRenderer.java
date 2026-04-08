@@ -62,9 +62,9 @@ public class WorldOverlayRenderer
 		if (coords == null) coords = SnifferItem.getHighlightedBlocks(player.getOffhandItem());
 		if (coords == null) return;
 
-		var red = ((WRConfig.highlightColor >> 16) & 0xFF) / 256.0f;
-		var green = ((WRConfig.highlightColor >> 8) & 0xFF) / 256.0f;
-		var blue = (WRConfig.highlightColor & 0xFF) / 256.0f;
+		var red = ((WRConfig.highlightColor.value >> 16) & 0xFF) / 256.0f;
+		var green = ((WRConfig.highlightColor.value >> 8) & 0xFF) / 256.0f;
+		var blue = (WRConfig.highlightColor.value & 0xFF) / 256.0f;
 
 		var tesselator = renderLinesPre(cameraPosition, poseStack);
 		var builder = tesselator.getBuilder();
@@ -90,9 +90,10 @@ public class WorldOverlayRenderer
 		if (target == null) target = LinkerItem.getTarget(player.getOffhandItem());
 		if (target == null || !player.shouldRender(target.getX(), target.getY(), target.getZ())) return;
 
-		var red = ((WRConfig.linkerTargetColor >> 16) & 0xFF) / 256.0f;
-		var green = ((WRConfig.linkerTargetColor >> 8) & 0xFF) / 256.0f;
-		var blue = (WRConfig.linkerTargetColor & 0xFF) / 256.0f;
+		var color = WRConfig.linkerTargetColor.value;
+		var red = ((color >> 16) & 0xFF) / 256.0f;
+		var green = ((color >> 8) & 0xFF) / 256.0f;
+		var blue = (color & 0xFF) / 256.0f;
 
 		var tesselator = renderLinesPre(cameraPosition, poseStack);
 		var builder = tesselator.getBuilder();

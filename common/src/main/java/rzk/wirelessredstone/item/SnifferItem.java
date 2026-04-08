@@ -156,7 +156,7 @@ public class SnifferItem extends FrequencyItem
 		var tag = stack.getTag();
 		if (!isSelected || !level.isClientSide || tag == null) return;
 
-		var timeOffset = (long) WRConfig.highlightTimeSeconds * SharedConstants.TICKS_PER_SECOND;
+		var timeOffset = (long) WRConfig.highlightTimeSeconds.value * SharedConstants.TICKS_PER_SECOND;
 		if (level.getGameTime() >= tag.getLong("timestamp") + timeOffset)
 			removeHighlightBlocks(stack);
 	}

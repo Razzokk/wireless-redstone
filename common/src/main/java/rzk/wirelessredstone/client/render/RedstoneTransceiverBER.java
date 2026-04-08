@@ -52,7 +52,7 @@ public class RedstoneTransceiverBER<T extends RedstoneTransceiverBlockEntity> im
 			poseStack.mulPose(Axis.YP.rotation((float) (i * Math.PI / 2)));
 			poseStack.translate(0, 0, 0.5 + textSurfaceOffset);
 			poseStack.scale(1f / 96, -1f / 96, 1f / 96);
-			font.drawInBatch(frequency, textOffset, 2.5f, WRConfig.frequencyDisplayColor, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, 0xFFFFFF);
+			font.drawInBatch(frequency, textOffset, 2.5f, WRConfig.frequencyDisplayColor.value, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, 0xFFFFFF);
 			poseStack.popPose();
 		}
 	}
@@ -86,7 +86,7 @@ public class RedstoneTransceiverBER<T extends RedstoneTransceiverBlockEntity> im
 		}
 
 		poseStack.scale(1f / 96, -1f / 96, 1f / 96);
-		font.drawInBatch(frequency, textOffset, 2.5f, WRConfig.frequencyDisplayColor, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, 0xFFFFFF);
+		font.drawInBatch(frequency, textOffset, 2.5f, WRConfig.frequencyDisplayColor.value, false, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.POLYGON_OFFSET, 0, 0xFFFFFF);
 
 	}
 }
