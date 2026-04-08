@@ -8,6 +8,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import rzk.wirelessredstone.block.RedstoneReceiverBlock;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.WRUtils;
 
 import java.util.HashSet;
@@ -32,7 +33,7 @@ public class RedstoneChannel
 
 	public RedstoneChannel(CompoundTag tag)
 	{
-		frequency = WRUtils.readFrequency(tag);
+		frequency = Frequency.get(tag);
 
 		ListTag transmitterTags = tag.getList("transmitters", Tag.TAG_COMPOUND);
 		for (var transmitterTag : transmitterTags)
@@ -42,7 +43,7 @@ public class RedstoneChannel
 	public CompoundTag save()
 	{
 		CompoundTag tag = new CompoundTag();
-		WRUtils.writeFrequency(tag, frequency);
+		Frequency.set(tag, frequency);
 
 		ListTag transmitterTags = new ListTag();
 		for (BlockPos pos : transmitters)

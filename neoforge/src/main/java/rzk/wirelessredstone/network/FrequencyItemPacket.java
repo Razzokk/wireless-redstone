@@ -11,6 +11,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.client.screen.ModScreens;
 import rzk.wirelessredstone.item.FrequencyItem;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.TranslationKeys;
 
 public record FrequencyItemPacket(int frequency, InteractionHand hand) implements CustomPacketPayload
@@ -40,8 +41,8 @@ public record FrequencyItemPacket(int frequency, InteractionHand hand) implement
 		ctx.workHandler().submitAsync(() -> {
 			var player = ctx.player().orElseThrow();
 			var stack = player.getItemInHand(hand);
-			if (stack.getItem() instanceof FrequencyItem item)
-				item.setFrequency(stack, frequency);
+			if (stack.getItem() instanceof FrequencyItem)
+				Frequency.set(stack, frequency);
 		}).exceptionally(e -> {
 			ctx.packetHandler().disconnect(Component.translatable(TranslationKeys.NETWORKING_FAILED, e.getMessage()));
 			return null;

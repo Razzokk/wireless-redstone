@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import rzk.wirelessredstone.block.entity.RedstoneTransceiverBlockEntity;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.WRConfig;
-import rzk.wirelessredstone.misc.WRUtils;
 import rzk.wirelessredstone.registry.ModBlocks;
 
 public class RedstoneTransceiverBER<T extends RedstoneTransceiverBlockEntity> implements BlockEntityRenderer<T>
@@ -27,7 +27,7 @@ public class RedstoneTransceiverBER<T extends RedstoneTransceiverBlockEntity> im
 	public void render(T entity, float tickDelta, PoseStack poseStack, MultiBufferSource multiBufferSource, int light, int overlay)
 	{
 		var frequency = entity.getFrequency();
-		if (!WRUtils.isValidFrequency(frequency)) return;
+		if (!Frequency.isValid(frequency)) return;
 
 		var frequencyString = String.valueOf(frequency);
 		var textOffset = -font.width(frequencyString) / 2.0f;

@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import rzk.wirelessredstone.api.ChunkLoadListener;
 import rzk.wirelessredstone.ether.RedstoneEther;
-import rzk.wirelessredstone.misc.WRUtils;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 
 public class RedstoneReceiverBlockEntity extends RedstoneTransceiverBlockEntity implements ChunkLoadListener
@@ -22,7 +22,7 @@ public class RedstoneReceiverBlockEntity extends RedstoneTransceiverBlockEntity 
 		RedstoneEther ether = RedstoneEther.getOrCreate((ServerLevel) level);
 		ether.removeReceiver(worldPosition, oldFrequency);
 
-		if (WRUtils.isValidFrequency(newFrequency))
+		if (Frequency.isValid(newFrequency))
 			ether.addReceiver(level, worldPosition, newFrequency);
 	}
 

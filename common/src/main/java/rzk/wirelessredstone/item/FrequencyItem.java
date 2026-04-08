@@ -1,6 +1,5 @@
 package rzk.wirelessredstone.item;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -15,8 +14,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.block.RedstoneTransceiverBlock;
-import rzk.wirelessredstone.misc.TranslationKeys;
-import rzk.wirelessredstone.misc.WRUtils;
+import rzk.wirelessredstone.misc.Frequency;
 
 import java.util.List;
 
@@ -25,16 +23,6 @@ public class FrequencyItem extends Item
 	public FrequencyItem(Properties properties)
 	{
 		super(properties.stacksTo(1));
-	}
-
-	public int getFrequency(ItemStack stack)
-	{
-		return WRUtils.readFrequency(stack.getTag());
-	}
-
-	public void setFrequency(ItemStack stack, int frequency)
-	{
-		WRUtils.writeFrequency(stack.getOrCreateTag(), frequency);
 	}
 
 	@Override
@@ -49,12 +37,12 @@ public class FrequencyItem extends Item
 			var stack = context.getItemInHand();
 			var isShift = player.isShiftKeyDown();
 
-			int frequency = isShift ? transceiver.getFrequency(level, pos) : getFrequency(stack);
+			int frequency = isShift ? transceiver.getFrequency(level, pos) : Frequency.get(stack);
 
-			if (!WRUtils.isValidFrequency(frequency))
+			if (!Frequency.isValid(frequency))
 				return InteractionResult.FAIL;
 
-			if (isShift) setFrequency(stack, frequency);
+			if (isShift) Frequency.set(stack, frequency);
 			else transceiver.setFrequency(level, pos, frequency);
 
 			return InteractionResult.SUCCESS;
@@ -72,7 +60,7 @@ public class FrequencyItem extends Item
 			return InteractionResultHolder.pass(stack);
 
 		if (!level.isClientSide)
-			WirelessRedstone.PLATFORM.sendFrequencyItemPacket((ServerPlayer) player, getFrequency(stack), usedHand);
+			WirelessRedstone.PLATFORM.sendFrequencyItemPacket((ServerPlayer) player, Frequency.get(stack), usedHand);
 
 		return InteractionResultHolder.success(stack);
 	}
@@ -80,10 +68,8 @@ public class FrequencyItem extends Item
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag isAdvanced)
 	{
-		int frequency = getFrequency(stack);
-		if (!WRUtils.isValidFrequency(frequency)) return;
-
-		var frequencyComponent = Component.literal(String.valueOf(frequency)).withStyle(ChatFormatting.AQUA);
-		tooltip.add(Component.translatable(TranslationKeys.TOOLTIP_FREQUENCY, frequencyComponent).withStyle(ChatFormatting.GRAY));
+		int frequency = Frequency.get(stack);
+		if (!Frequency.isValid(frequency)) return;
+		tooltip.add(Frequency.tooltip(frequency));
 	}
 }

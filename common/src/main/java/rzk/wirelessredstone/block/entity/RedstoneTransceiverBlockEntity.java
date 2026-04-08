@@ -10,11 +10,11 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
-import rzk.wirelessredstone.misc.WRUtils;
+import rzk.wirelessredstone.misc.Frequency;
 
 public abstract class RedstoneTransceiverBlockEntity extends BlockEntity
 {
-	protected int frequency = WRUtils.INVALID_FREQUENCY;
+	protected int frequency = Frequency.INVALID;
 
 	public RedstoneTransceiverBlockEntity(BlockEntityType<?> blockEntityType, BlockPos pos, BlockState state)
 	{
@@ -48,7 +48,7 @@ public abstract class RedstoneTransceiverBlockEntity extends BlockEntity
 	public CompoundTag getUpdateTag()
 	{
 		CompoundTag tag = new CompoundTag();
-		WRUtils.writeFrequency(tag, frequency);
+		Frequency.set(tag, frequency);
 		return tag;
 	}
 
@@ -56,13 +56,13 @@ public abstract class RedstoneTransceiverBlockEntity extends BlockEntity
 	public void load(CompoundTag tag)
 	{
 		super.load(tag);
-		frequency = WRUtils.readFrequency(tag);
+		frequency = Frequency.get(tag);
 	}
 
 	@Override
 	protected void saveAdditional(CompoundTag tag)
 	{
 		super.saveAdditional(tag);
-		WRUtils.writeFrequency(tag, frequency);
+		Frequency.set(tag, frequency);
 	}
 }

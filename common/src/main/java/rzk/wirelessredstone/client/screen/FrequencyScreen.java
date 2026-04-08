@@ -6,6 +6,7 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRUtils;
 
@@ -41,7 +42,7 @@ public abstract class FrequencyScreen extends Screen
 				frequency = getInputFrequency();
 
 			frequency += value * (hasShiftDown() ? 100 : 1);
-			frequency = WRUtils.clamp(WRUtils.MIN_FREQUENCY, WRUtils.MAX_FREQUENCY, frequency);
+			frequency = WRUtils.clamp(Frequency.MIN, Frequency.MAX, frequency);
 
 			frequencyInput.setValue(String.valueOf(frequency));
 		}).pos(x, y).size(WIDGET_WIDTH, WIDGET_HEIGHT).build());
@@ -85,7 +86,7 @@ public abstract class FrequencyScreen extends Screen
 		}).pos((width - WIDGET_WIDTH) / 2, frequencyInput.getY() + WIDGET_HEIGHT + 20).size(WIDGET_WIDTH, WIDGET_HEIGHT).build());
 		done.active = false;
 
-		if (WRUtils.isValidFrequency(frequency))
+		if (Frequency.isValid(frequency))
 			frequencyInput.setValue(String.valueOf(frequency));
 
 		updateFrequencyButtonDesc();
