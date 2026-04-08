@@ -13,7 +13,7 @@ repositories {
 }
 
 dependencies {
-	api("me.shedaniel.cloth", "cloth-config-neoforge", Versions.CLOTH_CONFIG)
+	api("me.shedaniel.cloth:cloth-config-neoforge:${Versions.CLOTH_CONFIG}")
 }
 
 val common = project(":common")

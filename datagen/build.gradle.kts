@@ -13,16 +13,16 @@ evaluationDependsOn(fabric.path)
 val generatedResources = common.file("src/generated/resources")
 
 dependencies {
-	minecraft("com.mojang", "minecraft", Versions.MINECRAFT)
+	minecraft("com.mojang:minecraft:${Versions.MINECRAFT}")
 
 	mappings(loom.layered {
 		officialMojangMappings()
 		parchment("org.parchmentmc.data:parchment-${Versions.PARCHMENT_MINECRAFT}:${Versions.PARCHMENT}")
 	})
 
-	modImplementation("net.fabricmc", "fabric-loader", Versions.FABRIC_LOADER)
-	modImplementation("net.fabricmc.fabric-api", "fabric-api", Versions.FABRIC_API)
-	modLocalRuntime("net.fabricmc.fabric-api", "fabric-api", Versions.FABRIC_API)
+	modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
+	modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
+	modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
 
 	implementation(project(common.path))
 	runtimeOnly(project(fabric.path, "namedElements")) { isTransitive = false }

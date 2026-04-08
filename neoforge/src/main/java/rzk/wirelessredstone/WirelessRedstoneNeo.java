@@ -2,6 +2,7 @@ package rzk.wirelessredstone;
 
 import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
@@ -21,7 +22,7 @@ import rzk.wirelessredstone.registry.ModItems;
 @Mod(WirelessRedstone.MOD_ID)
 public class WirelessRedstoneNeo
 {
-	public WirelessRedstoneNeo(IEventBus modEventBus)
+	public WirelessRedstoneNeo(IEventBus modEventBus, ModContainer container)
 	{
 		modEventBus.addListener(this::registerEvent);
 		modEventBus.addListener(this::loadComplete);
@@ -30,6 +31,10 @@ public class WirelessRedstoneNeo
 
 		NeoForge.EVENT_BUS.register(WREvents.class);
 		modEventBus.register(ModNetworking.class);
+
+		if (WirelessRedstone.PLATFORM.isModLoaded("cloth_config")) {
+			container.registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class, () -> new ConfigScreenHandler.ConfigScreenFactory(ModScreens::getConfigScreen));
+		}
 	}
 
 	private void registerEvent(RegisterEvent event)
@@ -43,9 +48,5 @@ public class WirelessRedstoneNeo
 	private void loadComplete(FMLLoadCompleteEvent event)
 	{
 		WRConfig.load();
-
-		if (ModList.get().isLoaded("cloth_config"))
-			ModLoadingContext.get().registerExtensionPoint(ConfigScreenHandler.ConfigScreenFactory.class,
-				() -> new ConfigScreenHandler.ConfigScreenFactory(ModScreens::getConfigScreen));
 	}
 }

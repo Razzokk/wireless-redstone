@@ -15,9 +15,9 @@ repositories {
 }
 
 dependencies {
-	minecraft("net.minecraftforge", "forge", "${Versions.MINECRAFT}-${Versions.FORGE}")
+	minecraft("net.minecraftforge:forge:${Versions.MINECRAFT}-${Versions.FORGE}")
 	annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT:processor")
-	api("me.shedaniel.cloth", "cloth-config-forge", Versions.CLOTH_CONFIG)
+	api(fg.deobf("me.shedaniel.cloth:cloth-config-forge:${Versions.CLOTH_CONFIG}"))
 }
 
 val common = project(":common")

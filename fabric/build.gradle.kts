@@ -20,11 +20,14 @@ dependencies {
 		parchment("org.parchmentmc.data:parchment-${Versions.PARCHMENT_MINECRAFT}:${Versions.PARCHMENT}")
 	})
 
-	modImplementation("net.fabricmc", "fabric-loader", Versions.FABRIC_LOADER)
-	modImplementation("net.fabricmc.fabric-api", "fabric-api", Versions.FABRIC_API)
-	modLocalRuntime("net.fabricmc.fabric-api","fabric-api", Versions.FABRIC_API)
-	modApi("me.shedaniel.cloth", "cloth-config-fabric", Versions.CLOTH_CONFIG)
-	modImplementation("com.terraformersmc", "modmenu", Versions.MOD_MENU)
+	modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
+	modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
+	modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
+
+	modApi("me.shedaniel.cloth:cloth-config-fabric:${Versions.CLOTH_CONFIG}") {
+		exclude(group = "net.fabricmc.fabric-api")
+	}
+	modImplementation("com.terraformersmc:modmenu:${Versions.MOD_MENU}")
 }
 
 sourceSets {
