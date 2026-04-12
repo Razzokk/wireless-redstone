@@ -2,6 +2,10 @@ package rzk.wirelessredstone.misc;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
+import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
@@ -15,6 +19,24 @@ public class WRUtils
 	public static int clamp(int min, int max, int value)
 	{
 		return Math.min(Math.max(min, value), max);
+	}
+
+	public static IntArrayTag writeBlockPos(BlockPos pos)
+	{
+		return new IntArrayTag(new int[]{ pos.getX(), pos.getY(), pos.getZ() });
+	}
+
+	public static BlockPos readBlockPos(Tag tag)
+	{
+		// Deprecated
+		if (tag instanceof CompoundTag nbt) return NbtUtils.readBlockPos(nbt);
+
+		if (tag instanceof IntArrayTag arrayTag && arrayTag.getAsIntArray().length == 3)
+		{
+			var array = arrayTag.getAsIntArray();
+			return array.length == 3 ? new BlockPos(array[0], array[1], array[2]) : null;
+		}
+		return null;
 	}
 
 	public static MutableComponent positionText(BlockPos pos)

@@ -3,7 +3,6 @@ package rzk.wirelessredstone.ether;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
@@ -35,9 +34,14 @@ public class RedstoneChannel
 	{
 		frequency = Frequency.get(tag);
 
-		ListTag transmitterTags = tag.getList("transmitters", Tag.TAG_COMPOUND);
+		ListTag transmitterTags = tag.getList("transmitters", Tag.TAG_INT_ARRAY);
 		for (var transmitterTag : transmitterTags)
-			transmitters.add(NbtUtils.readBlockPos((CompoundTag) transmitterTag));
+			transmitters.add(WRUtils.readBlockPos(transmitterTag));
+
+		// Deprecated
+		transmitterTags = tag.getList("transmitters", Tag.TAG_COMPOUND);
+		for (var transmitterTag : transmitterTags)
+			transmitters.add(WRUtils.readBlockPos(transmitterTag));
 	}
 
 	public CompoundTag save()
@@ -47,7 +51,7 @@ public class RedstoneChannel
 
 		ListTag transmitterTags = new ListTag();
 		for (BlockPos pos : transmitters)
-			transmitterTags.add(NbtUtils.writeBlockPos(pos));
+			transmitterTags.add(WRUtils.writeBlockPos(pos));
 		tag.put("transmitters", transmitterTags);
 
 		return tag;

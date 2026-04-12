@@ -2,7 +2,6 @@ package rzk.wirelessredstone.block.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
@@ -131,7 +130,7 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 	{
 		super.saveAdditional(tag);
 		if (link == null) return;
-		tag.put("link", NbtUtils.writeBlockPos(link));
+		tag.put("link", WRUtils.writeBlockPos(link));
 	}
 
 	@Override
@@ -139,6 +138,6 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 	{
 		super.load(tag);
 		if (!tag.contains("link")) return;
-		link = NbtUtils.readBlockPos(tag.getCompound("link"));
+		link = WRUtils.readBlockPos(tag.get("link"));
 	}
 }

@@ -6,6 +6,11 @@ with the minecraft version appended.
 
 ## [Unreleased]
 
+### Changed
+
+- Use int array tag (NBT) for storing block positions (transmitters, p2p link, ...)
+  - This change is backwards compatible
+
 ### Fixed
 
 - Sniffer stack size is supposed to be 1

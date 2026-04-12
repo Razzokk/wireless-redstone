@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -44,12 +43,12 @@ public class SnifferItem extends FrequencyItem
 		var tag = stack.getTag();
 		if (tag == null) return null;
 
-		var list = tag.getList(NbtKeys.HIGHLIGHTS, Tag.TAG_COMPOUND);
+		var list = tag.getList(NbtKeys.HIGHLIGHTS, Tag.TAG_INT_ARRAY);
 		if (list.isEmpty()) return null;
 
 		var coords = new BlockPos[list.size()];
 		for (int i = 0; i < list.size(); ++i)
-			coords[i] = NbtUtils.readBlockPos(list.getCompound(i));
+			coords[i] = WRUtils.readBlockPos(list.get(i));
 
 		return coords;
 	}
@@ -63,7 +62,7 @@ public class SnifferItem extends FrequencyItem
 
 		var list = new ListTag();
 		for (var pos : coords)
-			list.add(NbtUtils.writeBlockPos(pos));
+			list.add(WRUtils.writeBlockPos(pos));
 		tag.put(NbtKeys.HIGHLIGHTS, list);
 	}
 

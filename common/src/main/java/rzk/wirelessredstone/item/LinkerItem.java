@@ -2,7 +2,6 @@ package rzk.wirelessredstone.item;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
@@ -26,15 +25,15 @@ public class LinkerItem extends Item
 
 	private static void setTarget(ItemStack stack, BlockPos pos)
 	{
-		var tag = NbtUtils.writeBlockPos(pos);
+		var tag = WRUtils.writeBlockPos(pos);
 		stack.addTagElement(NbtKeys.LINKER_TARGET, tag);
 	}
 
 	public static BlockPos getTarget(ItemStack stack)
 	{
-		var tag = stack.getTagElement(NbtKeys.LINKER_TARGET);
+		var tag = stack.getTag();
 		if (tag == null) return null;
-		return NbtUtils.readBlockPos(tag);
+		return WRUtils.readBlockPos(tag.get(NbtKeys.LINKER_TARGET));
 	}
 
 	@Override
