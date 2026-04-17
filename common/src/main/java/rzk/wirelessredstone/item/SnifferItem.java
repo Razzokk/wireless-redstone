@@ -143,7 +143,8 @@ public class SnifferItem extends FrequencyItem
 		{
 			var message = buildActiveTransmittersMessage(player, transmitters, frequencyText);
 			player.sendSystemMessage(message);
-			WirelessRedstone.PLATFORM.sendSniffer((ServerPlayer) player, level.getGameTime(), usedHand, transmitters.toArray(BlockPos[]::new));
+			var coords = transmitters.stream().filter(pos -> player.shouldRender(pos.getX(), pos.getY(), pos.getZ())).toArray(BlockPos[]::new);
+			WirelessRedstone.PLATFORM.sendSniffer((ServerPlayer) player, level.getGameTime(), usedHand, coords);
 		}
 
 		return result;
