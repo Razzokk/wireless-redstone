@@ -6,6 +6,10 @@ with the minecraft version appended.
 
 ## [Unreleased]
 
+### Added
+
+- Attachment block version of Redstone Transmitter/Receiver and P2P Redstone Transmitter/Receiver
+
 ### Changed
 
 - Use int array tag (NBT) for storing block positions (transmitters, p2p link, ...)

@@ -34,6 +34,7 @@ public class WorldOverlayRenderer
 		GlStateManager._disableCull();
 		RenderSystem.disableDepthTest();
 		RenderSystem.lineWidth(3f);
+		RenderSystem.enableBlend();
 		RenderSystem.setShader(GameRenderer::getRendertypeLinesShader);
 		return RenderSystem.renderThreadTesselator();
 	}
@@ -42,6 +43,7 @@ public class WorldOverlayRenderer
 	{
 		tesselator.end();
 		RenderSystem.enableDepthTest();
+		RenderSystem.disableBlend();
 		RenderSystem.lineWidth(1f);
 		GlStateManager._enableCull();
 		GlStateManager._depthMask(true);
