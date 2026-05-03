@@ -4,8 +4,10 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.Minecraft;
+import rzk.wirelessredstone.client.render.HudRenderer;
 import rzk.wirelessredstone.client.render.WorldOverlayRendererFabric;
 import rzk.wirelessredstone.client.screen.FrequencyBlockScreen;
 import rzk.wirelessredstone.client.screen.FrequencyItemScreen;
@@ -24,6 +26,7 @@ public class WirelessRedstoneClientFabric implements ClientModInitializer
 		WirelessRedstoneClient.registerItemProperties();
 
 		WorldRenderEvents.AFTER_TRANSLUCENT.register(WorldOverlayRendererFabric::render);
+		HudRenderCallback.EVENT.register((drawContext, tickDelta) -> HudRenderer.renderP2pTarget(drawContext));
 
 		ClientPlayNetworking.registerGlobalReceiver(SnifferHighlightPacket.TYPE, (packet, player, responseSender) ->
 		{

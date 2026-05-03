@@ -9,6 +9,7 @@ with the minecraft version appended.
 ### Added
 
 - Attachment block version of Redstone Transmitter/Receiver and P2P Redstone Transmitter/Receiver
+- Target is shown underneath the crosshair when a P2P block is looked at with a **Linker**
 
 ### Changed
 
@@ -19,6 +20,7 @@ with the minecraft version appended.
 
 - Sniffer stack size is supposed to be 1
 - Sniffer and target highlight render wobbling when far out in the world due to floating point number precision (the farther out, the bigger the wobble)
+- P2P transmitter and receiver block entities not updating data correctly
 
 ## [1.2.2+1.20.4] - 2025-09-30
 

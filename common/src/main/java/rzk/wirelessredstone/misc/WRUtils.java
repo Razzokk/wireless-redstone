@@ -47,6 +47,11 @@ public class WRUtils
 		return Component.translatable(TranslationKeys.TOOLTIP_POSITION, x, y, z).withStyle(ChatFormatting.WHITE);
 	}
 
+	public static MutableComponent targetText(BlockPos target) {
+		var targetText = WRUtils.positionText(target);
+		return Component.translatable(TranslationKeys.TOOLTIP_TARGET, targetText).withStyle(ChatFormatting.GRAY);
+	}
+
 	public static void appendTeleportCommandIfAllowed(MutableComponent text, Player player, BlockPos pos)
 	{
 		if (player == null || !player.hasPermissions(2)) return;

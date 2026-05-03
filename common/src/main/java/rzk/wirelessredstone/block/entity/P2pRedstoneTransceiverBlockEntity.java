@@ -3,13 +3,18 @@ package rzk.wirelessredstone.block.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.api.ChunkLoadListener;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRUtils;
 
@@ -22,6 +27,11 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 	public P2pRedstoneTransceiverBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state)
 	{
 		super(type, pos, state);
+	}
+
+	public BlockPos getLink()
+	{
+		return link;
 	}
 
 	public boolean link(BlockPos link, Player player)
@@ -123,6 +133,21 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 
 		if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
 			other.virtualUnlink();
+	}
+
+	@Override
+	public @Nullable Packet<ClientGamePacketListener> getUpdatePacket()
+	{
+		return ClientboundBlockEntityDataPacket.create(this);
+	}
+
+	@Override
+	public CompoundTag getUpdateTag()
+	{
+		CompoundTag tag = new CompoundTag();
+		if (link == null) return tag;
+		tag.put("link", WRUtils.writeBlockPos(link));
+		return tag;
 	}
 
 	@Override

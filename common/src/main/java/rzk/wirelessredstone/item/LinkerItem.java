@@ -1,6 +1,5 @@
 package rzk.wirelessredstone.item;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionResult;
@@ -11,7 +10,6 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.misc.NbtKeys;
-import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRUtils;
 
 import java.util.List;
@@ -54,7 +52,6 @@ public class LinkerItem extends Item
 		var target = getTarget(stack);
 		if (target == null) return;
 
-		var targetText = WRUtils.positionText(target);
-		tooltip.add(Component.translatable(TranslationKeys.TOOLTIP_TARGET, targetText).withStyle(ChatFormatting.GRAY));
+		tooltip.add(WRUtils.targetText(target));
 	}
 }
