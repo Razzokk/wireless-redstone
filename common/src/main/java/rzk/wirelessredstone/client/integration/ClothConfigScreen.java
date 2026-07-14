@@ -9,11 +9,14 @@ import me.shedaniel.clothconfig2.gui.entries.IntegerListEntry;
 import me.shedaniel.clothconfig2.gui.entries.IntegerSliderEntry;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import rzk.wirelessredstone.config.AttachmentMode;
 import rzk.wirelessredstone.config.BoolConfigOption;
 import rzk.wirelessredstone.config.IntConfigOption;
 import rzk.wirelessredstone.config.IntRangeConfigOption;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRConfig;
+
+import static rzk.wirelessredstone.misc.WRConfig.*;
 
 public class ClothConfigScreen
 {
@@ -59,14 +62,24 @@ public class ClothConfigScreen
 			.setSavingRunnable(WRConfig::save);
 
 		ConfigCategory general = builder.getOrCreateCategory(Component.translatable(TranslationKeys.GUI_CONFIG_CATEGORY_GENERAL));
-		general.addEntry(sliderEntry(WRConfig.redstoneReceiverSignalStrength));
-		general.addEntry(boolEntry(WRConfig.redstoneReceiverStrongPower));
+		general.addEntry(sliderEntry(redstoneReceiverSignalStrength));
+		general.addEntry(boolEntry(redstoneReceiverStrongPower));
+		general.addEntry(
+			ConfigEntryBuilder.create()
+				.startEnumSelector(attachmentMode.component(), attachmentMode.clazz, attachmentMode.value)
+				.setDefaultValue(attachmentMode.defaultValue)
+				.setEnumNameProvider(modeRaw -> {
+					if (modeRaw instanceof AttachmentMode mode) return mode.component;
+					throw new RuntimeException("Unexpected enum value '" + modeRaw + "' for Attachment Mode!");
+				})
+				.setSaveConsumer(value -> attachmentMode.value = value)
+				.build());
 
 		ConfigCategory client = builder.getOrCreateCategory(Component.translatable(TranslationKeys.GUI_CONFIG_CATEGORY_CLIENT));
-		client.addEntry(colorEntry(WRConfig.frequencyDisplayColor));
-		client.addEntry(colorEntry(WRConfig.linkerTargetColor));
-		client.addEntry(colorEntry(WRConfig.highlightColor));
-		client.addEntry(intEntry(WRConfig.highlightTimeSeconds));
+		client.addEntry(colorEntry(frequencyDisplayColor));
+		client.addEntry(colorEntry(linkerTargetColor));
+		client.addEntry(colorEntry(highlightColor));
+		client.addEntry(intEntry(highlightTimeSeconds));
 
 		return builder.build();
 	}

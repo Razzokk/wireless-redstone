@@ -35,8 +35,7 @@ public class RedstoneTransmitterAttachmentBlock extends RedstoneTransmitterBlock
 	@Override
 	protected boolean hasSignal(BlockState state, Level level, BlockPos pos)
 	{
-		var direction = Attachment.getFacing(state).getOpposite();
-		return level.hasSignal(pos.relative(direction), direction);
+		return Attachment.hasSignal(state, level, pos);
 	}
 
 	@Override

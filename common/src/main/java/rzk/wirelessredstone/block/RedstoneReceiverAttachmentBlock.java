@@ -33,7 +33,7 @@ public class RedstoneReceiverAttachmentBlock extends RedstoneReceiverBlock
 	@Override
 	public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
 	{
-		if (direction != Attachment.getFacing(state)) return 0;
+		if (!Attachment.canConnectRedstone(state, direction)) return 0;
 		return super.getSignal(state, level, pos, direction);
 	}
 

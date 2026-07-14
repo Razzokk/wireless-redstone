@@ -1,17 +1,20 @@
 package rzk.wirelessredstone.block;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import rzk.wirelessredstone.config.AttachmentMode;
+import rzk.wirelessredstone.misc.WRConfig;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.ATTACH_FACE;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
 
-public class Attachment
-{
+public class Attachment {
 	private static final VoxelShape FLOOR_SHAPE = Block.box(2, 0, 2, 14, 2, 14);
 	private static final VoxelShape CEILING_SHAPE = Block.box(2, 14, 2, 14, 16, 14);
 	private static final VoxelShape NORTH_SHAPE = Block.box(2, 2, 14, 14, 14, 16);
@@ -37,7 +40,26 @@ public class Attachment
 	}
 
 	public static boolean canConnectRedstone(BlockState state, Direction direction) {
-		return getFacing(state) == direction;
+		if (WRConfig.attachmentMode.value == AttachmentMode.ATTACHED) return getFacing(state) == direction;
+		return getFacing(state) != direction.getOpposite();
+	}
+
+	public static boolean hasSignal(BlockState state, Level level, BlockPos pos) {
+		var facing = Attachment.getFacing(state);
+
+		if (WRConfig.attachmentMode.value == AttachmentMode.ATTACHED) {
+			var direction = facing.getOpposite();
+			return level.hasSignal(pos.relative(direction), direction);
+		}
+
+		for (Direction dir : Direction.values()) {
+			if (dir == facing.getOpposite()) continue;
+			var direction = dir.getOpposite();
+			if (!level.hasSignal(pos.relative(direction), direction)) continue;
+			return true;
+		}
+
+		return false;
 	}
 
 	public static Direction getFacing(BlockState state) {
@@ -49,10 +71,8 @@ public class Attachment
 		};
 	}
 
-	public static BlockState getStateForPlacement(BlockState baseState, BlockPlaceContext ctx)
-	{
-		var face = switch (ctx.getClickedFace())
-		{
+	public static BlockState getStateForPlacement(BlockState baseState, BlockPlaceContext ctx) {
+		var face = switch (ctx.getClickedFace()) {
 			case UP -> AttachFace.FLOOR;
 			case DOWN -> AttachFace.CEILING;
 			default -> AttachFace.WALL;
