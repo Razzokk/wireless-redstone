@@ -23,10 +23,12 @@ public abstract class LivingEntityMixin extends Entity
 	@Shadow
 	protected ItemStack useItem;
 
-	@Inject(method = "releaseUsingItem", at = @At("HEAD"))
-	private void clearActiveItem(CallbackInfo ci)
-	{
-		if (useItem.getItem() instanceof SelectedItemListener listener)
+	@Shadow
+	public abstract boolean isUsingItem();
+
+	@Inject(method = "stopUsingItem", at = @At("HEAD"))
+	private void clearActiveItem(CallbackInfo ci) {
+		if (isUsingItem() && useItem.getItem() instanceof SelectedItemListener listener)
 			listener.onStopUsing(useItem, (LivingEntity) (Object) this, useItem.getUseDuration());
 	}
 }

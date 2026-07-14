@@ -22,6 +22,8 @@ with the Minecraft version appended.
 - Sniffer stack size is supposed to be 1
 - Sniffer and target highlight render wobbling when far out in the world due to floating point number precision (the farther out, the bigger the wobble)
 - P2P transmitter and receiver block entities not updating data correctly
+- Fabric:
+  - Remote stays on when switching to another item in hotbar
 
 ## [1.2.2+1.20.4] - 2025-09-30
 
