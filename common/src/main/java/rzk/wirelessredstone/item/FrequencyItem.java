@@ -1,5 +1,6 @@
 package rzk.wirelessredstone.item;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.block.RedstoneTransceiverBlock;
 import rzk.wirelessredstone.misc.Frequency;
+import rzk.wirelessredstone.misc.TranslationKeys;
 
 import java.util.List;
 
@@ -39,11 +41,24 @@ public class FrequencyItem extends Item
 
 			int frequency = isShift ? transceiver.getFrequency(level, pos) : Frequency.get(stack);
 
-			if (!Frequency.isValid(frequency))
+			if (!Frequency.isValid(frequency)) {
+				if (level.isClientSide)
+					player.displayClientMessage(Component.translatable(TranslationKeys.MESSAGE_NO_FREQUENCY).withStyle(ChatFormatting.RED), true);
 				return InteractionResult.FAIL;
+			}
 
-			if (isShift) Frequency.set(stack, frequency);
-			else transceiver.setFrequency(level, pos, frequency);
+			if (isShift) {
+				Frequency.set(stack, frequency);
+
+				if (level.isClientSide)
+					player.displayClientMessage(Component.translatable(TranslationKeys.MESSAGE_FREQUENCY_COPIED, Frequency.text(frequency)), true);
+			}
+			else {
+				transceiver.setFrequency(level, pos, frequency);
+
+				if (level.isClientSide)
+					player.displayClientMessage(Component.translatable(TranslationKeys.MESSAGE_FREQUENCY_SET, Frequency.text(frequency)), true);
+			}
 
 			return InteractionResult.SUCCESS;
 		}

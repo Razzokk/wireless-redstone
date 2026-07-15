@@ -16,6 +16,8 @@ import rzk.wirelessredstone.config.IntRangeConfigOption;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRConfig;
 
+import java.util.Optional;
+
 import static rzk.wirelessredstone.misc.WRConfig.*;
 
 public class ClothConfigScreen
@@ -69,9 +71,10 @@ public class ClothConfigScreen
 				.startEnumSelector(attachmentMode.component(), attachmentMode.clazz, attachmentMode.value)
 				.setDefaultValue(attachmentMode.defaultValue)
 				.setEnumNameProvider(modeRaw -> {
-					if (modeRaw instanceof AttachmentMode mode) return mode.component;
+					if (modeRaw instanceof AttachmentMode mode) return mode.name;
 					throw new RuntimeException("Unexpected enum value '" + modeRaw + "' for Attachment Mode!");
 				})
+				.setTooltipSupplier(mode -> Optional.of(new Component[]{mode.description}))
 				.setSaveConsumer(value -> attachmentMode.value = value)
 				.build());
 

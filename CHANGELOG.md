@@ -11,11 +11,13 @@ with the Minecraft version appended.
 - Attachment block version of Redstone Transmitter/Receiver and P2P Redstone Transmitter/Receiver
   - Configurable Attachment Mode: Define if the attachment block shall receive/output redstone only from/to the attached block or also all adjacent ones (except the opposite of the attached side)
 - Target is shown underneath the crosshair when a P2P block is looked at with a **Linker**
+- Frequency items now show a message after a frequency has been copied or set
 
 ### Changed
 
 - Use int array tag (NBT) for storing block positions (transmitters, p2p link, ...)
   - This change is *only* backwards compatible (i.e., you can upgrade to newer versions but going back to older one will break the redstone network)
+- Improved names and descriptions in config screen
 
 ### Fixed
 
