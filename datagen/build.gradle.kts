@@ -1,12 +1,6 @@
-import mod.gradle.Versions
-
 plugins {
-	id("conventions.loader")
-	id("fabric-loom")
-}
-
-repositories {
-	maven("https://maven.shedaniel.me/") // Cloth config
+	id("loader")
+	alias(libs.plugins.loom)
 }
 
 val common = project(":common")
@@ -17,19 +11,18 @@ evaluationDependsOn(fabric.path)
 val generatedResources = common.file("src/generated/resources")
 
 dependencies {
-	minecraft("com.mojang:minecraft:${Versions.MINECRAFT}")
+	minecraft(libs.minecraft)
 
 	mappings(loom.layered {
 		officialMojangMappings()
-		parchment("org.parchmentmc.data:parchment-${Versions.PARCHMENT_MINECRAFT}:${Versions.PARCHMENT}")
+		parchment("${libs.parchment.get().module}-${libs.versions.minecraft.get()}:${libs.versions.parchment.get()}@zip")
 	})
 
-	modImplementation("net.fabricmc:fabric-loader:${Versions.FABRIC_LOADER}")
-	modImplementation("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
-	modLocalRuntime("net.fabricmc.fabric-api:fabric-api:${Versions.FABRIC_API}")
+	modImplementation(libs.fabric.loader)
+	modImplementation(libs.fabric.api)
 
-	modApi("me.shedaniel.cloth:cloth-config-fabric:${Versions.CLOTH_CONFIG}") {
-		exclude(group = "net.fabricmc.fabric-api")
+	modApi(libs.clothconfig.fabric) {
+		exclude(group = libs.fabric.api.get().group)
 	}
 
 	implementation(project(common.path))

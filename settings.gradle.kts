@@ -23,6 +23,8 @@ plugins {
 
 rootProject.name = "wireless-redstone"
 
+includeBuild("build-logic")
+
 include("common")
 include("datagen")
 include("fabric")

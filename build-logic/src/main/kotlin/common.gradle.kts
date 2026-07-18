@@ -1,5 +1,4 @@
-import mod.gradle.Properties
-import mod.gradle.Versions
+import mod.gradle.Mod
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -11,10 +10,10 @@ plugins {
 	`maven-publish`
 }
 
-base.archivesName.set("${Properties.MOD_ID}-${project.name}")
+base.archivesName.set("${Mod.ID}-${project.name}")
 
 java {
-	toolchain.languageVersion.set(JavaLanguageVersion.of(Versions.JAVA))
+	toolchain.languageVersion.set(JavaLanguageVersion.of(Mod.JAVA))
 	withSourcesJar()
 }
 
@@ -46,6 +45,8 @@ repositories {
 	maven("https://maven.fabricmc.net/") {
 		name = "Fabric"
 	}
+
+	maven("https://maven.shedaniel.me/") // Cloth config
 }
 
 tasks {
@@ -60,45 +61,45 @@ tasks {
 
 		manifest {
 			attributes(mapOf(
-				"Specification-Title" to Properties.MOD_NAME,
-				"Specification-Vendor" to Properties.MOD_AUTHOR,
+				"Specification-Title" to Mod.NAME,
+				"Specification-Vendor" to Mod.AUTHOR,
 				"Specification-Version" to archiveVersion,
-				"Implementation-Title" to "${Properties.MOD_NAME} (${project.name})",
+				"Implementation-Title" to "${Mod.NAME} (${project.name})",
 				"Implementation-Version" to archiveVersion,
-				"Implementation-Vendor" to Properties.MOD_AUTHOR,
+				"Implementation-Vendor" to Mod.AUTHOR,
 				"Implementation-Timestamp" to OffsetDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")),
 				"Built-On-Java" to "${System.getProperty("java.vm.version")} (${System.getProperty("java.vm.vendor")})",
-				"Built-On-Minecraft" to Versions.MINECRAFT,
+				"Built-On-Minecraft" to libs.versions.minecraft,
 			))
 		}
 	}
 
 	val expandProps = mapOf(
 		"group" to project.group,
-		"mod_version" to Versions.MOD,
-		"mod_id" to Properties.MOD_ID,
-		"mod_name" to Properties.MOD_NAME,
-		"mod_author" to Properties.MOD_AUTHOR,
-		"mod_license" to Properties.LICENSE,
-		"mod_description" to Properties.DESCRIPTION,
-		"minecraft_version" to Versions.MINECRAFT,
-		"fabric_api_version" to Versions.FABRIC_API,
-		"fabric_loader_version" to Versions.FABRIC_LOADER,
-		"fabric_minecraft_version_range" to Versions.FABRIC_MINECRAFT_RANGE,
-		"fabric_loader_range" to Versions.FABRIC_LOADER_RANGE,
-		"neoforge_version" to Versions.NEOFORGE,
-		"neoforge_minecraft_version_range" to Versions.NEOFORGE_MINECRAFT_RANGE,
-		"neoforge_loader_version_range" to Versions.NEOFORGE_LOADER_RANGE,
-		"neoforge_version" to Versions.FORGE,
-		"forge_minecraft_version_range" to Versions.FORGE_MINECRAFT_RANGE,
-		"forge_loader_version_range" to Versions.FORGE_LOADER_RANGE,
-		"cloth_config_version" to Versions.CLOTH_CONFIG,
-		"modmenu_version" to Versions.MOD_MENU,
-		"java_version" to Versions.JAVA,
-		"curseforge_page" to Properties.CURSEFORGE_PAGE,
-		"modrinth_page" to Properties.MODRINTH_PAGE,
-		"sources" to Properties.REPOSITORY_URL,
-		"discord" to Properties.DISCORD_URL
+		"mod_version" to Mod.VERSION,
+		"mod_id" to Mod.ID,
+		"mod_name" to Mod.NAME,
+		"mod_author" to Mod.AUTHOR,
+		"mod_license" to Mod.LICENSE,
+		"mod_description" to Mod.DESCRIPTION,
+		"minecraft_version" to libs.versions.minecraft.get(),
+		"fabric_loader_version" to libs.versions.fabric.loader.get(),
+		"fabric_api_version" to libs.versions.fabric.api.get(),
+		"fabric_minecraft_version_range" to libs.versions.fabric.range.minecraft.get(),
+		"fabric_loader_range" to libs.versions.fabric.range.loader.get(),
+		"neoforge_version" to libs.versions.neoforge.loader.get(),
+		"neoforge_minecraft_version_range" to libs.versions.neoforge.range.minecraft.get(),
+		"neoforge_loader_version_range" to libs.versions.neoforge.range.loader.get(),
+		"forge_version" to libs.versions.forge.loader.get(),
+		"forge_minecraft_version_range" to libs.versions.forge.range.minecraft.get(),
+		"forge_loader_version_range" to libs.versions.forge.range.loader.get(),
+		"cloth_config_version" to libs.versions.clothconfig.get(),
+		"modmenu_version" to libs.versions.modmenu.get(),
+		"java_version" to Mod.JAVA,
+		"curseforge_page" to Mod.CURSEFORGE_PAGE,
+		"modrinth_page" to Mod.MODRINTH_PAGE,
+		"sources" to Mod.REPOSITORY_URL,
+		"discord" to Mod.DISCORD_URL
 	)
 
 	val processResourcesTasks = listOf("processResources", "processDatagenResources")

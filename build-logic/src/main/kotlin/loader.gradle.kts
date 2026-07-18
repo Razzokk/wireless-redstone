@@ -1,5 +1,5 @@
 plugins {
-	id("conventions.common")
+	id("common")
 }
 
 configurations {
@@ -24,7 +24,6 @@ tasks {
 
 	named<ProcessResources>("processResources").configure {
 		dependsOn(configurations.getByName("commonResources"))
-		from(configurations.getByName("commonResources"))
 		from(configurations.getByName("commonResources"))
 	}
 

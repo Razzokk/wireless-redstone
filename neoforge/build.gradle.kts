@@ -1,24 +1,24 @@
-import mod.gradle.Properties
-import mod.gradle.Versions
+import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
+import mod.gradle.Mod
 import org.apache.tools.ant.filters.LineContains
+import org.gradle.kotlin.dsl.extra
+
+// Reference: https://projects.neoforged.net/neoforged/moddevgradle
 
 plugins {
-	id("conventions.loader")
-	id("net.neoforged.moddev")
-	id("me.modmuss50.mod-publish-plugin")
-}
-
-repositories {
-	maven("https://maven.shedaniel.me/")	// Cloth config
+	id("loader")
+	alias(libs.plugins.publish)
+	alias(libs.plugins.moddev)
 }
 
 dependencies {
-	api("me.shedaniel.cloth:cloth-config-neoforge:${Versions.CLOTH_CONFIG}")
+	api(libs.clothconfig.neoforge)
 }
 
-val common = project(":common")
-
 sourceSets {
+	val common = project(":common")
+	evaluationDependsOn(common.path)
+
 	getByName("main") {
 		compileClasspath += common.sourceSets["main"].output
 		runtimeClasspath += common.sourceSets["main"].output
@@ -26,13 +26,14 @@ sourceSets {
 }
 
 neoForge {
-	version = Versions.NEOFORGE
+	version = libs.versions.neoforge.loader.get()
 
 	parchment {
-		minecraftVersion = Versions.PARCHMENT_MINECRAFT
-		mappingsVersion = Versions.PARCHMENT
+		minecraftVersion = libs.versions.minecraft
+		mappingsVersion = libs.versions.parchment
 	}
 
+	val common = project(":common")
 	val at = common.file("src/main/resources/META-INF/accesstransformer.cfg")
 	if (at.exists()) setAccessTransformers(at)
 	validateAccessTransformers = true
@@ -45,14 +46,14 @@ neoForge {
 
 		create("client") {
 			client()
-			ideName = "NeoForge Client (:${project.name})"
+			ideName = "NeoForge Client"
 			gameDirectory.set(file("run/client"))
 			jvmArguments.set(setOf("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true"))
 		}
 
 		create("server") {
 			server()
-			ideName = "NeoForge Server (:${project.name})"
+			ideName = "NeoForge Server"
 			gameDirectory.set(file("run/server"))
 			programArgument("--nogui")
 			jvmArguments.set(setOf("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true"))
@@ -60,7 +61,7 @@ neoForge {
 	}
 
 	mods {
-		register(Properties.MOD_ID) {
+		register(Mod.ID) {
 			sourceSet(sourceSets["main"])
 		}
 	}
@@ -75,33 +76,35 @@ tasks {
 }
 
 publishMods {
-	val changelogProvider: Provider<String> by rootProject
+	val changelogProvider = rootProject.extra["changelogProvider"] as Provider<*>
+	val minecraftVersion = libs.versions.minecraft.get()
 
-	file.set(tasks.named<Jar>("jar").get().archiveFile)
+	file.set(tasks.jar.get().archiveFile)
 	modLoaders.add("neoforge")
-	changelog = changelogProvider
-	displayName = "[NeoForge ${Versions.MINECRAFT}] ${Versions.MOD} ${Properties.MOD_NAME}"
-	version = "${Versions.MOD}+${Versions.MINECRAFT}-neoforge"
+	changelog = changelogProvider.get() as String
+	displayName = "[NeoForge $minecraftVersion] ${Mod.VERSION} ${Mod.NAME}"
+	version = "${Mod.VERSION}+$minecraftVersion-neoforge"
 	type = STABLE
 
 	curseforge {
-		projectId = Properties.CURSEFORGE_PROJECT_ID
+		projectId = Mod.CURSEFORGE_PROJECT_ID
 		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+		minecraftVersions.add(minecraftVersion)
 
-		minecraftVersions.add(Versions.MINECRAFT)
-		javaVersions.add(JavaVersion.toVersion(Versions.JAVA))
+		javaVersions.add(JavaVersion.toVersion(Mod.JAVA))
 
-		clientRequired = true
-		serverRequired = true
+		client = true
+		server = true
 
 		optional("cloth-config")
 	}
 
 	modrinth {
-		projectId = Properties.MODRINTH_PROJECT_ID
+		projectId = Mod.MODRINTH_PROJECT_ID
 		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+		minecraftVersions.add(minecraftVersion)
 
-		minecraftVersions.add(Versions.MINECRAFT)
+		environment.set(ModrinthEnvironment.CLIENT_AND_SERVER)
 
 		optional("cloth-config")
 	}

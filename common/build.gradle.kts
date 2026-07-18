@@ -1,20 +1,16 @@
-import mod.gradle.Versions
+// Reference: https://projects.neoforged.net/neoforged/moddevgradle (NeoForm)
 
 plugins {
-	id("conventions.common")
-	id("net.neoforged.moddev")
-}
-
-repositories {
-	maven("https://maven.shedaniel.me/") // Cloth config
+	id("common")
+	alias(libs.plugins.moddev)
 }
 
 dependencies {
-	compileOnly("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
-	annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
-	compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
+	compileOnly(libs.mixin.extras)
+	annotationProcessor(libs.mixin.extras)
+	compileOnly(libs.mixin.fabric)
 
-	compileOnly("me.shedaniel.cloth:cloth-config-neoforge:${Versions.CLOTH_CONFIG}")
+	compileOnly(libs.clothconfig.neoforge)
 }
 
 sourceSets {
@@ -26,11 +22,11 @@ sourceSets {
 }
 
 neoForge {
-	neoFormVersion = Versions.NEOFORM
+	neoFormVersion = libs.versions.neoform.get()
 
 	parchment {
-		minecraftVersion = Versions.PARCHMENT_MINECRAFT
-		mappingsVersion = Versions.PARCHMENT
+		minecraftVersion = libs.versions.minecraft
+		mappingsVersion = libs.versions.parchment
 	}
 
 	accessTransformers.from("src/main/resources/META-INF/accesstransformer-common.cfg")

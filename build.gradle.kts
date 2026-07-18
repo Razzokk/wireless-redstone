@@ -1,31 +1,28 @@
-import mod.gradle.Properties
-import mod.gradle.Versions
+import mod.gradle.Mod
 import org.jetbrains.changelog.Changelog
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 plugins {
-	id("org.jetbrains.changelog") version "2.5.0"
-	id("fabric-loom") version "1.10-SNAPSHOT" apply false
-	id("net.neoforged.moddev") version "2.0.141" apply false
-	id("net.minecraftforge.gradle") version "[6.0.24,6.2)" apply false
-	id("org.parchmentmc.librarian.forgegradle") version "1.+" apply false
-	id("me.modmuss50.mod-publish-plugin") version "1.1.0" apply false
+	id("common") apply false // Workaround to be able to use the `Mod` object from `build-logic`
+	alias(libs.plugins.changelog)
+	alias(libs.plugins.publish) apply false
+	alias(libs.plugins.moddev) apply false
+	alias(libs.plugins.loom) apply false
 }
 
+val versionString = "${Mod.VERSION}+${libs.versions.minecraft.get()}"
 val isReleaseBuild = System.getenv("GITHUB_REF")?.startsWith("refs/tags/v") ?: false
 
-val changelogProvider by extra {
-	provider {
-		val version = if (isReleaseBuild) "${Versions.MOD}+${Versions.MINECRAFT}" else "Unreleased"
-		changelog.renderItem(changelog.get(version), Changelog.OutputType.MARKDOWN)
-	}
+extra["changelogProvider"] = provider {
+	val version = if (isReleaseBuild) versionString else "Unreleased"
+	changelog.renderItem(changelog.get(version), Changelog.OutputType.MARKDOWN)
 }
 
 allprojects {
-	group = Properties.GROUP
-	version = "${Versions.MOD}+${Versions.MINECRAFT}"
+	group = Mod.GROUP
+	version = versionString
 
 	if (!isReleaseBuild) {
 		val buildNumber: String = OffsetDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))
@@ -34,8 +31,8 @@ allprojects {
 }
 
 changelog {
-	version = "${Versions.MOD}+${Versions.MINECRAFT}"
+	version = versionString
 	groups.empty()
 	combinePreReleases.set(false)
-	repositoryUrl.set(Properties.REPOSITORY_URL)
+	repositoryUrl.set(Mod.REPOSITORY_URL)
 }
