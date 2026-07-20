@@ -3,12 +3,8 @@ plugins {
 	alias(libs.plugins.loom)
 }
 
-val common = project(":common")
 val fabric = project(":fabric")
-evaluationDependsOn(common.path)
 evaluationDependsOn(fabric.path)
-
-val generatedResources = common.file("src/generated/resources")
 
 dependencies {
 	minecraft(libs.minecraft)
@@ -25,29 +21,15 @@ dependencies {
 		exclude(group = libs.fabric.api.get().group)
 	}
 
-	implementation(project(common.path))
 	runtimeOnly(project(fabric.path, "namedElements")) { isTransitive = false }
 }
 
-//sourceSets {
-//	getByName("main") {
-//		compileClasspath += common.sourceSets["main"].output
-//		runtimeClasspath += common.sourceSets["main"].output
-//
-//		compileClasspath += fabric.sourceSets["main"].output
-//		runtimeClasspath += fabric.sourceSets["main"].output
-//	}
-//}
-
 fabricApi {
 	configureDataGeneration {
-		outputDirectory.set(generatedResources)
-		addToResources.set(false)
-	}
-}
+		val common = project(":common")
+		val generatedResources = common.file("src/generated/resources")
 
-tasks {
-	named<ProcessResources>("processResources").configure {
-		exclude("accesstransformer.cfg")
+		outputDirectory = generatedResources
+		addToResources = false
 	}
 }

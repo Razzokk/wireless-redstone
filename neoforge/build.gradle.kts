@@ -1,7 +1,6 @@
 import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
 import mod.gradle.Mod
 import org.apache.tools.ant.filters.LineContains
-import org.gradle.kotlin.dsl.extra
 
 // Reference: https://projects.neoforged.net/neoforged/moddevgradle
 
@@ -13,16 +12,6 @@ plugins {
 
 dependencies {
 	api(libs.clothconfig.neoforge)
-}
-
-sourceSets {
-	val common = project(":common")
-	evaluationDependsOn(common.path)
-
-	getByName("main") {
-		compileClasspath += common.sourceSets["main"].output
-		runtimeClasspath += common.sourceSets["main"].output
-	}
 }
 
 neoForge {

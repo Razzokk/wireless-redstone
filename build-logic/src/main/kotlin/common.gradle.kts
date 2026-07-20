@@ -1,4 +1,5 @@
 import mod.gradle.Mod
+import org.gradle.accessors.dm.LibrariesForLibs
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -9,6 +10,9 @@ plugins {
 	idea
 	`maven-publish`
 }
+
+// https://github.com/gradle/gradle/issues/15383#issuecomment-779893192
+val libs = the<LibrariesForLibs>()
 
 base.archivesName.set("${Mod.ID}-${project.name}")
 
@@ -109,6 +113,5 @@ tasks {
 		filesMatching(setOf("fabric.mod.json", "META-INF/mods.toml", "*.mixins.json", "pack.mcmeta")) {
 			expand(expandProps)
 		}
-		exclude("\\.cache")
 	}
 }

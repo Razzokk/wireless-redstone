@@ -31,16 +31,6 @@ dependencies {
 	modImplementation(libs.modmenu)
 }
 
-sourceSets {
-	val common = project(":common")
-	evaluationDependsOn(common.path)
-
-	getByName("main") {
-		compileClasspath += common.sourceSets["main"].output
-		runtimeClasspath += common.sourceSets["main"].output
-	}
-}
-
 loom {
 	val aw = file("src/main/resources/${Mod.ID}.accesswidener")
 	if (aw.exists()) accessWidenerPath.set(aw)
@@ -67,12 +57,6 @@ loom {
 			ideConfigGenerated(true)
 			vmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
 		}
-	}
-}
-
-tasks {
-	named<ProcessResources>("processResources").configure {
-		exclude("accesstransformer.cfg")
 	}
 }
 

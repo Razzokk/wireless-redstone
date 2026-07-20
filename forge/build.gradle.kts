@@ -25,16 +25,6 @@ dependencies {
 	api(renamer.dependency(libs.clothconfig.forge.get().toString()))
 }
 
-sourceSets {
-	val common = project(":common")
-	evaluationDependsOn(common.path)
-
-	getByName("main") {
-		compileClasspath += common.sourceSets["main"].output
-//		runtimeClasspath += common.sourceSets["main"].output
-	}
-}
-
 minecraft {
 	mappings(libs.parchment.get().name, "${libs.versions.parchment.get()}-${libs.versions.minecraft.get()}")
 

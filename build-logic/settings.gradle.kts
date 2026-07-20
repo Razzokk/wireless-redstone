@@ -1,3 +1,7 @@
-plugins {
-	id("dev.panuszewski.typesafe-conventions") version "0.11.1"
+dependencyResolutionManagement {
+	versionCatalogs {
+		create("libs") {
+			from(files("../gradle/libs.versions.toml"))
+		}
+	}
 }
