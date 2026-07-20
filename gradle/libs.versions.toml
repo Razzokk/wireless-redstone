@@ -41,7 +41,10 @@ mixin-extras = { module = "io.github.llamalad7:mixinextras-common", version.ref 
 clothconfig-fabric = { module = "me.shedaniel.cloth:cloth-config-fabric", version.ref = "clothconfig" }
 clothconfig-forge = { module = "me.shedaniel.cloth:cloth-config-forge", version.ref = "clothconfig" }
 clothconfig-neoforge = { module = "me.shedaniel.cloth:cloth-config-neoforge", version.ref = "clothconfig" }
-modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
+
+modmenu = { module = "maven.modrinth:modmenu", version.ref = "modmenu" }
+# Normally this, but lately causes issues during fetching on ci pipeline
+#modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version = "2.5.0" }

@@ -11,6 +11,7 @@ plugins {
 
 repositories {
 	maven("https://maven.terraformersmc.com/releases/")	// Mod Menu
+	maven("https://maven.nucleoid.xyz/")	// Needed by ModMenu 9.2.0
 }
 
 dependencies {

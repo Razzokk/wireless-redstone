@@ -11,6 +11,16 @@ configurations {
 	}
 }
 
+gradle.projectsEvaluated {
+	sourceSets {
+		getByName("main") {
+			val common = project(":common")
+			compileClasspath += common.sourceSets["main"].output
+			runtimeClasspath += common.sourceSets["main"].output
+		}
+	}
+}
+
 dependencies {
 	"commonJava"(project(":common", "commonJava"))
 	"commonResources"(project(":common", "commonResources"))

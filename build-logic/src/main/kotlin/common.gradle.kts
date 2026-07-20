@@ -30,7 +30,9 @@ repositories {
 				name = "Sponge"
 			}
 		}
-		filter { includeGroupAndSubgroups("org.spongepowered") }
+		filter {
+			includeGroupAndSubgroups("org.spongepowered")
+		}
 	}
 	exclusiveContent {
 		forRepositories(
@@ -44,7 +46,19 @@ repositories {
 				name = "Forge"
 			}
 		)
-		filter { includeGroup("org.parchmentmc.data") }
+		filter {
+			includeGroup("org.parchmentmc.data")
+		}
+	}
+	exclusiveContent {
+		forRepository {
+			maven("https://api.modrinth.com/maven") {
+				name = "Modrinth"
+			}
+		}
+		filter {
+			includeGroup("maven.modrinth")
+		}
 	}
 	maven("https://maven.fabricmc.net/") {
 		name = "Fabric"
