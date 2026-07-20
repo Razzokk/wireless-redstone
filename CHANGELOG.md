@@ -8,7 +8,7 @@ with the Minecraft version appended.
 
 ### Added
 
-- Attachment block version of Redstone Transmitter/Receiver and P2P Redstone Transmitter/Receiver
+- **Attachment** block version of Redstone Transmitter/Receiver and P2P Redstone Transmitter/Receiver
   - Configurable Attachment Mode: Define if the attachment block shall receive/output redstone only from/to the attached block or also all adjacent ones (except the opposite of the attached side)
 - Target is shown underneath the crosshair when a P2P block is looked at with a **Linker**
 - Frequency items now show a message after a frequency has been copied or set
@@ -26,6 +26,9 @@ with the Minecraft version appended.
 - P2P transmitter and receiver block entities not updating data correctly
 - Fabric:
   - Remote stays on when switching to another item in hotbar
+- Forge (**1.20.4**):
+  - Minecraft startup crash with forge version of the mod (used invalid unobfuscated jar)
+  - Affected versions (**1.2.0**, **1.2.1**, **1.2.2**)
 
 ## [1.2.2+1.20.4] - 2025-09-30
 
