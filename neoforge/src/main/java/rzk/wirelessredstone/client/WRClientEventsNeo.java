@@ -4,7 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionHand;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.neoforge.client.event.RenderGuiOverlayEvent;
+import net.neoforged.neoforge.client.event.RenderGuiEvent;
 import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 import rzk.wirelessredstone.client.render.HudRenderer;
 import rzk.wirelessredstone.client.render.WorldOverlayRenderer;
@@ -28,7 +28,7 @@ public class WRClientEventsNeo
 	}
 
 	@SubscribeEvent
-	public static void renderHud(RenderGuiOverlayEvent.Post event)
+	public static void renderHud(RenderGuiEvent.Post event)
 	{
 		HudRenderer.renderP2pTarget(event.getGuiGraphics());
 	}
