@@ -3,9 +3,6 @@ plugins {
 	alias(libs.plugins.loom)
 }
 
-val fabric = project(":fabric")
-evaluationDependsOn(fabric.path)
-
 dependencies {
 	minecraft(libs.minecraft)
 
@@ -16,12 +13,7 @@ dependencies {
 
 	modImplementation(libs.fabric.loader)
 	modImplementation(libs.fabric.api)
-
-	modApi(libs.clothconfig.fabric) {
-		exclude(group = libs.fabric.api.get().group)
-	}
-
-	runtimeOnly(project(fabric.path, "namedElements")) { isTransitive = false }
+	implementation(project(":fabric", "namedElements"))
 }
 
 fabricApi {
@@ -30,6 +22,7 @@ fabricApi {
 		val generatedResources = common.file("src/generated/resources")
 
 		outputDirectory = generatedResources
+		strictValidation = true
 		addToResources = false
 	}
 }
