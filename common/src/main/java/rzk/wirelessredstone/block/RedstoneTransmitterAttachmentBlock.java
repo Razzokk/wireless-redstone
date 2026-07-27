@@ -15,48 +15,37 @@ import org.jetbrains.annotations.Nullable;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.ATTACH_FACE;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.HORIZONTAL_FACING;
-import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
 
-public class RedstoneTransmitterAttachmentBlock extends RedstoneTransmitterBlock
-{
-	public RedstoneTransmitterAttachmentBlock()
-	{
+public class RedstoneTransmitterAttachmentBlock extends RedstoneTransmitterBlock {
+	public RedstoneTransmitterAttachmentBlock() {
 		registerDefaultState(defaultBlockState()
 			.setValue(ATTACH_FACE, AttachFace.FLOOR)
-			.setValue(HORIZONTAL_FACING, Direction.NORTH));
+			.setValue(HORIZONTAL_FACING, Direction.NORTH)
+		);
 	}
 
 	@Override
-	public boolean canConnectRedstone(BlockState state, BlockGetter blockGetter, BlockPos pos, @Nullable Direction direction)
-	{
+	public boolean canConnectRedstone(BlockState state, BlockGetter blockGetter, BlockPos pos, @Nullable Direction direction) {
 		return Attachment.canConnectRedstone(state, direction);
 	}
 
 	@Override
-	protected boolean hasSignal(BlockState state, Level level, BlockPos pos)
-	{
+	protected boolean hasSignal(BlockState state, Level level, BlockPos pos) {
 		return Attachment.hasSignal(state, level, pos);
 	}
 
 	@Override
-	public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx)
-	{
-		var world = ctx.getLevel();
-		var pos = ctx.getClickedPos();
-		var state = Attachment.getStateForPlacement(defaultBlockState(), ctx);
-		var powered = hasSignal(state, world, pos);
-		return state.setValue(POWERED, powered);
+	public @Nullable BlockState getStateForPlacement(BlockPlaceContext ctx) {
+		return Attachment.getStateForPlacement(defaultBlockState(), ctx);
 	}
 
 	@Override
-	public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext ctx)
-	{
+	public VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext ctx) {
 		return Attachment.getShape(state);
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-	{
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		super.createBlockStateDefinition(builder);
 		builder.add(HORIZONTAL_FACING, ATTACH_FACE);
 	}

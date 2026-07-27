@@ -17,7 +17,10 @@ with the Minecraft version appended.
 
 - Use int array tag (NBT) for storing block positions (transmitters, p2p link, ...)
   - This change is *only* backwards compatible (i.e., you can upgrade to newer versions but going back to older one will break the redstone network)
-- Improved names and descriptions in config screen
+- Improved names and descriptions in config screen (also with `/setblock` command)
+- Redstone transmitters and receivers now also update directly after block placement
+  - If you place a transmitter with a frequency (e.g., picked up in creative with CTRL, it also shows the frequency in the tooltip), it will now correctly register itself in the redstone ether network, before it did not do that
+  - If you place a receiver with a frequency it will turn on if any transmitters on the frequency are on
 
 ### Fixed
 
