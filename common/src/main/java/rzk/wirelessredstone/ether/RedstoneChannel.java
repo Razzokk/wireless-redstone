@@ -100,7 +100,7 @@ public class RedstoneChannel
 	{
 		var block = level.getBlockState(pos).getBlock();
 		if (!(block instanceof RedstoneReceiverBlock)) return;
-		level.scheduleTick(pos, block, WRUtils.TICKS_PER_REDSTONE_TICK);
+		level.scheduleTick(pos, block, 0);
 	}
 
 	public void updateReceivers(Level level)

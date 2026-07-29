@@ -11,16 +11,19 @@ with the Minecraft version appended.
 - **Attachment** block version of Redstone Transmitter/Receiver and P2P Redstone Transmitter/Receiver
   - Configurable Attachment Mode: Define if the attachment block shall receive/output redstone only from/to the attached block or also all adjacent ones (except the opposite of the attached side)
 - Target is shown underneath the crosshair when a P2P block is looked at with a **Linker**
-- Frequency items now show a message after a frequency has been copied or set
+- Frequency items show a message after a frequency has been copied or set
 
 ### Changed
 
+- Receivers are now updated immediately after a transmitter is (un)powered (before: 1 redstone tick delay)
+  - This also allows to send 1 game ticks to receivers (e.g. with an observer)
 - Use int array tag (NBT) for storing block positions (transmitters, p2p link, ...)
   - This change is *only* backwards compatible (i.e., you can upgrade to newer versions but going back to older one will break the redstone network)
-- Improved names and descriptions in config screen (also with `/setblock` command)
-- Redstone transmitters and receivers now also update directly after block placement
+- Improved names and descriptions in config screen
+- Redstone transmitters and receivers now also update directly after block placement (also with `/setblock` and `/fill` command)
   - If you place a transmitter with a frequency (e.g., picked up in creative with CTRL, it also shows the frequency in the tooltip), it will now correctly register itself in the redstone ether network, before it did not do that
   - If you place a receiver with a frequency it will turn on if any transmitters on the frequency are on
+  - Note: Frequency receivers (transmitters not) now also work when relocated with frames from project-red
 
 ### Fixed
 

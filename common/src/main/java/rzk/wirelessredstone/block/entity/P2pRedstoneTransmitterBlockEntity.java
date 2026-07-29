@@ -3,7 +3,6 @@ package rzk.wirelessredstone.block.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import rzk.wirelessredstone.block.P2pRedstoneReceiverBlock;
-import rzk.wirelessredstone.misc.WRUtils;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
@@ -19,7 +18,7 @@ public class P2pRedstoneTransmitterBlockEntity extends P2pRedstoneTransceiverBlo
 	public void scheduleReceiverUpdate()
 	{
 		if (level.isClientSide || link == null || !level.isLoaded(link)) return;
-		level.scheduleTick(worldPosition, getBlockState().getBlock(), WRUtils.TICKS_PER_REDSTONE_TICK);
+		level.scheduleTick(worldPosition, getBlockState().getBlock(), 0);
 	}
 
 	public void updateReceiver()

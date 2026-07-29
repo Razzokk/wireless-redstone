@@ -1,6 +1,7 @@
 package rzk.wirelessredstone.misc;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntArrayTag;
@@ -12,10 +13,7 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 
-public class WRUtils
-{
-	public static final int TICKS_PER_REDSTONE_TICK = 2;
-
+public class WRUtils {
 	public static int clamp(int min, int max, int value)
 	{
 		return Math.min(Math.max(min, value), max);
@@ -54,7 +52,7 @@ public class WRUtils
 
 	public static void appendTeleportCommandIfAllowed(MutableComponent text, Player player, BlockPos pos)
 	{
-		if (player == null || !player.hasPermissions(2)) return;
+		if (player == null || !player.hasPermissions(Commands.LEVEL_GAMEMASTERS)) return;
 
 		var command = String.format("/tp %d %d %d", pos.getX(), pos.getY() + 1, pos.getZ());
 		var click = new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);
