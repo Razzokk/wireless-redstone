@@ -6,22 +6,18 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.WirelessRedstone;
-import rzk.wirelessredstone.api.ChunkLoadListener;
-import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRUtils;
 
 import static rzk.wirelessredstone.misc.WRProperties.LINKED;
 
-public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity implements ChunkLoadListener
-{
+public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity {
 	protected BlockPos link;
 
 	public P2pRedstoneTransceiverBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state)
@@ -106,33 +102,39 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LINKED, true));
 	}
 
-	@Override
-	public void onChunkLoad(ServerLevel level)
-	{
+	public void onLoad() {
 		if (level.isClientSide || link == null) return;
 
-		if (!level.isLoaded(link))
-		{
+		if (!level.isLoaded(link)) {
 			virtualUnlink();
 		}
-		else if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other && worldPosition.equals(other.link))
-		{
+		else if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other && worldPosition.equals(other.link)) {
 			virtualLink();
 			other.virtualLink();
 		}
-		else
-		{
+		else {
 			unlink();
 		}
 	}
 
-	@Override
-	public void onChunkUnload(ServerLevel level)
-	{
+	public void onUnload() {
 		if (level.isClientSide || link == null || !level.isLoaded(link)) return;
 
 		if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
 			other.virtualUnlink();
+	}
+
+	@Override
+	public void clearRemoved() {
+		super.clearRemoved();
+		if (level == null || level.isClientSide) return;
+		level.blockEvent(getBlockPos(), getBlockState().getBlock(), 0, 0);
+	}
+
+	@Override
+	public void setRemoved() {
+		onUnload();
+		super.setRemoved();
 	}
 
 	@Override

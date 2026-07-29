@@ -20,18 +20,20 @@ import static net.minecraft.world.level.block.state.properties.BlockStatePropert
 
 public class RedstoneReceiverBlock extends RedstoneTransceiverBlock {
 	@Override
-	public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
-		if (oldState.getBlock() == state.getBlock() || level.isClientSide) return;
-		level.scheduleTick(pos, this, 0);
-	}
-
-	@Override
 	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
 		super.onRemove(state, level, pos, newState, movedByPiston);
 		if (level.isClientSide || !WRConfig.redstoneReceiverStrongPower.value) return;
 
 		for (Direction direction : DIRECTIONS)
 			level.updateNeighborsAtExceptFromFacing(pos.relative(direction), this, direction.getOpposite());
+	}
+
+	@Override
+	public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+		if (!level.isClientSide && level.getBlockEntity(pos) instanceof RedstoneReceiverBlockEntity blockEntity) {
+			blockEntity.onLoad();
+		}
+		return false;
 	}
 
 	@Override

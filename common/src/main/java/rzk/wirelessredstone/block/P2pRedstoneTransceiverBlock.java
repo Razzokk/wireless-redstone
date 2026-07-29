@@ -20,6 +20,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.api.RedstoneConnectable;
 import rzk.wirelessredstone.block.entity.P2pRedstoneTransceiverBlockEntity;
+import rzk.wirelessredstone.block.entity.RedstoneReceiverBlockEntity;
 import rzk.wirelessredstone.item.LinkerItem;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRUtils;
@@ -53,6 +54,14 @@ public abstract class P2pRedstoneTransceiverBlock extends Block implements Entit
 	public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos)
 	{
 		return state.getValue(LINKED) ? Redstone.SIGNAL_MAX : 0;
+	}
+
+	@Override
+	public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+		if (!level.isClientSide && level.getBlockEntity(pos) instanceof RedstoneReceiverBlockEntity blockEntity) {
+			blockEntity.onLoad();
+		}
+		return false;
 	}
 
 	protected abstract boolean canLink(BlockState targetState, Level level, Player player);

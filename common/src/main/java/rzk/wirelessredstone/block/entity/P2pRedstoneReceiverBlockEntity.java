@@ -1,7 +1,6 @@
 package rzk.wirelessredstone.block.entity;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 
@@ -33,9 +32,8 @@ public class P2pRedstoneReceiverBlockEntity extends P2pRedstoneTransceiverBlockE
 	}
 
 	@Override
-	public void onChunkLoad(ServerLevel level)
-	{
-		super.onChunkLoad(level);
+	public void onLoad() {
+		super.onLoad();
 		if (level.isClientSide || link == null) return;
 
 		var transmitterState = level.getBlockState(link);

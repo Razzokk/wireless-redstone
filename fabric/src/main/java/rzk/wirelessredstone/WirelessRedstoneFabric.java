@@ -1,7 +1,6 @@
 package rzk.wirelessredstone;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerChunkEvents;
 import rzk.wirelessredstone.misc.WRConfig;
 import rzk.wirelessredstone.network.ModNetworking;
 import rzk.wirelessredstone.registry.ModBlockEntities;
@@ -19,8 +18,5 @@ public class WirelessRedstoneFabric implements ModInitializer
 		ModBlockEntities.register();
 		ModNetworking.register();
 		WirelessRedstone.registerCreativeTab();
-
-		ServerChunkEvents.CHUNK_LOAD.register(WirelessRedstone::onChunkLoad);
-		ServerChunkEvents.CHUNK_UNLOAD.register(WirelessRedstone::onChunkUnload);
 	}
 }
