@@ -11,11 +11,12 @@ configurations {
 	}
 }
 
-gradle.projectsEvaluated {
-	sourceSets {
-		getByName("main") {
-			compileClasspath += project(":common").sourceSets["main"].output
-		}
+val common = project(":common")
+evaluationDependsOn(common.path)
+
+sourceSets {
+	getByName("main") {
+		compileClasspath += common.sourceSets["main"].output
 	}
 }
 
