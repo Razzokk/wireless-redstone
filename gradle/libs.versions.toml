@@ -9,7 +9,7 @@ fabric-range-loader = ">=0.17"
 
 neoform = "1.20.1-20240627.114801"
 
-forge-loader = "1.20.1-47.4.10"
+forge-loader = "1.20.1-47.1.47"
 forge-range-loader = "[47,)"
 forge-range-minecraft = "[1.20.1,1.20.2)"
 

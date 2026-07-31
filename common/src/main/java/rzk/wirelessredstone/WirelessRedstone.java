@@ -1,7 +1,5 @@
 package rzk.wirelessredstone;
 
-import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
@@ -12,6 +10,7 @@ import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.platform.Platform;
 import rzk.wirelessredstone.registry.ModBlocks;
 import rzk.wirelessredstone.registry.ModItems;
+import rzk.wirelessredstone.registry.RegisterUtil;
 
 public final class WirelessRedstone {
 	public static final String MOD_ID = "wirelessredstone";
@@ -39,7 +38,7 @@ public final class WirelessRedstone {
 		.icon(() -> new ItemStack(ModBlocks.redstoneTransmitter))
 		.build();
 
-	public static void registerCreativeTab() {
-		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, new ResourceLocation(WirelessRedstone.MOD_ID, WirelessRedstone.MOD_ID), CREATIVE_MODE_TAB);
+	public static void registerCreativeTab(RegisterUtil<CreativeModeTab> util) {
+		util.register(new ResourceLocation(WirelessRedstone.MOD_ID, WirelessRedstone.MOD_ID), CREATIVE_MODE_TAB);
 	}
 }
