@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import rzk.wirelessredstone.misc.WRUtils;
+import rzk.wirelessredstone.misc.Frequency;
 
 import java.util.Collections;
 import java.util.Set;
@@ -74,20 +74,20 @@ public class RedstoneEther extends SavedData
 
 	public void addTransmitter(Level level, BlockPos pos, int frequency)
 	{
-		if (!WRUtils.isValidFrequency(frequency)) return;
+		if (!Frequency.isValid(frequency)) return;
 		getOrCreateChannel(frequency).addTransmitter(level, pos);
 		setDirty();
 	}
 
 	public void addRemote(Level level, LivingEntity owner, int frequency)
 	{
-		if (!WRUtils.isValidFrequency(frequency)) return;
+		if (!Frequency.isValid(frequency)) return;
 		getOrCreateChannel(frequency).addRemote(level, owner);
 	}
 
 	public void addReceiver(Level level, BlockPos pos, int frequency)
 	{
-		if (!WRUtils.isValidFrequency(frequency)) return;
+		if (!Frequency.isValid(frequency)) return;
 		getOrCreateChannel(frequency).addReceiver(level, pos);
 	}
 

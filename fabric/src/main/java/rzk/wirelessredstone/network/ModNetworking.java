@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import rzk.wirelessredstone.block.RedstoneTransceiverBlock;
 import rzk.wirelessredstone.item.FrequencyItem;
 import rzk.wirelessredstone.item.RemoteItem;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.registry.ModItems;
 
 public class ModNetworking
@@ -21,8 +22,8 @@ public class ModNetworking
 		ServerPlayNetworking.registerGlobalReceiver(FrequencyItemPacket.TYPE, (packet, player, responseSender) ->
 		{
 			var stack = player.getItemInHand(packet.hand());
-			if (stack.getItem() instanceof FrequencyItem item)
-				item.setFrequency(stack, packet.frequency());
+			if (stack.getItem() instanceof FrequencyItem)
+				Frequency.set(stack, packet.frequency());
 		});
 
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->

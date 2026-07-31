@@ -4,6 +4,10 @@
     "wirelessredstone:redstone_transmitter",
     "wirelessredstone:redstone_receiver",
     "wirelessredstone:p2p_redstone_transmitter",
-    "wirelessredstone:p2p_redstone_receiver"
+    "wirelessredstone:p2p_redstone_receiver",
+    "wirelessredstone:redstone_transmitter_attachment",
+    "wirelessredstone:redstone_receiver_attachment",
+    "wirelessredstone:p2p_redstone_transmitter_attachment",
+    "wirelessredstone:p2p_redstone_receiver_attachment"
   ]
 }

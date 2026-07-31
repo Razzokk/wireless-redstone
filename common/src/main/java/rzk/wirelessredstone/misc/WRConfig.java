@@ -7,6 +7,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.world.level.redstone.Redstone;
 import rzk.wirelessredstone.WirelessRedstone;
+import rzk.wirelessredstone.config.AttachmentMode;
+import rzk.wirelessredstone.config.BoolConfigOption;
+import rzk.wirelessredstone.config.ConfigOption;
+import rzk.wirelessredstone.config.EnumConfigOption;
+import rzk.wirelessredstone.config.IntConfigOption;
+import rzk.wirelessredstone.config.IntRangeConfigOption;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,6 +20,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WRConfig
 {
@@ -23,36 +31,39 @@ public class WRConfig
 		.create();
 
 	private static final String FILE_NAME = WirelessRedstone.MOD_ID + ".json";
+	private static final List<ConfigOption> CONFIGS = new ArrayList<>();
+
+	private static <T extends ConfigOption> T addConfig(T configOption) {
+		CONFIGS.add(configOption);
+		return configOption;
+	}
 
 	// General
-	public static int redstoneReceiverSignalStrength = Redstone.SIGNAL_MAX;
-	public static boolean redstoneReceiverStrongPower = true;
+	public static IntRangeConfigOption redstoneReceiverSignalStrength = addConfig(new IntRangeConfigOption("signal_strength", Redstone.SIGNAL_MAX, 1, Redstone.SIGNAL_MAX, TranslationKeys.GUI_CONFIG_SIGNAL_STRENGTH));
+	public static BoolConfigOption redstoneReceiverStrongPower = addConfig(new BoolConfigOption("provide_strong_power", true, TranslationKeys.GUI_CONFIG_STRONG_POWER));
+	public static EnumConfigOption<AttachmentMode> attachmentMode = addConfig(new EnumConfigOption<>("attachment_mode", AttachmentMode.class, AttachmentMode.ATTACHED, TranslationKeys.GUI_CONFIG_ATTACHMENT_MODE));
 
 	// Client
-	public static int frequencyDisplayColor = 0;
-	public static int highlightColor = 0xFF3F3F;
-	public static int highlightTimeSeconds = 10;
-	public static int linkerTargetColor = 0x32C8FF;
+	public static IntConfigOption frequencyDisplayColor = addConfig(new IntConfigOption("display_color", 0, TranslationKeys.GUI_CONFIG_DISPLAY_COLOR));
+	public static IntConfigOption linkerTargetColor = addConfig(new IntConfigOption("linker_target_color", 0x32C8FF, TranslationKeys.GUI_CONFIG_TARGET_COLOR));
+	public static IntConfigOption highlightColor = addConfig(new IntConfigOption("highlight_color", 0xFF3F3F, TranslationKeys.GUI_CONFIG_HIGHLIGHT_COLOR));
+	public static IntRangeConfigOption highlightTimeSeconds = addConfig(new IntRangeConfigOption("highlight_time", 10, 1, Integer.MAX_VALUE, TranslationKeys.GUI_CONFIG_HIGHLIGHT_TIME));
 
 	public static void load()
 	{
 		File file = new File(WirelessRedstone.PLATFORM.getConfigDir(), FILE_NAME);
 
-		if (!file.exists()) save();
+		if (!file.exists()) {
+			save();
+			return;
+		}
 
-		try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file)))
+		try (var reader = new BufferedReader(new FileReader(file)))
 		{
-			JsonObject config = JsonParser.parseReader(bufferedReader).getAsJsonObject();
+			var config = JsonParser.parseReader(reader).getAsJsonObject();
 
-			// General
-			redstoneReceiverSignalStrength = config.getAsJsonPrimitive("signal_strength").getAsInt();
-			redstoneReceiverStrongPower = config.getAsJsonPrimitive("provide_strong_power").getAsBoolean();
-
-			// Client
-			frequencyDisplayColor = config.getAsJsonPrimitive("display_color").getAsInt();
-			highlightColor = config.getAsJsonPrimitive("highlight_color").getAsInt();
-			highlightTimeSeconds = config.getAsJsonPrimitive("highlight_time").getAsInt();
-			linkerTargetColor = config.getAsJsonPrimitive("linker_target_color").getAsInt();
+			for (var configOption : CONFIGS)
+				configOption.loadFromJson(config);
 		}
 		catch (IOException | NullPointerException e)
 		{
@@ -62,22 +73,15 @@ public class WRConfig
 
 	public static void save()
 	{
-		File file = new File(WirelessRedstone.PLATFORM.getConfigDir(), FILE_NAME);
-		JsonObject config = new JsonObject();
+		var file = new File(WirelessRedstone.PLATFORM.getConfigDir(), FILE_NAME);
+		var config = new JsonObject();
 
-		// General
-		config.addProperty("signal_strength", redstoneReceiverSignalStrength);
-		config.addProperty("provide_strong_power", redstoneReceiverStrongPower);
+		for (var configOption : CONFIGS)
+			configOption.writeToJson(config);
 
-		// Client
-		config.addProperty("display_color", frequencyDisplayColor);
-		config.addProperty("highlight_color", highlightColor);
-		config.addProperty("highlight_time", highlightTimeSeconds);
-		config.addProperty("linker_target_color", linkerTargetColor);
-
-		try (BufferedWriter fileWriter = new BufferedWriter(new FileWriter(file)))
+		try (var writer = new BufferedWriter(new FileWriter(file)))
 		{
-			fileWriter.write(GSON.toJson(config));
+			writer.write(GSON.toJson(config));
 		}
 		catch (IOException e)
 		{

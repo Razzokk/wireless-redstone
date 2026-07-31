@@ -2,12 +2,14 @@ package rzk.wirelessredstone.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.data.recipes.RecipeCategory;
-import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.world.item.Items;
 import rzk.wirelessredstone.registry.ModBlocks;
 import rzk.wirelessredstone.registry.ModItems;
+
+import java.util.function.Consumer;
 
 public class RecipeGenerator extends FabricRecipeProvider
 {
@@ -17,7 +19,7 @@ public class RecipeGenerator extends FabricRecipeProvider
 	}
 
 	@Override
-	public void buildRecipes(RecipeOutput exporter)
+	public void buildRecipes(Consumer<FinishedRecipe> exporter)
 	{
 		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModItems.circuit, 2)
 			.pattern("RGR")
@@ -69,6 +71,42 @@ public class RecipeGenerator extends FabricRecipeProvider
 			.pattern("IRI")
 			.pattern("RCR")
 			.pattern("IRI")
+			.define('I', Items.COPPER_INGOT)
+			.define('R', Items.REDSTONE)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.redstoneTransmitterAttachment)
+			.pattern(" I ")
+			.pattern("RCR")
+			.define('I', Items.IRON_INGOT)
+			.define('R', Items.REDSTONE_TORCH)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.redstoneReceiverAttachment)
+			.pattern(" I ")
+			.pattern("RCR")
+			.define('I', Items.IRON_INGOT)
+			.define('R', Items.REDSTONE)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneTransmitterAttachment)
+			.pattern(" I ")
+			.pattern("RCR")
+			.define('I', Items.COPPER_INGOT)
+			.define('R', Items.REDSTONE_TORCH)
+			.define('C', ModItems.circuit)
+			.unlockedBy(getHasName(ModItems.circuit), has(ModItems.circuit))
+			.save(exporter);
+
+		ShapedRecipeBuilder.shaped(RecipeCategory.REDSTONE, ModBlocks.p2pRedstoneReceiverAttachment)
+			.pattern(" I ")
+			.pattern("RCR")
 			.define('I', Items.COPPER_INGOT)
 			.define('R', Items.REDSTONE)
 			.define('C', ModItems.circuit)

@@ -1,15 +1,18 @@
-import mod.gradle.Properties
-import mod.gradle.Versions
+import mod.gradle.Mod
+
+// Reference: https://projects.neoforged.net/neoforged/moddevgradle (NeoForm)
 
 plugins {
-	id("conventions.common")
-	id("org.spongepowered.gradle.vanilla") version "0.2.1-SNAPSHOT"
+	id("common")
+	alias(libs.plugins.vanilla)
 }
 
 dependencies {
-	compileOnly("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
-	annotationProcessor("io.github.llamalad7:mixinextras-common:${Versions.MIXIN_EXTRAS}")
-	compileOnly("net.fabricmc:sponge-mixin:${Versions.FABRIC_MIXIN}")
+	compileOnly(libs.mixin.extras)
+	annotationProcessor(libs.mixin.extras)
+	compileOnly(libs.mixin.fabric)
+
+	compileOnly(libs.clothconfig.forge)
 }
 
 sourceSets {
@@ -21,9 +24,9 @@ sourceSets {
 }
 
 minecraft {
-	version(Versions.MINECRAFT)
+	version(libs.versions.minecraft.get())
 
-	val aw = file("src/main/resources/${Properties.MOD_ID}.accesswidener")
+	val aw = file("src/main/resources/${Mod.ID}.accesswidener")
 	if (aw.exists()) accessWideners(aw)
 }
 

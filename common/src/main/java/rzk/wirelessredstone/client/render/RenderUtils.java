@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class RenderUtils
@@ -30,16 +31,16 @@ public class RenderUtils
 			.endVertex();
 	}
 
-	public static void drawOutlineShape(BufferBuilder builder, PoseStack.Pose pose, VoxelShape shape, BlockPos pos, float red, float green, float blue, float alpha)
+	public static void drawOutlineShape(BufferBuilder builder, PoseStack.Pose pose, Vec3 cameraPos, VoxelShape shape, BlockPos pos, float red, float green, float blue, float alpha)
 	{
 		shape.forAllEdges((minX, minY, minZ, maxX, maxY, maxZ) ->
 			drawLine(builder, pose,
-				(float) (pos.getX() + minX),
-				(float) (pos.getY() + minY),
-				(float) (pos.getZ() + minZ),
-				(float) (pos.getX() + maxX),
-				(float) (pos.getY() + maxY),
-				(float) (pos.getZ() + maxZ),
+				(float) (pos.getX() + minX - cameraPos.x),
+				(float) (pos.getY() + minY - cameraPos.y),
+				(float) (pos.getZ() + minZ - cameraPos.z),
+				(float) (pos.getX() + maxX - cameraPos.x),
+				(float) (pos.getY() + maxY - cameraPos.y),
+				(float) (pos.getZ() + maxZ - cameraPos.z),
 				red, green, blue, alpha)
 		);
 	}

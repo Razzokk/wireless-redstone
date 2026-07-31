@@ -33,6 +33,6 @@ public abstract class RedstoneWireMixin
 		if (!(state.getBlock() instanceof RedstoneConnectable connectable))
 			return shouldConnectTo(state, direction);
 
-		return connectable.canConnectRedstone(state, level, pos.relative(direction), side);
+		return connectable.canConnectRedstone(state, level, pos.relative(direction), direction);
 	}
 }

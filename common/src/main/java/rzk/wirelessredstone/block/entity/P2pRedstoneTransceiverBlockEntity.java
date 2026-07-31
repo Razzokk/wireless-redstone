@@ -2,27 +2,32 @@ package rzk.wirelessredstone.block.entity;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.WirelessRedstone;
-import rzk.wirelessredstone.api.ChunkLoadListener;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRUtils;
 
 import static rzk.wirelessredstone.misc.WRProperties.LINKED;
 
-public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity implements ChunkLoadListener
-{
+public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity {
 	protected BlockPos link;
 
 	public P2pRedstoneTransceiverBlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state)
 	{
 		super(type, pos, state);
+	}
+
+	public BlockPos getLink()
+	{
+		return link;
 	}
 
 	public boolean link(BlockPos link, Player player)
@@ -97,29 +102,22 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 		level.setBlockAndUpdate(worldPosition, getBlockState().setValue(LINKED, true));
 	}
 
-	@Override
-	public void onChunkLoad(ServerLevel level)
-	{
+	public void onLoad() {
 		if (level.isClientSide || link == null) return;
 
-		if (!level.isLoaded(link))
-		{
+		if (!level.isLoaded(link)) {
 			virtualUnlink();
 		}
-		else if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other && worldPosition.equals(other.link))
-		{
+		else if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other && worldPosition.equals(other.link)) {
 			virtualLink();
 			other.virtualLink();
 		}
-		else
-		{
+		else {
 			unlink();
 		}
 	}
 
-	@Override
-	public void onChunkUnload(ServerLevel level)
-	{
+	public void onUnload() {
 		if (level.isClientSide || link == null || !level.isLoaded(link)) return;
 
 		if (level.getBlockEntity(link) instanceof P2pRedstoneTransceiverBlockEntity other)
@@ -127,11 +125,39 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 	}
 
 	@Override
+	public void clearRemoved() {
+		super.clearRemoved();
+		if (level == null || level.isClientSide) return;
+		level.blockEvent(getBlockPos(), getBlockState().getBlock(), 0, 0);
+	}
+
+	@Override
+	public void setRemoved() {
+		onUnload();
+		super.setRemoved();
+	}
+
+	@Override
+	public @Nullable Packet<ClientGamePacketListener> getUpdatePacket()
+	{
+		return ClientboundBlockEntityDataPacket.create(this);
+	}
+
+	@Override
+	public CompoundTag getUpdateTag()
+	{
+		CompoundTag tag = new CompoundTag();
+		if (link == null) return tag;
+		tag.put("link", WRUtils.writeBlockPos(link));
+		return tag;
+	}
+
+	@Override
 	protected void saveAdditional(CompoundTag tag)
 	{
 		super.saveAdditional(tag);
 		if (link == null) return;
-		tag.put("link", NbtUtils.writeBlockPos(link));
+		tag.put("link", WRUtils.writeBlockPos(link));
 	}
 
 	@Override
@@ -139,6 +165,6 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity impl
 	{
 		super.load(tag);
 		if (!tag.contains("link")) return;
-		link = NbtUtils.readBlockPos(tag.getCompound("link"));
+		link = WRUtils.readBlockPos(tag.get("link"));
 	}
 }

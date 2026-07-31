@@ -1,6 +1,5 @@
 package rzk.wirelessredstone.block;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -25,8 +24,7 @@ import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.api.RedstoneConnectable;
 import rzk.wirelessredstone.block.entity.RedstoneTransceiverBlockEntity;
 import rzk.wirelessredstone.item.FrequencyItem;
-import rzk.wirelessredstone.misc.TranslationKeys;
-import rzk.wirelessredstone.misc.WRUtils;
+import rzk.wirelessredstone.misc.Frequency;
 
 import java.util.List;
 
@@ -47,7 +45,7 @@ public abstract class RedstoneTransceiverBlock extends Block implements EntityBl
 
 	public void setFrequency(Level level, BlockPos pos, int frequency)
 	{
-		if (WRUtils.isValidFrequency(frequency) && level.getBlockEntity(pos) instanceof RedstoneTransceiverBlockEntity transceiver)
+		if (Frequency.isValid(frequency) && level.getBlockEntity(pos) instanceof RedstoneTransceiverBlockEntity transceiver)
 			transceiver.setFrequency(frequency);
 	}
 
@@ -81,11 +79,9 @@ public abstract class RedstoneTransceiverBlock extends Block implements EntityBl
 	@Override
 	public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag)
 	{
-		var frequency = WRUtils.readFrequency(BlockItem.getBlockEntityData(stack));
-		if (!WRUtils.isValidFrequency(frequency)) return;
-
-		var frequencyComponent = Component.literal(String.valueOf(frequency)).withStyle(ChatFormatting.AQUA);
-		tooltip.add(Component.translatable(TranslationKeys.TOOLTIP_FREQUENCY, frequencyComponent).withStyle(ChatFormatting.GRAY));
+		int frequency = Frequency.get(BlockItem.getBlockEntityData(stack));
+		if (!Frequency.isValid(frequency)) return;
+		tooltip.add(Frequency.tooltip(frequency));
 	}
 
 	@Override

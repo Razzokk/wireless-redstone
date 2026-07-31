@@ -2,13 +2,36 @@
 
 Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
-with the minecraft version prepended to it.
+with the Minecraft version appended.
 
 ## [Unreleased]
+
+### Added
+
+- **Attachment** block version of Redstone Transmitter/Receiver and P2P Redstone Transmitter/Receiver
+  - Configurable Attachment Mode: Define if the attachment block shall receive/output redstone only from/to the attached block or also all adjacent ones (except the opposite of the attached side)
+- Target is shown underneath the crosshair when a P2P block is looked at with a **Linker**
+- Frequency items show a message after a frequency has been copied or set
+
+### Changed
+
+- Receivers are now updated immediately after a transmitter is (un)powered (before: 1 redstone tick delay)
+  - This also allows to send 1 game ticks to receivers (e.g. with an observer)
+- Use int array tag (NBT) for storing block positions (transmitters, p2p link, ...)
+  - This change is *only* backwards compatible (i.e., you can upgrade to newer versions but going back to older one will break the redstone network)
+- Improved names and descriptions in config screen
+- Redstone transmitters and receivers now also update directly after block placement (also with `/setblock` and `/fill` command)
+  - If you place a transmitter with a frequency (e.g., picked up in creative with CTRL, it also shows the frequency in the tooltip), it will now correctly register itself in the redstone ether network, before it did not do that
+  - If you place a receiver with a frequency it will turn on if any transmitters on the frequency are on
+  - Note: Frequency receivers (transmitters not) now also work when relocated with frames from project-red
 
 ### Fixed
 
 - Sniffer stack size is supposed to be 1
+- Sniffer and target highlight render wobbling when far out in the world due to floating point number precision (the farther out, the bigger the wobble)
+- P2P transmitter and receiver block entities not updating data correctly
+- Fabric:
+  - Remote stays on when switching to another item in hotbar
 
 ## [1.2.2+1.20.1] - 2025-09-30
 
@@ -16,7 +39,7 @@ with the minecraft version prepended to it.
 
 - Shorten display name on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/wirelessredstone) and [Modrinth]():
 	- before: `[<loader> <mc-version>] wirelessredstone-<mod-version>` e.g. **[Forge 1.20.1] wirelessredstone-1.2.2**
-    - now: `[<loader> <mc-version>] <mod-version> Wireless Redstone` e.g. **[Forge 1.20.1] 1.2.2 Wireless Redstone**
+	- now: `[<loader> <mc-version>] <mod-version> Wireless Redstone` e.g. **[Forge 1.20.1] 1.2.2 Wireless Redstone**
 
 ### Fixed
 
@@ -44,10 +67,10 @@ Skip for Fabric
 - Moved icon from `resources/` to `resources/assets/wirelessredstone/`
 - Dev only:
 	- Yarn mappings for fabric **and** forge (using [Architectury Loom](https://docs.architectury.dev/loom/introduction))
-    - Extracted most of the code into the common project -> less fabric and forge specific code
-    - Update forge to 47.2.20
-    - Update fabric loader and api to 0.15.7 and 0.92.0+1.20.1 respectively
-    - Use gradle v8.6
+	- Extracted most of the code into the common project -> less fabric and forge specific code
+	- Update forge to 47.2.20
+	- Update fabric loader and api to 0.15.7 and 0.92.0+1.20.1 respectively
+	- Use gradle v8.6
 
 ### Added
 

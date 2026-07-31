@@ -5,6 +5,9 @@ pluginManagement {
 		maven("https://maven.fabricmc.net/") {
 			name = "Fabric"
 		}
+		maven("https://maven.neoforged.net/releases") {
+			name = "NeoForge"
+		}
 		maven("https://maven.minecraftforge.net/") {
 			name = "Forge"
 		}
@@ -19,6 +22,8 @@ plugins {
 }
 
 rootProject.name = "wireless-redstone"
+
+includeBuild("build-logic")
 
 include("common")
 include("datagen")

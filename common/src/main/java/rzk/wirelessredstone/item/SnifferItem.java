@@ -4,7 +4,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
@@ -20,6 +19,7 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.ether.RedstoneEther;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.NbtKeys;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRConfig;
@@ -43,12 +43,12 @@ public class SnifferItem extends FrequencyItem
 		var tag = stack.getTag();
 		if (tag == null) return null;
 
-		var list = tag.getList(NbtKeys.HIGHLIGHTS, Tag.TAG_COMPOUND);
+		var list = tag.getList(NbtKeys.HIGHLIGHTS, Tag.TAG_INT_ARRAY);
 		if (list.isEmpty()) return null;
 
 		var coords = new BlockPos[list.size()];
 		for (int i = 0; i < list.size(); ++i)
-			coords[i] = NbtUtils.readBlockPos(list.getCompound(i));
+			coords[i] = WRUtils.readBlockPos(list.get(i));
 
 		return coords;
 	}
@@ -62,7 +62,7 @@ public class SnifferItem extends FrequencyItem
 
 		var list = new ListTag();
 		for (var pos : coords)
-			list.add(NbtUtils.writeBlockPos(pos));
+			list.add(WRUtils.writeBlockPos(pos));
 		tag.put(NbtKeys.HIGHLIGHTS, list);
 	}
 
@@ -110,9 +110,9 @@ public class SnifferItem extends FrequencyItem
 		if (player.isShiftKeyDown())  return super.use(level, player, usedHand);
 
 		ItemStack stack = player.getItemInHand(usedHand);
-		int frequency = getFrequency(stack);
+		int frequency = Frequency.get(stack);
 
-		if (!WRUtils.isValidFrequency(frequency))
+		if (!Frequency.isValid(frequency))
 		{
 			if (level.isClientSide)
 				player.displayClientMessage(Component.translatable(TranslationKeys.MESSAGE_NO_FREQUENCY).withStyle(ChatFormatting.RED), true);
@@ -123,7 +123,7 @@ public class SnifferItem extends FrequencyItem
 		var result = InteractionResultHolder.success(stack);
 		if (level.isClientSide) return result;
 
-		var frequencyText = WRUtils.frequencyText(frequency);
+		var frequencyText = Frequency.text(frequency);
 		var ether = RedstoneEther.get((ServerLevel) level);
 
 		if (ether == null)
@@ -143,7 +143,8 @@ public class SnifferItem extends FrequencyItem
 		{
 			var message = buildActiveTransmittersMessage(player, transmitters, frequencyText);
 			player.sendSystemMessage(message);
-			WirelessRedstone.PLATFORM.sendSniffer((ServerPlayer) player, level.getGameTime(), usedHand, transmitters.toArray(BlockPos[]::new));
+			var coords = transmitters.stream().filter(pos -> player.shouldRender(pos.getX(), pos.getY(), pos.getZ())).toArray(BlockPos[]::new);
+			WirelessRedstone.PLATFORM.sendSniffer((ServerPlayer) player, level.getGameTime(), usedHand, coords);
 		}
 
 		return result;
@@ -155,7 +156,7 @@ public class SnifferItem extends FrequencyItem
 		var tag = stack.getTag();
 		if (!isSelected || !level.isClientSide || tag == null) return;
 
-		var timeOffset = (long) WRConfig.highlightTimeSeconds * SharedConstants.TICKS_PER_SECOND;
+		var timeOffset = (long) WRConfig.highlightTimeSeconds.value * SharedConstants.TICKS_PER_SECOND;
 		if (level.getGameTime() >= tag.getLong("timestamp") + timeOffset)
 			removeHighlightBlocks(stack);
 	}

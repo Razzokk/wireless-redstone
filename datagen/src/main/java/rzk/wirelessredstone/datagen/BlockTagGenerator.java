@@ -26,7 +26,11 @@ public class BlockTagGenerator extends FabricTagProvider.BlockTagProvider
 			.add(getId(ModBlocks.redstoneTransmitter))
 			.add(getId(ModBlocks.redstoneReceiver))
 			.add(getId(ModBlocks.p2pRedstoneTransmitter))
-			.add(getId(ModBlocks.p2pRedstoneReceiver));
+			.add(getId(ModBlocks.p2pRedstoneReceiver))
+			.add(getId(ModBlocks.redstoneTransmitterAttachment))
+			.add(getId(ModBlocks.redstoneReceiverAttachment))
+			.add(getId(ModBlocks.p2pRedstoneTransmitterAttachment))
+			.add(getId(ModBlocks.p2pRedstoneReceiverAttachment));
 	}
 
 	private static ResourceLocation getId(Block block)

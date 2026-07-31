@@ -27,11 +27,8 @@ public class WorldOverlayRenderer
 		renderLinkerTarget(level, player, stack, cameraPosition, poseStack, tickDelta);
 	}
 
-	private static Tesselator renderLinesPre(Vec3 cameraPosition, PoseStack poseStack)
+	private static Tesselator renderLinesPre()
 	{
-		poseStack.pushPose();
-		poseStack.translate(-cameraPosition.x, -cameraPosition.y, -cameraPosition.z);
-
 		RenderSystem.assertOnRenderThread();
 		GlStateManager._depthMask(false);
 		GlStateManager._disableCull();
@@ -39,21 +36,17 @@ public class WorldOverlayRenderer
 		RenderSystem.lineWidth(3f);
 		RenderSystem.enableBlend();
 		RenderSystem.setShader(GameRenderer::getRendertypeLinesShader);
-
 		return RenderSystem.renderThreadTesselator();
 	}
 
-	private static void renderLinesPost(Tesselator tesselator, PoseStack poseStack)
+	private static void renderLinesPost(Tesselator tesselator)
 	{
 		tesselator.end();
-
 		RenderSystem.enableDepthTest();
 		RenderSystem.disableBlend();
 		RenderSystem.lineWidth(1f);
 		GlStateManager._enableCull();
 		GlStateManager._depthMask(true);
-
-		poseStack.popPose();
 	}
 
 	private static void renderSnifferHighlights(Level level, Player player, ItemStack stack, Vec3 cameraPosition, PoseStack poseStack)
@@ -62,11 +55,11 @@ public class WorldOverlayRenderer
 		if (coords == null) coords = SnifferItem.getHighlightedBlocks(player.getOffhandItem());
 		if (coords == null) return;
 
-		var red = ((WRConfig.highlightColor >> 16) & 0xFF) / 256.0f;
-		var green = ((WRConfig.highlightColor >> 8) & 0xFF) / 256.0f;
-		var blue = (WRConfig.highlightColor & 0xFF) / 256.0f;
+		var red = ((WRConfig.highlightColor.value >> 16) & 0xFF) / 256.0f;
+		var green = ((WRConfig.highlightColor.value >> 8) & 0xFF) / 256.0f;
+		var blue = (WRConfig.highlightColor.value & 0xFF) / 256.0f;
 
-		var tesselator = renderLinesPre(cameraPosition, poseStack);
+		var tesselator = renderLinesPre();
 		var builder = tesselator.getBuilder();
 		builder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
 
@@ -78,10 +71,10 @@ public class WorldOverlayRenderer
 
 			var state = level.getBlockState(pos);
 			var shape = state.getShape(level, pos);
-			RenderUtils.drawOutlineShape(builder, pose, shape, pos, red, green, blue, 1);
+			RenderUtils.drawOutlineShape(builder, pose, cameraPosition, shape, pos, red, green, blue, 1);
 		}
 
-		renderLinesPost(tesselator, poseStack);
+		renderLinesPost(tesselator);
 	}
 
 	private static void renderLinkerTarget(Level level, Player player, ItemStack stack, Vec3 cameraPosition, PoseStack poseStack, float tickDelta)
@@ -90,11 +83,12 @@ public class WorldOverlayRenderer
 		if (target == null) target = LinkerItem.getTarget(player.getOffhandItem());
 		if (target == null || !player.shouldRender(target.getX(), target.getY(), target.getZ())) return;
 
-		var red = ((WRConfig.linkerTargetColor >> 16) & 0xFF) / 256.0f;
-		var green = ((WRConfig.linkerTargetColor >> 8) & 0xFF) / 256.0f;
-		var blue = (WRConfig.linkerTargetColor & 0xFF) / 256.0f;
+		var color = WRConfig.linkerTargetColor.value;
+		var red = ((color >> 16) & 0xFF) / 256.0f;
+		var green = ((color >> 8) & 0xFF) / 256.0f;
+		var blue = (color & 0xFF) / 256.0f;
 
-		var tesselator = renderLinesPre(cameraPosition, poseStack);
+		var tesselator = renderLinesPre();
 		var builder = tesselator.getBuilder();
 		builder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
 
@@ -114,8 +108,8 @@ public class WorldOverlayRenderer
 		var state = level.getBlockState(target);
 		var shape = state.getShape(level, target);
 		var pose = poseStack.last();
-		RenderUtils.drawOutlineShape(builder, pose, shape, target, red, green, blue, alpha);
+		RenderUtils.drawOutlineShape(builder, pose, cameraPosition, shape, target, red, green, blue, alpha);
 
-		renderLinesPost(tesselator, poseStack);
+		renderLinesPost(tesselator);
 	}
 }

@@ -3,12 +3,12 @@ package rzk.wirelessredstone.ether;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
-import net.minecraft.nbt.NbtUtils;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
+import rzk.wirelessredstone.block.RedstoneReceiverBlock;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.WRUtils;
-import rzk.wirelessredstone.registry.ModBlocks;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -32,21 +32,26 @@ public class RedstoneChannel
 
 	public RedstoneChannel(CompoundTag tag)
 	{
-		frequency = WRUtils.readFrequency(tag);
+		frequency = Frequency.get(tag);
 
-		ListTag transmitterTags = tag.getList("transmitters", Tag.TAG_COMPOUND);
+		ListTag transmitterTags = tag.getList("transmitters", Tag.TAG_INT_ARRAY);
 		for (var transmitterTag : transmitterTags)
-			transmitters.add(NbtUtils.readBlockPos((CompoundTag) transmitterTag));
+			transmitters.add(WRUtils.readBlockPos(transmitterTag));
+
+		// Deprecated
+		transmitterTags = tag.getList("transmitters", Tag.TAG_COMPOUND);
+		for (var transmitterTag : transmitterTags)
+			transmitters.add(WRUtils.readBlockPos(transmitterTag));
 	}
 
 	public CompoundTag save()
 	{
 		CompoundTag tag = new CompoundTag();
-		WRUtils.writeFrequency(tag, frequency);
+		Frequency.set(tag, frequency);
 
 		ListTag transmitterTags = new ListTag();
 		for (BlockPos pos : transmitters)
-			transmitterTags.add(NbtUtils.writeBlockPos(pos));
+			transmitterTags.add(WRUtils.writeBlockPos(pos));
 		tag.put("transmitters", transmitterTags);
 
 		return tag;
@@ -93,7 +98,9 @@ public class RedstoneChannel
 
 	public void updateReceiver(Level level, BlockPos pos)
 	{
-		level.scheduleTick(pos, ModBlocks.redstoneReceiver, WRUtils.TICKS_PER_REDSTONE_TICK);
+		var block = level.getBlockState(pos).getBlock();
+		if (!(block instanceof RedstoneReceiverBlock)) return;
+		level.scheduleTick(pos, block, 0);
 	}
 
 	public void updateReceivers(Level level)

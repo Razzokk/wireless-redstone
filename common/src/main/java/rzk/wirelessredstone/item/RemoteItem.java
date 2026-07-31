@@ -13,8 +13,8 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import rzk.wirelessredstone.api.SelectedItemListener;
 import rzk.wirelessredstone.ether.RedstoneEther;
+import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.TranslationKeys;
-import rzk.wirelessredstone.misc.WRUtils;
 
 public class RemoteItem extends FrequencyItem implements SelectedItemListener
 {
@@ -29,7 +29,7 @@ public class RemoteItem extends FrequencyItem implements SelectedItemListener
 		{
 			var ether = RedstoneEther.get((ServerLevel) level);
 			if (ether == null) return;
-			int frequency = getFrequency(stack);
+			int frequency = Frequency.get(stack);
 			ether.removeRemote(level, owner, frequency);
 		}
 	}
@@ -47,10 +47,10 @@ public class RemoteItem extends FrequencyItem implements SelectedItemListener
 		if (player.isShiftKeyDown()) return super.use(level, player, usedHand);
 
 		ItemStack stack = player.getItemInHand(usedHand);
-		int frequency = getFrequency(stack);
+		int frequency = Frequency.get(stack);
 		player.getCooldowns().addCooldown(this, 10);
 
-		if (!WRUtils.isValidFrequency(frequency))
+		if (!Frequency.isValid(frequency))
 		{
 			if (!level.isClientSide)
 				player.displayClientMessage(Component.translatable(TranslationKeys.MESSAGE_NO_FREQUENCY).withStyle(ChatFormatting.RED), true);

@@ -32,7 +32,7 @@ public class P2pRedstoneReceiverBlock extends P2pRedstoneTransceiverBlock
 				.ifPresent(P2pRedstoneTransceiverBlockEntity::unlinkOther);
 		}
 
-		if (!level.isClientSide && WRConfig.redstoneReceiverStrongPower)
+		if (!level.isClientSide && WRConfig.redstoneReceiverStrongPower.value)
 			for (Direction direction : DIRECTIONS)
 				level.updateNeighborsAtExceptFromFacing(pos.relative(direction), this, direction.getOpposite());
 
@@ -42,20 +42,19 @@ public class P2pRedstoneReceiverBlock extends P2pRedstoneTransceiverBlock
 	@Override
 	public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
 	{
-		return state.getValue(POWERED) && this.canConnectRedstone(state, level, pos, direction) ?
-			WRConfig.redstoneReceiverSignalStrength : 0;
+		return state.getValue(POWERED) ? WRConfig.redstoneReceiverSignalStrength.value : 0;
 	}
 
 	@Override
 	public int getDirectSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction)
 	{
-		return WRConfig.redstoneReceiverStrongPower ? getSignal(state, level, pos, direction) : 0;
+		return WRConfig.redstoneReceiverStrongPower.value ? getSignal(state, level, pos, direction) : 0;
 	}
 
 	@Override
 	protected boolean canLink(BlockState targetState, Level level, Player player)
 	{
-		if (targetState.is(ModBlocks.p2pRedstoneTransmitter)) return true;
+		if (targetState.is(ModBlocks.p2pRedstoneTransmitter) || targetState.is(ModBlocks.p2pRedstoneTransmitterAttachment)) return true;
 
 		if (!level.isClientSide)
 		{

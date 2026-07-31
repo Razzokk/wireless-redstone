@@ -1,60 +1,40 @@
 package rzk.wirelessredstone.misc;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.commands.Commands;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.player.Player;
 
-public class WRUtils
-{
-	public static final int TICKS_PER_REDSTONE_TICK = 2;
-
-	public static final int MIN_FREQUENCY = 0;
-	public static final int MAX_FREQUENCY = 99999;
-	public static final int INVALID_FREQUENCY = -1;
-
-	public static boolean isValidFrequency(int frequency)
-	{
-		return frequency >= MIN_FREQUENCY && frequency <= MAX_FREQUENCY;
-	}
-
-	public static void writeFrequency(CompoundTag tag, int frequency)
-	{
-		if (tag == null || !isValidFrequency(frequency)) return;
-		tag.putInt(NbtKeys.FREQUENCY, frequency);
-	}
-
-	public static int readFrequency(CompoundTag tag)
-	{
-		if (tag == null || !tag.contains(NbtKeys.FREQUENCY)) return INVALID_FREQUENCY;
-		return tag.getInt(NbtKeys.FREQUENCY);
-	}
-
-	public static void writeTarget(CompoundTag tag, BlockPos target)
-	{
-		if (target == null) return;
-		tag.put(NbtKeys.LINKER_TARGET, NbtUtils.writeBlockPos(target));
-	}
-
-	public static BlockPos readTarget(CompoundTag tag)
-	{
-		if (tag == null || !tag.contains(NbtKeys.LINKER_TARGET)) return null;
-		return NbtUtils.readBlockPos(tag.getCompound(NbtKeys.LINKER_TARGET));
-	}
-
+public class WRUtils {
 	public static int clamp(int min, int max, int value)
 	{
 		return Math.min(Math.max(min, value), max);
 	}
 
-	public static MutableComponent frequencyText(int frequency)
+	public static IntArrayTag writeBlockPos(BlockPos pos)
 	{
-		return Component.literal(String.valueOf(frequency)).withStyle(ChatFormatting.AQUA);
+		return new IntArrayTag(new int[]{ pos.getX(), pos.getY(), pos.getZ() });
+	}
+
+	public static BlockPos readBlockPos(Tag tag)
+	{
+		// Deprecated
+		if (tag instanceof CompoundTag nbt) return NbtUtils.readBlockPos(nbt);
+
+		if (tag instanceof IntArrayTag arrayTag && arrayTag.getAsIntArray().length == 3)
+		{
+			var array = arrayTag.getAsIntArray();
+			return array.length == 3 ? new BlockPos(array[0], array[1], array[2]) : null;
+		}
+		return null;
 	}
 
 	public static MutableComponent positionText(BlockPos pos)
@@ -65,9 +45,14 @@ public class WRUtils
 		return Component.translatable(TranslationKeys.TOOLTIP_POSITION, x, y, z).withStyle(ChatFormatting.WHITE);
 	}
 
+	public static MutableComponent targetText(BlockPos target) {
+		var targetText = WRUtils.positionText(target);
+		return Component.translatable(TranslationKeys.TOOLTIP_TARGET, targetText).withStyle(ChatFormatting.GRAY);
+	}
+
 	public static void appendTeleportCommandIfAllowed(MutableComponent text, Player player, BlockPos pos)
 	{
-		if (player == null || !player.hasPermissions(2)) return;
+		if (player == null || !player.hasPermissions(Commands.LEVEL_GAMEMASTERS)) return;
 
 		var command = String.format("/tp %d %d %d", pos.getX(), pos.getY() + 1, pos.getZ());
 		var click = new ClickEvent(ClickEvent.Action.RUN_COMMAND, command);

@@ -8,6 +8,7 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import rzk.wirelessredstone.client.screen.ModScreens;
 import rzk.wirelessredstone.item.FrequencyItem;
+import rzk.wirelessredstone.misc.Frequency;
 
 import java.util.function.Supplier;
 
@@ -35,8 +36,8 @@ public record FrequencyItemPacket(int frequency, InteractionHand hand)
 	{
 		var player = ctx.getSender();
 		var stack = player.getItemInHand(hand);
-		if (stack.getItem() instanceof FrequencyItem item)
-			item.setFrequency(stack, frequency);
+		if (stack.getItem() instanceof FrequencyItem)
+			Frequency.set(stack, frequency);
 	}
 
 	private void handleClient(NetworkEvent.Context ctx)
