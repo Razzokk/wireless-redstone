@@ -2,6 +2,7 @@ package rzk.wirelessredstone.client.screen;
 
 import net.minecraft.core.BlockPos;
 import rzk.wirelessredstone.client.WirelessRedstoneClient;
+import rzk.wirelessredstone.network.FrequencyBlockPacket;
 
 public class FrequencyBlockScreen extends FrequencyScreen
 {
@@ -16,6 +17,7 @@ public class FrequencyBlockScreen extends FrequencyScreen
 	@Override
 	protected void setFrequency()
 	{
-		WirelessRedstoneClient.PLATFORM.sendFrequencyBlockPacket(getInputFrequency(), pos);
+		var packet = new FrequencyBlockPacket(getInputFrequency(), pos);
+		WirelessRedstoneClient.PLATFORM.sendPacket(packet);
 	}
 }

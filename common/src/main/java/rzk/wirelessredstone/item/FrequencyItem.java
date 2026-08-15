@@ -17,6 +17,7 @@ import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.block.RedstoneTransceiverBlock;
 import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.TranslationKeys;
+import rzk.wirelessredstone.network.FrequencyItemPacket;
 
 import java.util.List;
 
@@ -74,8 +75,10 @@ public class FrequencyItem extends Item
 		if (!player.isShiftKeyDown())
 			return InteractionResultHolder.pass(stack);
 
-		if (!level.isClientSide)
-			WirelessRedstone.PLATFORM.sendFrequencyItemPacket((ServerPlayer) player, Frequency.get(stack), usedHand);
+		if (!level.isClientSide) {
+			var packet = new FrequencyItemPacket(Frequency.get(stack), usedHand);
+			WirelessRedstone.PLATFORM.sendPacket((ServerPlayer) player, packet);
+		}
 
 		return InteractionResultHolder.success(stack);
 	}

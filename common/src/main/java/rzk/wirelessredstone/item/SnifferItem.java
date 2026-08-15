@@ -24,6 +24,7 @@ import rzk.wirelessredstone.misc.NbtKeys;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.misc.WRConfig;
 import rzk.wirelessredstone.misc.WRUtils;
+import rzk.wirelessredstone.network.SnifferHighlightPacket;
 import rzk.wirelessredstone.registry.ModItems;
 
 import java.util.ArrayList;
@@ -144,7 +145,8 @@ public class SnifferItem extends FrequencyItem
 			var message = buildActiveTransmittersMessage(player, transmitters, frequencyText);
 			player.sendSystemMessage(message);
 			var coords = transmitters.stream().filter(pos -> player.shouldRender(pos.getX(), pos.getY(), pos.getZ())).toArray(BlockPos[]::new);
-			WirelessRedstone.PLATFORM.sendSniffer((ServerPlayer) player, level.getGameTime(), usedHand, coords);
+			var packet = new SnifferHighlightPacket(level.getGameTime(), usedHand, coords);
+			WirelessRedstone.PLATFORM.sendPacket((ServerPlayer) player, packet);
 		}
 
 		return result;

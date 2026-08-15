@@ -1,22 +1,15 @@
 package rzk.wirelessredstone.client.platform;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.InteractionHand;
-import rzk.wirelessredstone.network.FrequencyBlockPacket;
-import rzk.wirelessredstone.network.FrequencyItemPacket;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import net.minecraft.network.FriendlyByteBuf;
+import rzk.wirelessredstone.network.Packet;
 
-public class ClientPlatformFabric implements ClientPlatform
-{
+public class ClientPlatformFabric implements ClientPlatform {
 	@Override
-	public void sendFrequencyItemPacket(int frequency, InteractionHand hand)
-	{
-		ClientPlayNetworking.send(new FrequencyItemPacket(frequency, hand));
-	}
-
-	@Override
-	public void sendFrequencyBlockPacket(int frequency, BlockPos pos)
-	{
-		ClientPlayNetworking.send(new FrequencyBlockPacket(frequency, pos));
+	public void sendPacket(Packet packet) {
+		FriendlyByteBuf buf = PacketByteBufs.create();
+		packet.write(buf);
+		ClientPlayNetworking.send(packet.type().id(), buf);
 	}
 }
