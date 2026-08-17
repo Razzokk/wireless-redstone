@@ -3,7 +3,7 @@ package rzk.wirelessredstone;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import rzk.wirelessredstone.misc.WRConfig;
+import rzk.wirelessredstone.config.WRConfig;
 import rzk.wirelessredstone.network.ModNetworking;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 import rzk.wirelessredstone.registry.ModBlocks;

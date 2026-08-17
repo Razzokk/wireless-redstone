@@ -45,12 +45,6 @@ public class DefaultLanguageGenerator extends FabricLanguageProvider
 		translations.add(TranslationKeys.GUI_CONFIG_HIGHLIGHT_TIME, "Sniffer highlight time (seconds)");
 		translations.add(TranslationKeys.GUI_CONFIG_TARGET_COLOR, "Target highlight color");
 
-		translations.add(TranslationKeys.GUI_CONFIG_ATTACHMENT_MODE, "Attachment Mode");
-		translations.add(TranslationKeys.GUI_CONFIG_ATTACHMENT_MODE_ATTACHED, "Attached");
-		translations.add(TranslationKeys.GUI_CONFIG_ATTACHMENT_MODE_ATTACHED_DESCRIPTION, "Signal input and output only\nfrom and to the attached block itself");
-		translations.add(TranslationKeys.GUI_CONFIG_ATTACHMENT_MODE_ADJACENT, "Adjacent");
-		translations.add(TranslationKeys.GUI_CONFIG_ATTACHMENT_MODE_ADJACENT_DESCRIPTION, "Signal input and output from and to\nall adjacent blocks, except the one\nopposite to the attachment");
-
 		// Tooltips
 		translations.add(TranslationKeys.TOOLTIP_FREQUENCY, "Frequency: %s");
 		translations.add(TranslationKeys.TOOLTIP_STATE, "State: %s");

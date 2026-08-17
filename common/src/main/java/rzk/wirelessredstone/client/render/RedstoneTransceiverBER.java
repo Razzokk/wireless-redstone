@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import rzk.wirelessredstone.block.entity.RedstoneTransceiverBlockEntity;
 import rzk.wirelessredstone.misc.Frequency;
-import rzk.wirelessredstone.misc.WRConfig;
+import rzk.wirelessredstone.config.WRConfig;
 import rzk.wirelessredstone.registry.ModBlocks;
 
 public class RedstoneTransceiverBER<T extends RedstoneTransceiverBlockEntity> implements BlockEntityRenderer<T>

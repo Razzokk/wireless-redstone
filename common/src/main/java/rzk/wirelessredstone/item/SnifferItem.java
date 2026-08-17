@@ -22,7 +22,7 @@ import rzk.wirelessredstone.ether.RedstoneEther;
 import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.NbtKeys;
 import rzk.wirelessredstone.misc.TranslationKeys;
-import rzk.wirelessredstone.misc.WRConfig;
+import rzk.wirelessredstone.config.WRConfig;
 import rzk.wirelessredstone.misc.WRUtils;
 import rzk.wirelessredstone.network.SnifferHighlightPacket;
 import rzk.wirelessredstone.registry.ModItems;

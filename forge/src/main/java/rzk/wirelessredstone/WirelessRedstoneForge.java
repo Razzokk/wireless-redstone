@@ -11,7 +11,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.registries.RegisterEvent;
 import rzk.wirelessredstone.client.WirelessRedstoneClientForge;
 import rzk.wirelessredstone.client.screen.ModScreens;
-import rzk.wirelessredstone.misc.WRConfig;
+import rzk.wirelessredstone.config.WRConfig;
 import rzk.wirelessredstone.misc.WREvents;
 import rzk.wirelessredstone.network.ModNetworking;
 import rzk.wirelessredstone.registry.ModBlockEntities;

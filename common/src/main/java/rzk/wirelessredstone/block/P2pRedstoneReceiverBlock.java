@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.block.entity.P2pRedstoneReceiverBlockEntity;
 import rzk.wirelessredstone.block.entity.P2pRedstoneTransceiverBlockEntity;
 import rzk.wirelessredstone.misc.TranslationKeys;
-import rzk.wirelessredstone.misc.WRConfig;
+import rzk.wirelessredstone.config.WRConfig;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 import rzk.wirelessredstone.registry.ModBlocks;
 

@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import rzk.wirelessredstone.item.LinkerItem;
 import rzk.wirelessredstone.item.SnifferItem;
-import rzk.wirelessredstone.misc.WRConfig;
+import rzk.wirelessredstone.config.WRConfig;
 
 public class WorldOverlayRenderer
 {
