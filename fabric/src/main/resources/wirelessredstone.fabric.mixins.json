@@ -3,12 +3,12 @@
 	"minVersion": "0.8",
 	"package": "rzk.wirelessredstone.mixin",
 	"compatibilityLevel": "JAVA_${java_version}",
-	"mixins": [],
-	"client": [
+	"mixins": [
 		"LivingEntityMixin",
 		"RedstoneWireMixin",
 		"ServerPlayerMixin"
 	],
+	"client": [],
 	"server": [],
 	"injectors": {
 		"defaultRequire": 1

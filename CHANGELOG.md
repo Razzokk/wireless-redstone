@@ -31,7 +31,12 @@ with the Minecraft version appended.
 - Sniffer and target highlight render wobbling when far out in the world due to floating point number precision (the farther out, the bigger the wobble)
 - P2P transmitter and receiver block entities not updating data correctly
 - Fabric:
-  - Remote stays on when switching to another item in hotbar
+  - Wrong mixin configuration (was only registered on the client, oops)
+  - Redstone wire not connecting to transmitters and receivers (if played on server)
+  - Frequency activated with remote stayed on if:
+    - Switching to another item in hotbar
+    - Dropped by player (if played on server)
+    - Normal usage (releasing right mouse button, if played on server)
 
 ## [1.2.2+1.20.1] - 2025-09-30
 
