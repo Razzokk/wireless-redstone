@@ -25,6 +25,7 @@ import rzk.wirelessredstone.api.RedstoneConnectable;
 import rzk.wirelessredstone.block.entity.RedstoneTransceiverBlockEntity;
 import rzk.wirelessredstone.item.FrequencyItem;
 import rzk.wirelessredstone.misc.Frequency;
+import rzk.wirelessredstone.network.FrequencyBlockPacket;
 
 import java.util.List;
 
@@ -64,8 +65,10 @@ public abstract class RedstoneTransceiverBlock extends Block implements EntityBl
 		if (item instanceof FrequencyItem)
 			return InteractionResult.PASS;
 
-		if (!level.isClientSide)
-			WirelessRedstone.PLATFORM.sendFrequencyBlockPacket((ServerPlayer) player, getFrequency(level, pos), pos);
+		if (!level.isClientSide) {
+			var packet = new FrequencyBlockPacket(getFrequency(level, pos), pos);
+			WirelessRedstone.PLATFORM.sendPacket((ServerPlayer) player, packet);
+		}
 
 		return InteractionResult.SUCCESS;
 	}

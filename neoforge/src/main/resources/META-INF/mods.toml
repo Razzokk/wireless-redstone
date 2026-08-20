@@ -14,11 +14,6 @@ authors = "${mod_author}"
 description = '''${mod_description}'''
 displayTest = "MATCH_VERSION"
 
-[[mixins]]
-config = "${mod_id}.mixins.json"
-[[mixins]]
-config = "${mod_id}.neoforge.mixins.json"
-
 [[dependencies.${mod_id}]]
 modId = "minecraft"
 type = "required"

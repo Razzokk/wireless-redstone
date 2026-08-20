@@ -20,12 +20,6 @@ public class TranslationKeys
 	public static final String GUI_CONFIG_HIGHLIGHT_TIME = "gui.wirelessredstone.config.highlight.time";
 	public static final String GUI_CONFIG_TARGET_COLOR = "gui.wirelessredstone.config.target.color";
 
-	public static final String GUI_CONFIG_ATTACHMENT_MODE = "gui.wirelessredstone.config.attachment.mode";
-	public static final String GUI_CONFIG_ATTACHMENT_MODE_ATTACHED = "gui.wirelessredstone.config.attachment.mode.attached";
-	public static final String GUI_CONFIG_ATTACHMENT_MODE_ATTACHED_DESCRIPTION = "gui.wirelessredstone.config.attachment.mode.attached.description";
-	public static final String GUI_CONFIG_ATTACHMENT_MODE_ADJACENT = "gui.wirelessredstone.config.attachment.mode.adjacent";
-	public static final String GUI_CONFIG_ATTACHMENT_MODE_ADJACENT_DESCRIPTION = "gui.wirelessredstone.config.attachment.mode.adjacent.description";
-
 	// Tooltips
 	public static final String TOOLTIP_FREQUENCY = "item.wirelessredstone.tooltip.frequency";
 	public static final String TOOLTIP_STATE = "item.wirelessredstone.tooltip.state";

@@ -1,51 +1,33 @@
 package rzk.wirelessredstone.platform;
 
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
-import rzk.wirelessredstone.network.FrequencyBlockPacket;
-import rzk.wirelessredstone.network.FrequencyItemPacket;
-import rzk.wirelessredstone.network.SnifferHighlightPacket;
+import rzk.wirelessredstone.network.Packet;
 
 import java.io.File;
 
-public class PlatformFabric implements Platform
-{
+public class PlatformFabric implements Platform {
 	@Override
-	public PlatformLoader getLoader()
-	{
+	public PlatformLoader getLoader() {
 		return PlatformLoader.FABRIC;
 	}
 
 	@Override
-	public File getConfigDir()
-	{
+	public File getConfigDir() {
 		return FabricLoader.getInstance().getConfigDir().toFile();
 	}
 
 	@Override
-	public boolean isModLoaded(String modId)
-	{
+	public boolean isModLoaded(String modId) {
 		return FabricLoader.getInstance().isModLoaded(modId);
 	}
 
 	@Override
-	public void sendFrequencyItemPacket(ServerPlayer player, int frequency, InteractionHand hand)
-	{
-		ServerPlayNetworking.send(player, new FrequencyItemPacket(frequency, hand));
-	}
-
-	@Override
-	public void sendFrequencyBlockPacket(ServerPlayer player, int frequency, BlockPos pos)
-	{
-		ServerPlayNetworking.send(player, new FrequencyBlockPacket(frequency, pos));
-	}
-
-	@Override
-	public void sendSniffer(ServerPlayer player, long time, InteractionHand hand, BlockPos[] transmitters)
-	{
-		ServerPlayNetworking.send(player, new SnifferHighlightPacket(time, hand, transmitters));
+	public void sendPacket(ServerPlayer player, Packet packet) {
+		var buf = PacketByteBufs.create();
+		packet.write(buf);
+		ServerPlayNetworking.send(player, packet.type().id(), buf);
 	}
 }

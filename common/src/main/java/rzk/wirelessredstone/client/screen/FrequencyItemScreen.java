@@ -2,6 +2,7 @@ package rzk.wirelessredstone.client.screen;
 
 import net.minecraft.world.InteractionHand;
 import rzk.wirelessredstone.client.WirelessRedstoneClient;
+import rzk.wirelessredstone.network.FrequencyItemPacket;
 
 public class FrequencyItemScreen extends FrequencyScreen
 {
@@ -16,6 +17,7 @@ public class FrequencyItemScreen extends FrequencyScreen
 	@Override
 	protected void setFrequency()
 	{
-		WirelessRedstoneClient.PLATFORM.sendFrequencyItemPacket(getInputFrequency(), hand);
+		var packet = new FrequencyItemPacket(getInputFrequency(), hand);
+		WirelessRedstoneClient.PLATFORM.sendPacket(packet);
 	}
 }

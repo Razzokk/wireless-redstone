@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.block.entity.RedstoneReceiverBlockEntity;
 import rzk.wirelessredstone.ether.RedstoneEther;
 import rzk.wirelessredstone.misc.Frequency;
-import rzk.wirelessredstone.misc.WRConfig;
+import rzk.wirelessredstone.config.WRConfig;
 
 import static net.minecraft.world.level.SignalGetter.DIRECTIONS;
 import static net.minecraft.world.level.block.state.properties.BlockStateProperties.POWERED;
