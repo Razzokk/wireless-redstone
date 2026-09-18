@@ -33,11 +33,10 @@ minecraft {
 	runs {
 		configureEach {
 			systemProperty("eventbus.api.strictRuntimeChecks", "true")
-			systemProperty("mixin.env.remapRefMap", "true")
-			systemProperty("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
 			systemProperty("forge.logging.markers", "REGISTRIES")
 			systemProperty("forge.logging.console.level", "debug")
-			jvmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
+			systemProperty("mixin.debug.verbose", "true")
+			systemProperty("mixin.debug.export", "true")
 		}
 
 		create("client") {
@@ -52,7 +51,7 @@ minecraft {
 	}
 }
 
-// Only for Minecraft 1.21.11 or lower
+// Only for Minecraft 1.20.4 or lower
 renamer {
 	// Creates a task named 'renameJar'
 	classes(tasks.named<Jar>("jar")) {

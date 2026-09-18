@@ -38,22 +38,18 @@ loom {
 
 	runs {
 		configureEach {
-			generateRunConfig = true
-			appendProjectPathToDisplayName = false
 			systemProperties.put("mixin.debug.verbose", "true")
 			systemProperties.put("mixin.debug.export", "true")
 		}
 
 		named("client") {
 			client()
-			displayName  = "Fabric Client"
 			runDirectory = file("run/client")
 			programArguments.addAll("--username", "dev")
 		}
 
 		named("server") {
 			server()
-			displayName  = "Fabric Server"
 			runDirectory = file("run/server")
 		}
 	}
