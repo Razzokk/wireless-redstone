@@ -2,13 +2,12 @@ plugins {
 	id("common")
 }
 
-configurations {
-	register("commonJava") {
-		isCanBeResolved = true
-	}
-	register("commonResources") {
-		isCanBeResolved = true
-	}
+val commonJava = configurations.register("commonJava") {
+	isCanBeResolved = true
+}
+
+val commonResources = configurations.register("commonResources") {
+	isCanBeResolved = true
 }
 
 val common = project(":common")
@@ -21,25 +20,25 @@ sourceSets {
 }
 
 dependencies {
-	"commonJava"(project(":common", "commonJava"))
-	"commonResources"(project(":common", "commonResources"))
+	commonJava(project(":common", commonJava.name))
+	commonResources(project(":common", commonResources.name))
 }
 
 tasks {
 	named<JavaCompile>("compileJava").configure {
-		dependsOn(configurations.getByName("commonJava"))
-		source(configurations.getByName("commonJava"))
+		dependsOn(commonJava)
+		source(commonJava)
 	}
 
 	named<ProcessResources>("processResources").configure {
-		dependsOn(configurations.getByName("commonResources"))
-		from(configurations.getByName("commonResources"))
+		dependsOn(commonResources)
+		from(commonResources)
 	}
 
 	named<Jar>("sourcesJar").configure {
-		dependsOn(configurations.getByName("commonJava"))
-		from(configurations.getByName("commonJava"))
-		dependsOn(configurations.getByName("commonResources"))
-		from(configurations.getByName("commonResources"))
+		dependsOn(commonJava)
+		from(commonJava)
+		dependsOn(commonResources)
+		from(commonResources)
 	}
 }

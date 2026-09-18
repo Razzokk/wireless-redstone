@@ -1,6 +1,5 @@
 import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
 import mod.gradle.Mod
-import org.apache.tools.ant.filters.LineContains
 
 // Reference: https://projects.neoforged.net/neoforged/moddevgradle
 
@@ -29,6 +28,8 @@ neoForge {
 
 	runs {
 		configureEach {
+			systemProperty("mixin.debug.verbose", "true")
+			systemProperty("mixin.debug.export", "true")
 			systemProperty("forge.logging.markers", "REGISTRIES")
 			systemProperty("forge.logging.console.level", "debug")
 		}
@@ -37,7 +38,7 @@ neoForge {
 			client()
 			ideName = "NeoForge Client"
 			gameDirectory.set(file("run/client"))
-			jvmArguments.set(setOf("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true"))
+			programArguments.set(setOf("--username", "dev"))
 		}
 
 		create("server") {
@@ -45,21 +46,6 @@ neoForge {
 			ideName = "NeoForge Server"
 			gameDirectory.set(file("run/server"))
 			programArgument("--nogui")
-			jvmArguments.set(setOf("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true"))
-		}
-	}
-
-	mods {
-		register(Mod.ID) {
-			sourceSet(sourceSets["main"])
-		}
-	}
-}
-
-tasks {
-	named<ProcessResources>("processResources").configure {
-		filesMatching("*.mixins.json") {
-			filter<LineContains>("negate" to true, "contains" to setOf("refmap"))
 		}
 	}
 }

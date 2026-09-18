@@ -1,7 +1,6 @@
 import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
 import mod.gradle.Mod
 import net.minecraftforge.renamer.gradle.RenameJar
-import org.apache.tools.ant.filters.LineContains
 import org.gradle.jvm.tasks.Jar
 
 // Reference: https://github.com/MinecraftForge/MDKExamples
@@ -33,12 +32,6 @@ minecraft {
 
 	runs {
 		configureEach {
-			mods {
-				create(Mod.ID) {
-					source(sourceSets["main"])
-				}
-			}
-
 			systemProperty("eventbus.api.strictRuntimeChecks", "true")
 			systemProperty("mixin.env.remapRefMap", "true")
 			systemProperty("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
@@ -49,6 +42,7 @@ minecraft {
 
 		create("client") {
 			workingDir = file("run/client")
+			args("--username", "dev")
 		}
 
 		create("server") {
@@ -68,14 +62,6 @@ renamer {
 
 	// Needs to be after the call of `minecraft.dependency`, also stated by error message
 	mappings(minecraft.dependency.toSrg)
-}
-
-tasks {
-	named<ProcessResources>("processResources").configure {
-		filesMatching("*.mixins.json") {
-			filter<LineContains>("negate" to true, "contains" to setOf("refmap"))
-		}
-	}
 }
 
 publishMods {

@@ -48,14 +48,14 @@ modmenu = { module = "maven.modrinth:modmenu", version.ref = "modmenu" }
 
 [plugins]
 changelog = { id = "org.jetbrains.changelog", version = "2.5.0" }
-publish = { id = "me.modmuss50.mod-publish-plugin", version = "2.1.1" }
+publish = { id = "me.modmuss50.mod-publish-plugin", version = "2.2.0" }
 
-moddev = { id = "net.neoforged.moddev", version = "2.0.141" }
+moddev = { id = "net.neoforged.moddev", version = "2.0.147" }
 
 # net.fabricmc.fabric-loom for new unobfuscated minecraft versions
 # net.fabricmc.fabric-loom-remap for old obfuscated minecraft versions
 loom = { id = "net.fabricmc.fabric-loom-remap", version = "1.17-SNAPSHOT" }
 
-forge-gradle = { id = "net.minecraftforge.gradle", version = "[7.0.29,8)" }
+forge-gradle = { id = "net.minecraftforge.gradle", version = "[7.0.40,8)" }
 # Only for Minecraft 1.21.11 or lower:
-forge-renamer = { id = "net.minecraftforge.renamer", version = "1.1.5" }
+forge-renamer = { id = "net.minecraftforge.renamer", version = "1.1.7" }

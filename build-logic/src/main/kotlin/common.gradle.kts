@@ -123,9 +123,13 @@ tasks {
 	val processResourcesTasks = listOf("processResources", "processDatagenResources")
 
 	withType<ProcessResources>().matching { processResourcesTasks.contains(it.name) }.configureEach {
+		// Expand the above properties in matching files
 		inputs.properties(expandProps)
 		filesMatching(setOf("fabric.mod.json", "META-INF/mods.toml", "*.mixins.json", "pack.mcmeta")) {
 			expand(expandProps)
 		}
+
+		// Do not include .cache from generated resources
+		exclude("\\.cache")
 	}
 }
