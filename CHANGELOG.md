@@ -30,7 +30,7 @@ with the Minecraft version appended.
 - Sniffer stack size is supposed to be 1
 - Sniffer and target highlight render wobbling when far out in the world due to floating point number precision (the farther out, the bigger the wobble)
 - P2P transmitter and receiver block entities not updating data correctly
-- Fabric:
+- **Fabric**:
   - Wrong mixin configuration (was only registered on the client, oops)
   - Redstone wire not connecting to transmitters and receivers (if played on server)
   - Frequency activated with remote stayed on if:
@@ -135,7 +135,7 @@ Port to MC 1.20.1
 
 - Increased contrast of T and R letters on transmitter and receiver texture
 
-[Unreleased]: https://github.com/Razzokk/wireless-redstone/compare/v1.2.2+1.20.1...HEAD
+[Unreleased]: https://github.com/Razzokk/wireless-redstone/compare/v1.3.0+1.20.1...HEAD
 [1.20.1-1.1.3]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.1.2...v1.20.1-1.1.3
 [1.20.1-1.1.2]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.1.1...v1.20.1-1.1.2
 [1.20.1-1.1.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.1.0...v1.20.1-1.1.1
@@ -143,5 +143,6 @@ Port to MC 1.20.1
 [1.20.1-1.0.2]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.0.1...v1.20.1-1.0.2
 [1.20.1-1.0.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.0.0...v1.20.1-1.0.1
 [1.20.1-1.0.0]: https://github.com/Razzokk/wireless-redstone/commits/v1.20.1-1.0.0
+[1.3.0+1.20.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.2.2+1.20.1...v1.3.0+1.20.1
 [1.2.2+1.20.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.2.1+1.20.1...v1.2.2+1.20.1
 [1.2.1+1.20.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.20.1-1.1.3...v1.2.1+1.20.1

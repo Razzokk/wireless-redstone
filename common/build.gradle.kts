@@ -1,6 +1,6 @@
 import mod.gradle.Mod
 
-// Reference: https://projects.neoforged.net/neoforged/moddevgradle (NeoForm)
+// Reference: https://github.com/SpongePowered/VanillaGradle
 
 plugins {
 	id("common")

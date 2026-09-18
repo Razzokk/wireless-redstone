@@ -36,27 +36,25 @@ loom {
 	val aw = file("src/main/resources/${Mod.ID}.accesswidener")
 	if (aw.exists()) accessWidenerPath.set(aw)
 
-	mods {
-		register(Mod.ID) {
-			sourceSet(sourceSets["main"])
-		}
-	}
-
 	runs {
+		configureEach {
+			generateRunConfig = true
+			appendProjectPathToDisplayName = false
+			systemProperties.put("mixin.debug.verbose", "true")
+			systemProperties.put("mixin.debug.export", "true")
+		}
+
 		named("client") {
 			client()
-			configName = "Fabric Client"
-			runDir = "run/client"
-			ideConfigGenerated(true)
-			vmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
+			displayName  = "Fabric Client"
+			runDirectory = file("run/client")
+			programArguments.addAll("--username", "dev")
 		}
 
 		named("server") {
 			server()
-			configName = "Fabric Server"
-			runDir = "run/server"
-			ideConfigGenerated(true)
-			vmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
+			displayName  = "Fabric Server"
+			runDirectory = file("run/server")
 		}
 	}
 }
