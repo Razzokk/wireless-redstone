@@ -6,6 +6,8 @@ with the Minecraft version appended.
 
 ## [Unreleased]
 
+## [1.3.0+1.20.1] - 2026-09-18
+
 ### Added
 
 - **Attachment** block version of Redstone Transmitter/Receiver and P2P Redstone Transmitter/Receiver
