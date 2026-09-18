@@ -1,7 +1,6 @@
 import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
 import mod.gradle.Mod
 import net.minecraftforge.renamer.gradle.RenameJar
-import org.apache.tools.ant.filters.LineContains
 import org.gradle.jvm.tasks.Jar
 
 // Reference: https://github.com/MinecraftForge/MDKExamples
@@ -33,22 +32,16 @@ minecraft {
 
 	runs {
 		configureEach {
-			mods {
-				create(Mod.ID) {
-					source(sourceSets["main"])
-				}
-			}
-
 			systemProperty("eventbus.api.strictRuntimeChecks", "true")
-			systemProperty("mixin.env.remapRefMap", "true")
-			systemProperty("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
 			systemProperty("forge.logging.markers", "REGISTRIES")
 			systemProperty("forge.logging.console.level", "debug")
-			jvmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
+			systemProperty("mixin.debug.verbose", "true")
+			systemProperty("mixin.debug.export", "true")
 		}
 
 		create("client") {
 			workingDir = file("run/client")
+			args("--username", "dev")
 		}
 
 		create("server") {
@@ -58,7 +51,7 @@ minecraft {
 	}
 }
 
-// Only for Minecraft 1.21.11 or lower
+// Only for Minecraft 1.20.4 or lower
 renamer {
 	// Creates a task named 'renameJar'
 	classes(tasks.named<Jar>("jar")) {
@@ -68,14 +61,6 @@ renamer {
 
 	// Needs to be after the call of `minecraft.dependency`, also stated by error message
 	mappings(minecraft.dependency.toSrg)
-}
-
-tasks {
-	named<ProcessResources>("processResources").configure {
-		filesMatching("*.mixins.json") {
-			filter<LineContains>("negate" to true, "contains" to setOf("refmap"))
-		}
-	}
 }
 
 publishMods {
