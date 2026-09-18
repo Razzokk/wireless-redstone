@@ -1,0 +1,55 @@
+[versions]
+minecraft = "1.19.2"
+parchment = "2022.08.14"
+
+fabric-loader = "0.19.0"
+fabric-api = "0.76.1+1.19.2"
+fabric-range-minecraft = "1.19.2"
+fabric-range-loader = ">=0.19"
+
+forge-loader = "1.19.2-43.2.0"
+forge-range-loader = "[43,)"
+forge-range-minecraft = "[1.19.2,1.19.3)"
+
+mixin = "0.8.7"
+mixin-fabric = "0.16.3+mixin.0.8.7"
+mixin-extras = "0.5.4"
+
+# Dependencies (optional)
+clothconfig = "8.3.103"
+modmenu = "4.1.2"
+
+[libraries]
+minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
+parchment = { module = "org.parchmentmc.data:parchment", version.ref = "parchment" }
+
+fabric-loader = { module = "net.fabricmc:fabric-loader", version.ref = "fabric-loader" }
+fabric-api = { module = "net.fabricmc.fabric-api:fabric-api", version.ref = "fabric-api" }
+
+forge = { module = "net.minecraftforge:forge", version.ref = "forge-loader" }
+
+mixin = { module = "org.spongepowered:mixin", version.ref = "mixin" }
+mixin-fabric = { module = "net.fabricmc:sponge-mixin", version.ref = "mixin-fabric" }
+mixin-extras = { module = "io.github.llamalad7:mixinextras-common", version.ref = "mixin-extras" }
+
+# Dependencies (optional)
+clothconfig-fabric = { module = "me.shedaniel.cloth:cloth-config-fabric", version.ref = "clothconfig" }
+clothconfig-forge = { module = "me.shedaniel.cloth:cloth-config-forge", version.ref = "clothconfig" }
+
+modmenu = { module = "maven.modrinth:modmenu", version.ref = "modmenu" }
+# Normally this, but lately causes issues during fetching on ci pipeline
+#modmenu = { module = "com.terraformersmc:modmenu", version.ref = "modmenu" }
+
+[plugins]
+changelog = { id = "org.jetbrains.changelog", version = "2.5.0" }
+publish = { id = "me.modmuss50.mod-publish-plugin", version = "2.2.0" }
+
+vanilla = { id = "org.spongepowered.gradle.vanilla", version = "0.2.2" }
+
+# net.fabricmc.fabric-loom for new unobfuscated minecraft versions
+# net.fabricmc.fabric-loom-remap for old obfuscated minecraft versions
+loom = { id = "net.fabricmc.fabric-loom-remap", version = "1.17-SNAPSHOT" }
+
+forge-gradle = { id = "net.minecraftforge.gradle", version = "[7.0.40,8)" }
+# Only for Minecraft 1.21.11 or lower:
+forge-renamer = { id = "net.minecraftforge.renamer", version = "1.1.7" }

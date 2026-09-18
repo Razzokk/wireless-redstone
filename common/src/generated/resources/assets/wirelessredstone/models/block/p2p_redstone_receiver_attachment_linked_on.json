@@ -1,0 +1,8 @@
+{
+  "parent": "wirelessredstone:block/template/attachment",
+  "textures": {
+    "bottom": "wirelessredstone:block/p2p_redstone_receiver_attachment/bottom_linked_on",
+    "side": "wirelessredstone:block/p2p_redstone_receiver_attachment/side_linked_on",
+    "top": "wirelessredstone:block/p2p_redstone_receiver_attachment/top_linked_on"
+  }
+}

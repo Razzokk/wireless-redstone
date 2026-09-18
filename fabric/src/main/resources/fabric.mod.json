@@ -1,39 +1,37 @@
 {
 	"schemaVersion": 1,
 	"id": "${mod_id}",
-	"version": "${mod_version}",
-	"name": "${mod_display_name}",
-	"license": "${mod_license}",
-	"icon": "icon.png",
-	"environment": "*",
+	"version": "${mod_version}+${minecraft_version}",
+	"name": "${mod_name}",
 	"description": "${mod_description}",
-	"authors": [
-		"${mod_author}"
-	],
+	"license": "${mod_license}",
+	"icon": "assets/${mod_id}/icon.png",
+	"environment": "*",
+	"authors": [ "${mod_author}" ],
 	"contact": {
-		"homepage": "https://www.curseforge.com/minecraft/mc-mods/wirelessredstone",
-		"sources": "https://github.com/Razzokk/WirelessRedstone",
-		"issues": "https://github.com/Razzokk/WirelessRedstone/issues"
+		"homepage": "${curseforge_page}",
+		"issues": "${sources}/issues",
+		"sources": "${sources}"
 	},
 	"entrypoints": {
 		"main": [
-			"rzk.wirelessredstone.WirelessRedstone"
+			"rzk.wirelessredstone.WirelessRedstoneFabric"
 		],
 		"client": [
-			"rzk.wirelessredstone.WirelessRedstoneClient"
+			"rzk.wirelessredstone.client.WirelessRedstoneClientFabric"
 		],
 		"modmenu": [
-			"rzk.wirelessredstone.WRModMenu"
+			"rzk.wirelessredstone.client.WRModMenu"
 		]
 	},
 	"mixins": [
-		"wirelessredstone.mixins.json"
+		"${mod_id}.fabric.mixins.json"
 	],
 	"depends": {
 		"java": ">=${java_version}",
-		"minecraft": "~${mc_version}",
-		"fabricloader": ">=${loader_version}",
-		"fabric-api": ">=${fabric_api_version}"
+		"minecraft": "${fabric_minecraft_version_range}",
+		"fabricloader": "${fabric_loader_range}",
+		"fabric-api": "*"
 	},
 	"suggests": {
 		"cloth-config": ">=${cloth_config_version}",
@@ -42,7 +40,9 @@
 	"custom": {
 		"modmenu": {
 			"links": {
-				"modmenu.discord": "https://discord.gg/4f2sFD53XK"
+				"modmenu.curseforge": "${curseforge_page}",
+				"modmenu.modrinth": "${modrinth_page}",
+				"modmenu.discord": "${discord}"
 			}
 		}
 	}

@@ -2,9 +2,13 @@
 
 Format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 versioning follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html)
-with the minecraft version prepended to it.
+with the Minecraft version appended.
 
 ## [Unreleased]
+
+## [1.3.0+1.19.2] - 2026-09-19
+
+Backport from 1.3.0+1.20.1
 
 ## [1.19.2-1.1.2] - 2024-07-09
 
@@ -28,8 +32,9 @@ Backport from [1.19.4](https://github.com/Razzokk/WirelessRedstone/commit/244532
 
 Initial 1.19.2 version
 
-[Unreleased]: https://github.com/Razzokk/WirelessRedstone/compare/release/1.19.2-1.1.2...HEAD
-[1.19.2-1.1.1]: https://github.com/Razzokk/WirelessRedstone/compare/release/1.19.2-1.1.0...release/1.19.2-1.1.1
-[1.19.2-0.1.0b]: https://github.com/Razzokk/WirelessRedstone/commits/release/1.19.2-0.1.0b
-[1.19.2-1.1.0]: https://github.com/Razzokk/WirelessRedstone/compare/release/1.19.2-0.1.0b...release/1.19.2-1.1.0
-[1.19.2-1.1.2]: https://github.com/Razzokk/WirelessRedstone/compare/release/1.19.2-1.1.1...release/1.19.2-1.1.2
+[Unreleased]: https://github.com/Razzokk/wireless-redstone/compare/v1.3.0+1.19.2...HEAD
+[1.19.2-1.1.2]: https://github.com/Razzokk/wireless-redstone/compare/v1.19.2-1.1.1...v1.19.2-1.1.2
+[1.19.2-1.1.1]: https://github.com/Razzokk/wireless-redstone/compare/v1.19.2-1.1.0...v1.19.2-1.1.1
+[1.19.2-1.1.0]: https://github.com/Razzokk/wireless-redstone/compare/v1.19.2-0.1.0b...v1.19.2-1.1.0
+[1.19.2-0.1.0b]: https://github.com/Razzokk/wireless-redstone/commits/v1.19.2-0.1.0b
+[1.3.0+1.19.2]: https://github.com/Razzokk/wireless-redstone/compare/v1.19.2-1.1.2...v1.3.0+1.19.2

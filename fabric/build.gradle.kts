@@ -1,133 +1,101 @@
-import net.darkhax.curseforgegradle.Constants
-import net.darkhax.curseforgegradle.TaskPublishCurseForge
+import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
+import mod.gradle.Mod
+
+// Reference: https://docs.fabricmc.net/develop/loom
 
 plugins {
-	id("fabric-loom") version "1.2-SNAPSHOT"
-	id("com.modrinth.minotaur")
-	id("net.darkhax.curseforgegradle")
-}
-
-val common = project(":common")
-
-val javaVersion: Int by rootProject
-val mcVersion: String by project
-val modId: String by project
-val modVersion: String by project
-val loaderVersion: String by project
-val yarnMappings: String by project
-val fabricApiVersion: String by project
-val clothConfigVersion: String by project
-val modMenuVersion: String by project
-val jeiVersion: String by project
-val curseforgeProjectId: String by project
-val modReleaseType: String by project
-val changelogProvider: Provider<String> by project
-
-val generatedResources: File = common.file("src/main/generated")
-
-base {
-	archivesName.set("$modId-fabric")
+	id("loader")
+	alias(libs.plugins.publish)
+	alias(libs.plugins.loom)
 }
 
 repositories {
-	maven("https://maven.shedaniel.me/")				// Cloth config
 	maven("https://maven.terraformersmc.com/releases/")	// Mod Menu
-	maven("https://maven.blamejared.com/")				// JEI
+	maven("https://maven.nucleoid.xyz/")	// Needed by ModMenu 9.2.0
 }
 
 dependencies {
-	implementation(common)
-	minecraft("com.mojang", "minecraft", mcVersion)
-	mappings("net.fabricmc", "yarn", yarnMappings, classifier = "v2")
+	minecraft(libs.minecraft)
 
-	modImplementation("net.fabricmc", "fabric-loader", loaderVersion)
-	modImplementation("net.fabricmc.fabric-api", "fabric-api", fabricApiVersion)
+	mappings(loom.layered {
+		officialMojangMappings()
+		parchment("${libs.parchment.get().module}-${libs.versions.minecraft.get()}:${libs.versions.parchment.get()}@zip")
+	})
 
-	modCompileOnly("me.shedaniel.cloth", "cloth-config-fabric", clothConfigVersion)
-	modCompileOnly("com.terraformersmc", "modmenu", modMenuVersion)
+	modImplementation(libs.fabric.loader)
+	modImplementation(libs.fabric.api)
 
-	modLocalRuntime("mezz.jei", "jei-$mcVersion-fabric", jeiVersion)
+	modApi(libs.clothconfig.fabric) {
+		exclude(group = libs.fabric.api.get().group)
+		exclude(group = libs.fabric.loader.get().group)
+	}
+
+	modImplementation(libs.modmenu) {
+		exclude(group = libs.fabric.api.get().group)
+		exclude(group = libs.fabric.loader.get().group)
+	}
 }
 
-project.evaluationDependsOn(common.path)
-
 loom {
-	splitEnvironmentSourceSets()
-
-	mods {
-		register(modId) {
-			sourceSet(sourceSets.main.get())
-			sourceSet(sourceSets["client"])
-		}
-	}
+	val aw = file("src/main/resources/${Mod.ID}.accesswidener")
+	if (aw.exists()) accessWidenerPath.set(aw)
 
 	runs {
 		configureEach {
-			runDir(common.projectDir.relativeTo(projectDir).resolve("run").path)
-			// Needed to generate the run configuration
-			ideConfigGenerated(true)
+			generateRunConfig = true
+			appendProjectPathToDisplayName = false
+			systemProperties.put("mixin.debug.verbose", "true")
+			systemProperties.put("mixin.debug.export", "true")
 		}
 
 		named("client") {
 			client()
-			configName = "Fabric Client"
-			programArgs("--username", "Dev")
+			displayName  = "Fabric Client"
+			runDirectory = file("run/client")
+			programArguments.addAll("--username", "dev")
 		}
 
 		named("server") {
 			server()
-			configName = "Fabric Server"
+			displayName  = "Fabric Server"
+			runDirectory = file("run/server")
 		}
 	}
 }
 
-tasks {
-	jar {
-		from(common.sourceSets.main.get().output)
-		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+publishMods {
+	val changelogProvider = rootProject.extra["changelogProvider"] as Provider<*>
+	val minecraftVersion = libs.versions.minecraft.get()
+
+	file.set(tasks.remapJar.get().archiveFile)
+	modLoaders.add("fabric")
+	changelog = changelogProvider.get() as String
+	displayName = "[Fabric $minecraftVersion] ${Mod.VERSION} ${Mod.NAME}"
+	version = "${Mod.VERSION}+$minecraftVersion-fabric"
+	type = STABLE
+
+	curseforge {
+		projectId = Mod.CURSEFORGE_PROJECT_ID
+		accessToken = providers.environmentVariable("CURSEFORGE_TOKEN")
+		minecraftVersions.add(minecraftVersion)
+
+		javaVersions.add(JavaVersion.toVersion(Mod.JAVA))
+
+		client = true
+		server = true
+
+		requires("fabric-api")
+		optional("cloth-config", "modmenu")
 	}
 
-	named<Jar>("sourcesJar") {
-		from(common.sourceSets.main.get().allSource)
-		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+	modrinth {
+		projectId = Mod.MODRINTH_PROJECT_ID
+		accessToken = providers.environmentVariable("MODRINTH_TOKEN")
+		minecraftVersions.add(minecraftVersion)
+
+		environment.set(ModrinthEnvironment.CLIENT_AND_SERVER)
+
+		requires("fabric-api")
+		optional("cloth-config", "modmenu")
 	}
-
-	processResources {
-		from(common.sourceSets.main.get().resources)
-		duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-	}
-}
-
-// Publishing
-
-modrinth {
-	if (project.hasProperty("debug")) debugMode.set(true)
-	token.set(System.getenv("MODRINTH_TOKEN"))
-
-	projectId.set(modId)
-	versionNumber.set("fabric-$modVersion")
-	versionName.set("[Fabric $mcVersion] $modId-$modVersion")
-	versionType.set(modReleaseType)
-	uploadFile.set(tasks.remapJar)
-	changelog.set(changelogProvider)
-
-	dependencies {
-		required.project("fabric-api")
-		optional.project("cloth-config")
-		optional.project("modmenu")
-	}
-}
-
-tasks.register<TaskPublishCurseForge>("curseforge") {
-	if (project.hasProperty("debug")) debugMode = true
-	apiToken = System.getenv("CURSEFORGE_TOKEN")
-
-	val file = upload(curseforgeProjectId, tasks.remapJar)
-	file.displayName = "[Fabric $mcVersion] $modId-$modVersion"
-	file.releaseType = modReleaseType
-	file.changelog = changelogProvider.get()
-	file.changelogType = Constants.CHANGELOG_MARKDOWN
-	file.addJavaVersion("Java $javaVersion")
-	file.addRequirement("fabric-api")
-	file.addOptional("cloth-config", "modmenu")
 }

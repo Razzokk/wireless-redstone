@@ -1,60 +1,52 @@
 package rzk.wirelessredstone.network;
 
-import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.minecraft.item.ItemStack;
-import net.minecraft.network.PacketByteBuf;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.server.level.ServerPlayer;
 import rzk.wirelessredstone.block.RedstoneTransceiverBlock;
 import rzk.wirelessredstone.item.FrequencyItem;
-import rzk.wirelessredstone.item.ModItems;
 import rzk.wirelessredstone.item.RemoteItem;
-import rzk.wirelessredstone.network.packet.Packet;
-import rzk.wirelessredstone.network.packet.PacketType;
-import rzk.wirelessredstone.network.packet.ServerPacketHandler;
+import rzk.wirelessredstone.misc.Frequency;
+import rzk.wirelessredstone.registry.ModItems;
 
-public class ModNetworking
-{
-	public static void register()
-	{
-		registerGlobalServerReceiver(FrequencyBlockPacket.TYPE, (packet, player, responseSender) ->
-		{
-			World world = player.getWorld();
-			if (world.getBlockState(packet.pos).getBlock() instanceof RedstoneTransceiverBlock block)
-				block.setFrequency(world, packet.pos, packet.frequency);
-		});
+public class ModNetworking {
+	@FunctionalInterface
+	public interface PacketHandler<T extends Packet> {
+		void receive(T packet, ServerPlayer player);
+	}
 
-		registerGlobalServerReceiver(FrequencyItemPacket.TYPE, (packet, player, responseSender) ->
-		{
-			ItemStack stack = player.getStackInHand(packet.hand);
-			if (stack.getItem() instanceof FrequencyItem item)
-				item.setFrequency(stack, packet.frequency);
-		});
-
-		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
-		{
-			ServerPlayerEntity player = handler.player;
-			ItemStack stack = player.getActiveItem();
-			if (!stack.isOf(ModItems.REMOTE)) return;
-			((RemoteItem) stack.getItem()).onDeactivation(stack, player.getWorld(), player);
+	public static <T extends Packet> boolean registerGlobalReceiver(Packet.Type<T> type, PacketHandler<T> receiver) {
+		return ServerPlayNetworking.registerGlobalReceiver(type.id(), (server, player, handler, buf, responseSender) -> {
+			var packet = type.creator().apply(buf);
+			if (server.isSameThread()) {
+				receiver.receive(packet, player);
+			}
+			else {
+				server.execute(() -> {
+					receiver.receive(packet, player);
+				});
+			}
 		});
 	}
 
-	private static <T extends Packet> void registerGlobalServerReceiver(PacketType<T> packetType, ServerPacketHandler<T> handler)
-	{
-		ServerPlayNetworking.registerGlobalReceiver(packetType.identifier, (server, player, ignore, buf, responseSender) ->
-		{
-			T packet = packetType.createPacket(buf);
-			server.execute(() -> handler.handle(packet, player, responseSender));
+	public static void register() {
+		registerGlobalReceiver(FrequencyBlockPacket.TYPE, (packet, player) -> {
+			var level = player.level;
+			if (level.getBlockState(packet.pos()).getBlock() instanceof RedstoneTransceiverBlock block)
+				block.setFrequency(level, packet.pos(), packet.frequency());
 		});
-	}
 
-	public static <T extends Packet> void send(ServerPlayerEntity player, T packet)
-	{
-		PacketByteBuf buffer = PacketByteBufs.create();
-		packet.write(buffer);
-		ServerPlayNetworking.send(player, packet.getType().identifier, buffer);
+		registerGlobalReceiver(FrequencyItemPacket.TYPE, (packet, player) -> {
+			var stack = player.getItemInHand(packet.hand());
+			if (stack.getItem() instanceof FrequencyItem)
+				Frequency.set(stack, packet.frequency());
+		});
+
+		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+			var player = handler.player;
+			var stack = player.getUseItem();
+			if (!stack.is(ModItems.remote)) return;
+			((RemoteItem) stack.getItem()).onDeactivation(stack, player.level, player);
+		});
 	}
 }
