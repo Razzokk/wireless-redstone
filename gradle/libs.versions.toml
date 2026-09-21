@@ -11,7 +11,7 @@ forge-loader = "1.20.1-47.1.47"
 forge-range-loader = "[47,)"
 forge-range-minecraft = "[1.20.1,1.20.2)"
 
-mixin = "0.8.5"
+mixin = "0.8.7"
 mixin-fabric = "0.16.3+mixin.0.8.7"
 mixin-extras = "0.5.4"
 

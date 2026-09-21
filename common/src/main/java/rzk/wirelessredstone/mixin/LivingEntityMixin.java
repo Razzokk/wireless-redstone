@@ -28,9 +28,9 @@ public abstract class LivingEntityMixin extends Entity
 
 	@Inject(method = "stopUsingItem", at = @At("HEAD"))
 	private void onStopUsingItem(CallbackInfo ci) {
+		System.out.println("HELLOOOOOOOOOOOO WOOOOOOOOOOOOOOORLD");
 		if (isUsingItem() && useItem.getItem() instanceof SelectedItemListener listener) {
 			listener.onStopUsing(useItem, (LivingEntity) (Object) this, useItem.getUseDuration());
-			System.out.println("HELLOOOOOOOOOOOO WOOOOOOOOOOOOOOORLD");
 		}
 	}
 }
