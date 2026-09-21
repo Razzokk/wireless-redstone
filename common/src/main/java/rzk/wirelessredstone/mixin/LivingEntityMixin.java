@@ -27,8 +27,10 @@ public abstract class LivingEntityMixin extends Entity
 	public abstract boolean isUsingItem();
 
 	@Inject(method = "stopUsingItem", at = @At("HEAD"))
-	private void clearActiveItem(CallbackInfo ci) {
-		if (isUsingItem() && useItem.getItem() instanceof SelectedItemListener listener)
+	private void onStopUsingItem(CallbackInfo ci) {
+		if (isUsingItem() && useItem.getItem() instanceof SelectedItemListener listener) {
 			listener.onStopUsing(useItem, (LivingEntity) (Object) this, useItem.getUseDuration());
+			System.out.println("HELLOOOOOOOOOOOO WOOOOOOOOOOOOOOORLD");
+		}
 	}
 }
