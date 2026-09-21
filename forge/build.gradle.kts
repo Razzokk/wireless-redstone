@@ -33,11 +33,9 @@ minecraft {
 	runs {
 		configureEach {
 			systemProperty("eventbus.api.strictRuntimeChecks", "true")
-			systemProperty("mixin.env.remapRefMap", "true")
-			systemProperty("mixin.env.refMapRemappingFile", "${projectDir}/build/createSrgToMcp/output.srg")
 			systemProperty("forge.logging.markers", "REGISTRIES")
 			systemProperty("forge.logging.console.level", "debug")
-			jvmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
+//			jvmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
 		}
 
 		create("client") {
@@ -52,10 +50,11 @@ minecraft {
 	}
 }
 
-// Only for Minecraft 1.21.11 or lower
+// Only for Minecraft 1.20.4 or lower
 renamer {
 	enableMixinRefmaps {
 		config("${Mod.ID}.forge.mixins.json")
+		refMap = "${Mod.ID}.refmap.json"
 	}
 
 	// Creates a task named 'renameJar'
@@ -69,22 +68,6 @@ renamer {
 	// Needs to be after the call of `minecraft.dependency`, also stated by error message
 	mappings(minecraft.dependency.toSrg)
 }
-
-// Mixin configuration (requires plugin: id("org.spongepowered.mixin") version "0.7.+")
-// Does not work because not compatible with newer gradle versions
-// Workaround: reference main.refmap.json in the mixin file
-
-//mixin {
-//	add(sourceSets.main.get(), "$modId.refmap.json")
-//	config("$modId.mixins.json")
-//
-//	if (project.hasProperty("debug")) {
-//		val debug = this.debug as DynamicProperties
-//		debug.setProperty("verbose", true)
-//		debug.setProperty("export", true)
-//		setDebug(debug)
-//	}
-//}
 
 publishMods {
 	val changelogProvider = rootProject.extra["changelogProvider"] as Provider<*>

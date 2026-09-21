@@ -11,7 +11,8 @@ forge-loader = "1.19.2-43.2.0"
 forge-range-loader = "[43,)"
 forge-range-minecraft = "[1.19.2,1.19.3)"
 
-mixin = "0.8.7"
+# 1.19.2 forge/renamer seems to be only working with 0.8.5
+mixin = "0.8.5"
 mixin-fabric = "0.16.3+mixin.0.8.7"
 mixin-extras = "0.5.4"
 
@@ -51,5 +52,5 @@ vanilla = { id = "org.spongepowered.gradle.vanilla", version = "0.2.2" }
 loom = { id = "net.fabricmc.fabric-loom-remap", version = "1.17-SNAPSHOT" }
 
 forge-gradle = { id = "net.minecraftforge.gradle", version = "[7.0.40,8)" }
-# Only for Minecraft 1.21.11 or lower:
+# Only for Minecraft 1.20.4 or lower:
 forge-renamer = { id = "net.minecraftforge.renamer", version = "1.1.7" }
