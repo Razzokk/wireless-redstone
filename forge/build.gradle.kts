@@ -54,9 +54,7 @@ minecraft {
 renamer {
 	enableMixinRefmaps {
 		config("${Mod.ID}.forge.mixins.json")
-//		source(sourceSets.main.get()) {
-//			refMap = "${Mod.ID}.refmap.json"
-//		}
+		refMap = "${Mod.ID}.refmap.json"
 	}
 
 	// Creates a task named 'renameJar'

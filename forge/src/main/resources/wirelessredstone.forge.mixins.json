@@ -3,6 +3,7 @@
 	"minVersion": "0.8",
 	"package": "rzk.wirelessredstone.mixin",
 	"compatibilityLevel": "JAVA_${java_version}",
+	"refmap": "${mod_id}.refmap.json",
 	"mixins": [
 		"LivingEntityMixin"
 	],
