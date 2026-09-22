@@ -50,15 +50,21 @@ minecraft {
 	}
 }
 
-tasks.compileJava {
-	options.compilerArgs.add("-AoutRefMapFile=${project.projectDir}/src/main/resources/${Mod.ID}.refmap.json")
-}
+//tasks.compileJava {
+//	val tsrgFile = project.tasks.findByPath(":extractMappings")?.outputs?.files?.singleFile
+//	options.compilerArgs.add("-AoutRefMapFile=${project.projectDir}/src/main/resources/${Mod.ID}.refmap.json")
+//	if (tsrgFile != null && tsrgFile.exists()) {
+//		options.compilerArgs.add("-AreobfTsrgFile=${tsrgFile.absolutePath}")
+//	}
+//}
 
 // Only for Minecraft 1.20.4 or lower
 renamer {
 	enableMixinRefmaps {
+		source(sourceSets.main.get()) {
+			refMap = "${Mod.ID}.refmap.json"
+		}
 		config("${Mod.ID}.forge.mixins.json")
-		refMap = "${Mod.ID}.refmap.json"
 	}
 
 	// Creates a task named 'renameJar'
