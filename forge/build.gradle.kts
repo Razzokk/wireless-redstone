@@ -51,7 +51,7 @@ minecraft {
 }
 
 tasks.compileJava {
-	val mappingProvider = project.tasks.findByPath(":extractMappings")
+	val mappingProvider = project.tasks.findByPath(":createMcpToSrg")
 	options.compilerArgs.add("-AoutRefMapFile=${project.projectDir}/src/main/resources/${Mod.ID}.refmap.json")
 	options.compilerArgs.add("-Averbose=true")
 
@@ -62,7 +62,7 @@ tasks.compileJava {
 	}
 }
 
-tasks.compileJava.get().dependsOn(tasks.named("extractMappings"))
+tasks.compileJava.get().dependsOn(tasks.named("createMcpToSrg"))
 
 // Only for Minecraft 1.20.4 or lower
 renamer {
