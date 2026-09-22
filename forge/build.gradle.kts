@@ -50,6 +50,10 @@ minecraft {
 	}
 }
 
+tasks.compileJava {
+	options.compilerArgs.add("-AoutRefMapFile=${project.projectDir}/src/main/resources/${Mod.ID}.refmap.json")
+}
+
 // Only for Minecraft 1.20.4 or lower
 renamer {
 	enableMixinRefmaps {
