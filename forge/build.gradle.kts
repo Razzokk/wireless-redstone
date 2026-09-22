@@ -50,10 +50,12 @@ minecraft {
 	}
 }
 
-tasks.compileJava {
-	options.compilerArgs.add("-AoutRefMapFile=${project.projectDir}/src/main/resources/${Mod.ID}.refmap.json")
-	options.compilerArgs.add("-AdefaultObfuscationEnv=searge")
-}
+//tasks.compileJava {
+//	options.compilerArgs.add("-AoutRefMapFile=${project.projectDir}/src/main/resources/${Mod.ID}.refmap.json")
+//	options.compilerArgs.add("-AdefaultObfuscationEnv=searge")
+//}
+
+tasks.compileJava.get().outputs.upToDateWhen { false }
 
 // Only for Minecraft 1.20.4 or lower
 renamer {
