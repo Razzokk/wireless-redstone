@@ -50,12 +50,17 @@ minecraft {
 	}
 }
 
-//tasks.compileJava {
-//	options.compilerArgs.add("-AoutRefMapFile=${project.projectDir}/src/main/resources/${Mod.ID}.refmap.json")
-//	options.compilerArgs.add("-AdefaultObfuscationEnv=searge")
-//}
+tasks.compileJava {
+	val mappingProvider = project.tasks.findByPath(":extractMappings")
+	options.compilerArgs.add("-AoutRefMapFile=${project.projectDir}/src/main/resources/${Mod.ID}.refmap.json")
+	options.compilerArgs.add("-Averbose=true")
 
-tasks.compileJava.get().outputs.upToDateWhen { false }
+	if (mappingProvider != null) {
+		inputs.files(mappingProvider.outputs.files)
+		val tsrgFile = mappingProvider.outputs.files.singleFile
+			options.compilerArgs.add("-AreobfTsrgFile=${tsrgFile.absolutePath}")
+	}
+}
 
 // Only for Minecraft 1.20.4 or lower
 renamer {
