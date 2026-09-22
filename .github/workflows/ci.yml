@@ -23,7 +23,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build
-        run: ./gradlew :fabric:build :forge:build --debug
+        run: ./gradlew :fabric:build :forge:build --info --stacktrace
 
       - name: Move build artifacts to central artifacts directory
         run: |
