@@ -62,6 +62,8 @@ tasks.compileJava {
 	}
 }
 
+tasks.compileJava.get().dependsOn(tasks.named("extractMappings"))
+
 // Only for Minecraft 1.20.4 or lower
 renamer {
 	enableMixinRefmaps {
