@@ -51,18 +51,17 @@ minecraft {
 }
 
 tasks.compileJava {
-	val mappingProvider = project.tasks.findByPath(":createMcpToSrg")
 	options.compilerArgs.add("-AoutRefMapFile=${project.projectDir}/src/main/resources/${Mod.ID}.refmap.json")
 	options.compilerArgs.add("-Averbose=true")
+	options.compilerArgs.add("-AcheckInjectors=true")
 
-	if (mappingProvider != null) {
-		inputs.files(mappingProvider.outputs.files)
-		val tsrgFile = mappingProvider.outputs.files.singleFile
-			options.compilerArgs.add("-AreobfTsrgFile=${tsrgFile.absolutePath}")
-	}
+	val tsrgFile = minecraft.dependency.toSrg
+	if (tsrgFile.isPresent) {
+		options.compilerArgs.add("-AreobfTsrgFile=${tsrgFile.get()}")
+	} else {
+		println("ERROOOOOOOOOOOOOOOOOOR")
+		}
 }
-
-tasks.compileJava.get().dependsOn(tasks.named("createMcpToSrg"))
 
 // Only for Minecraft 1.20.4 or lower
 renamer {
