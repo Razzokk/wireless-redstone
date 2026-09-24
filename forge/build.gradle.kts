@@ -71,6 +71,7 @@ renamer {
 
 	// Needs to be after the call of `minecraft.dependency`, also stated by error message
 	mappings(minecraft.dependency.toSrg)
+	mappings(renamer.mixin.generatedMappings)
 }
 
 tasks.compileJava {
