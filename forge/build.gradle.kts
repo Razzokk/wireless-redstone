@@ -74,8 +74,8 @@ renamer {
 }
 
 tasks.compileJava {
-	dependsOn(renamer.mixin.generatedMappings)
-	options.compilerArgs.add("-Amappings=${renamer.mixin.generatedMappings.get().output.get().asFile.absolutePath}")
+	dependsOn(renamer.mixin.mappings)
+	options.compilerArgs.add("-Amappings=${renamer.mixin.mappings.get().output.get().asFile.absolutePath}")
 }
 
 publishMods {
