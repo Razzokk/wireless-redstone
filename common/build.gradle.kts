@@ -8,19 +8,12 @@ plugins {
 }
 
 dependencies {
-	compileOnly(libs.mixin.extras)
-	annotationProcessor(libs.mixin.extras)
-	compileOnly(libs.mixin.fabric)
-
+	compileOnly(libs.mixin)
 	compileOnly(libs.clothconfig.forge)
 }
 
-sourceSets {
-	create("generated") {
-		resources {
-			srcDir("src/generated/resources")
-		}
-	}
+sourceSets.create("generated") {
+	resources.srcDir("src/generated/resources")
 }
 
 minecraft {
@@ -46,4 +39,8 @@ artifacts {
 	add("commonJava", sourceSets["main"].java.sourceDirectories.singleFile)
 	add("commonResources", sourceSets["main"].resources.sourceDirectories.singleFile)
 	add("commonResources", sourceSets["generated"].resources.sourceDirectories.singleFile)
+}
+
+tasks.configureEach {
+	enabled = false
 }
