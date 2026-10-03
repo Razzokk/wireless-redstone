@@ -35,7 +35,8 @@ minecraft {
 			systemProperty("eventbus.api.strictRuntimeChecks", "true")
 			systemProperty("forge.logging.markers", "REGISTRIES")
 			systemProperty("forge.logging.console.level", "debug")
-//			jvmArgs("-Dmixin.debug.verbose=true", "-Dmixin.debug.export=true")
+			systemProperty("mixin.debug.verbose", "true")
+			systemProperty("mixin.debug.export", "true")
 		}
 
 		create("client") {

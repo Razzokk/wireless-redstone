@@ -6,7 +6,7 @@ with the Minecraft version appended.
 
 ## [Unreleased]
 
-## [1.3.0+1.19.2] - 2026-09-19
+## [1.3.0+1.19.2] - 2026-10-03
 
 Backport from 1.3.0+1.20.1
 
