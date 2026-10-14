@@ -17,6 +17,7 @@
     "RCR"
   ],
   "result": {
-    "item": "wirelessredstone:redstone_transmitter_attachment"
+    "count": 1,
+    "id": "wirelessredstone:redstone_transmitter_attachment"
   }
 }

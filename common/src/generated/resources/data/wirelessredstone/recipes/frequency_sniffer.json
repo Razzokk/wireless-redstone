@@ -18,6 +18,7 @@
     "ITI"
   ],
   "result": {
-    "item": "wirelessredstone:frequency_sniffer"
+    "count": 1,
+    "id": "wirelessredstone:frequency_sniffer"
   }
 }

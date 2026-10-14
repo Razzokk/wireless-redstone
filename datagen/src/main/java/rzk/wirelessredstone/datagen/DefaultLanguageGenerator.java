@@ -2,20 +2,21 @@ package rzk.wirelessredstone.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider;
+import net.minecraft.core.HolderLookup;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.registry.ModBlocks;
 import rzk.wirelessredstone.registry.ModItems;
 
+import java.util.concurrent.CompletableFuture;
+
 public class DefaultLanguageGenerator extends FabricLanguageProvider
 {
-	protected DefaultLanguageGenerator(FabricDataOutput dataOutput)
-	{
-		super(dataOutput);
+	protected DefaultLanguageGenerator(FabricDataOutput dataOutput, CompletableFuture<HolderLookup.Provider> registryLookup) {
+		super(dataOutput, "en_us", registryLookup);
 	}
 
 	@Override
-	public void generateTranslations(TranslationBuilder translations)
-	{
+	public void generateTranslations(HolderLookup.Provider registryLookup, TranslationBuilder translations) {
 		// Blocks
 		translations.add(ModBlocks.redstoneTransmitter, "Redstone Transmitter");
 		translations.add(ModBlocks.redstoneReceiver, "Redstone Receiver");

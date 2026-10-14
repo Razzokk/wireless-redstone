@@ -5,9 +5,7 @@
       "conditions": {
         "items": [
           {
-            "items": [
-              "wirelessredstone:circuit"
-            ]
+            "items": "wirelessredstone:circuit"
           }
         ]
       },

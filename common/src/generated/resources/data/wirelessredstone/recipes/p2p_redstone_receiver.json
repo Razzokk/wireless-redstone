@@ -18,6 +18,7 @@
     "IRI"
   ],
   "result": {
-    "item": "wirelessredstone:p2p_redstone_receiver"
+    "count": 1,
+    "id": "wirelessredstone:p2p_redstone_receiver"
   }
 }

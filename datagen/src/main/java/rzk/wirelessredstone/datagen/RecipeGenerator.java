@@ -2,6 +2,7 @@ package rzk.wirelessredstone.datagen;
 
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricRecipeProvider;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.data.recipes.RecipeCategory;
 import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
@@ -9,11 +10,12 @@ import net.minecraft.world.item.Items;
 import rzk.wirelessredstone.registry.ModBlocks;
 import rzk.wirelessredstone.registry.ModItems;
 
+import java.util.concurrent.CompletableFuture;
+
 public class RecipeGenerator extends FabricRecipeProvider
 {
-	public RecipeGenerator(FabricDataOutput output)
-	{
-		super(output);
+	public RecipeGenerator(FabricDataOutput output, CompletableFuture<HolderLookup.Provider> registriesFuture) {
+		super(output, registriesFuture);
 	}
 
 	@Override

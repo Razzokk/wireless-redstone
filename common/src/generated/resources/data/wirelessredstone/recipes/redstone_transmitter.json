@@ -18,6 +18,7 @@
     "IRI"
   ],
   "result": {
-    "item": "wirelessredstone:redstone_transmitter"
+    "count": 1,
+    "id": "wirelessredstone:redstone_transmitter"
   }
 }
