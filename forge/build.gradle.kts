@@ -1,7 +1,5 @@
 import me.modmuss50.mpp.platforms.modrinth.ModrinthEnvironment
 import mod.gradle.Mod
-import net.minecraftforge.renamer.gradle.RenameJar
-import org.gradle.jvm.tasks.Jar
 
 // Reference: https://github.com/MinecraftForge/MDKExamples
 
@@ -9,7 +7,6 @@ plugins {
 	id("loader")
 	alias(libs.plugins.publish)
 	alias(libs.plugins.forge.gradle)
-	alias(libs.plugins.forge.renamer)
 }
 
 repositories {
@@ -21,8 +18,10 @@ repositories {
 dependencies {
 	implementation(minecraft.dependency(libs.forge.get().toString()))
 	annotationProcessor(variantOf(libs.mixin) { classifier("processor") })
-	api(renamer.dependency(libs.clothconfig.forge.get().toString()))
+	api(libs.clothconfig.forge.get().toString())
 }
+
+val mixinConfig = "${Mod.ID}.mixins.json";
 
 minecraft {
 	mappings(libs.parchment.get().name, "${libs.versions.parchment.get()}-${libs.versions.minecraft.get()}")
@@ -37,6 +36,9 @@ minecraft {
 			systemProperty("forge.logging.console.level", "debug")
 			systemProperty("mixin.debug.verbose", "true")
 			systemProperty("mixin.debug.export", "true")
+
+			val file = common.file("src/main/resources/${mixinConfig}")
+			if (file.exists()) args("--mixin.config=${mixinConfig}")
 		}
 
 		create("client") {
@@ -51,24 +53,18 @@ minecraft {
 	}
 }
 
-// Only for Minecraft 1.20.4 or lower
-renamer {
-	// Creates a task named 'renameJar'
-	classes(tasks.named<Jar>("jar")) {
-		// Just use the final output jar, no need for a separate renamed jar
-		archiveClassifier = ""
+tasks.jar.configure {
+	manifest {
+		val file = project(":common").file("src/main/resources/${mixinConfig}")
+		if (file.exists()) attributes["MixinConfigs"] = mixinConfig
 	}
-
-	// Needs to be after the call of `minecraft.dependency`, also stated by error message
-	mappings(minecraft.dependency.toSrg)
 }
 
 publishMods {
 	val changelogProvider = rootProject.extra["changelogProvider"] as Provider<*>
 	val minecraftVersion = libs.versions.minecraft.get()
 
-	// Need to use the renameJar jar output
-	file.set(tasks.named<RenameJar>("renameJar").get().output)
+	file.set(tasks.jar.get().archiveFile)
 	modLoaders.add("forge")
 	changelog = changelogProvider.get() as String
 	displayName = "[Forge $minecraftVersion] ${Mod.VERSION} ${Mod.NAME}"

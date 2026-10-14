@@ -6,6 +6,9 @@ with the Minecraft version appended.
 
 ## [Unreleased]
 
+This version is backwards compatible with 1.20.4.
+This means you can use your existing world from 1.20.4 in 1.20.6 after updating, but once you played in 1.20.6 you cannot make the content of this mod work properly again in 1.20.4.
+
 ## [1.3.0+1.20.4] - 2026-10-03
 
 ### Added

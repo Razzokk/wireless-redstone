@@ -12,12 +12,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
 import rzk.wirelessredstone.WirelessRedstone;
 import rzk.wirelessredstone.block.RedstoneTransceiverBlock;
 import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.TranslationKeys;
 import rzk.wirelessredstone.network.FrequencyItemPacket;
+import rzk.wirelessredstone.registry.ModComponents;
 
 import java.util.List;
 
@@ -25,7 +25,10 @@ public class FrequencyItem extends Item
 {
 	public FrequencyItem(Properties properties)
 	{
-		super(properties.stacksTo(1));
+		super(properties
+			.stacksTo(1)
+			.component(ModComponents.frequency, Frequency.INVALID)
+		);
 	}
 
 	@Override
@@ -84,8 +87,7 @@ public class FrequencyItem extends Item
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag isAdvanced)
-	{
+	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		int frequency = Frequency.get(stack);
 		if (!Frequency.isValid(frequency)) return;
 		tooltip.add(Frequency.tooltip(frequency));

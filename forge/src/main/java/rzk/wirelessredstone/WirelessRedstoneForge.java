@@ -16,6 +16,7 @@ import rzk.wirelessredstone.misc.WREvents;
 import rzk.wirelessredstone.network.ModNetworking;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 import rzk.wirelessredstone.registry.ModBlocks;
+import rzk.wirelessredstone.registry.ModComponents;
 import rzk.wirelessredstone.registry.ModItems;
 
 @Mod(WirelessRedstone.MOD_ID)
@@ -42,6 +43,7 @@ public class WirelessRedstoneForge
 	{
 		event.register(Registries.BLOCK, helper -> ModBlocks.register());
 		event.register(Registries.BLOCK_ENTITY_TYPE, helper -> ModBlockEntities.register());
+		event.register(Registries.DATA_COMPONENT_TYPE, helper -> ModComponents.register());
 		event.register(Registries.ITEM, helper -> ModItems.register());
 		event.register(Registries.CREATIVE_MODE_TAB, helper -> WirelessRedstone.registerCreativeTab());
 	}

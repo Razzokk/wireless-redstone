@@ -7,10 +7,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
-import net.minecraft.world.level.Level;
-import org.jetbrains.annotations.Nullable;
-import rzk.wirelessredstone.misc.NbtKeys;
 import rzk.wirelessredstone.misc.WRUtils;
+import rzk.wirelessredstone.registry.ModComponents;
 
 import java.util.List;
 
@@ -21,17 +19,12 @@ public class LinkerItem extends Item
 		super(properties.stacksTo(1));
 	}
 
-	private static void setTarget(ItemStack stack, BlockPos pos)
-	{
-		var tag = WRUtils.writeBlockPos(pos);
-		stack.addTagElement(NbtKeys.LINKER_TARGET, tag);
+	private static void setTarget(ItemStack stack, BlockPos pos) {
+		stack.set(ModComponents.target, pos);
 	}
 
-	public static BlockPos getTarget(ItemStack stack)
-	{
-		var tag = stack.getTag();
-		if (tag == null) return null;
-		return WRUtils.readBlockPos(tag.get(NbtKeys.LINKER_TARGET));
+	public static BlockPos getTarget(ItemStack stack) {
+		return stack.get(ModComponents.target);
 	}
 
 	@Override
@@ -47,11 +40,9 @@ public class LinkerItem extends Item
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag isAdvanced)
-	{
+	public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
 		var target = getTarget(stack);
 		if (target == null) return;
-
 		tooltip.add(WRUtils.targetText(target));
 	}
 }

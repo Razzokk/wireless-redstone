@@ -1,7 +1,7 @@
 package rzk.wirelessredstone.platform;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
-import rzk.wirelessredstone.network.Packet;
 
 import java.io.File;
 import java.util.ServiceLoader;
@@ -18,5 +18,5 @@ public interface Platform {
 
 	boolean isModLoaded(String modId);
 
-	void sendPacket(ServerPlayer player, Packet packet);
+	void sendPacket(ServerPlayer player, CustomPacketPayload packet);
 }

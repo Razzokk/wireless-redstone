@@ -5,6 +5,7 @@ import rzk.wirelessredstone.config.WRConfig;
 import rzk.wirelessredstone.network.ModNetworking;
 import rzk.wirelessredstone.registry.ModBlockEntities;
 import rzk.wirelessredstone.registry.ModBlocks;
+import rzk.wirelessredstone.registry.ModComponents;
 import rzk.wirelessredstone.registry.ModItems;
 
 public class WirelessRedstoneFabric implements ModInitializer {
@@ -12,8 +13,9 @@ public class WirelessRedstoneFabric implements ModInitializer {
 	public void onInitialize() {
 		WRConfig.load();
 		ModBlocks.register();
-		ModItems.register();
 		ModBlockEntities.register();
+		ModComponents.register();
+		ModItems.register();
 		ModNetworking.register();
 		WirelessRedstone.registerCreativeTab();
 	}

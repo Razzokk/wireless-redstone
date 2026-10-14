@@ -5,6 +5,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.item.ItemStack;
+import rzk.wirelessredstone.registry.ModComponents;
 
 public class Frequency
 {
@@ -25,7 +26,7 @@ public class Frequency
 
 	public static int get(ItemStack stack) {
 		if (stack == null) return INVALID;
-		return get(stack.getTag());
+		return stack.getOrDefault(ModComponents.frequency, INVALID);
 	}
 
 	public static void set(CompoundTag tag, int frequency) {
@@ -34,7 +35,7 @@ public class Frequency
 	}
 
 	public static void set(ItemStack stack, int frequency) {
-		set(stack.getOrCreateTag(), frequency);
+		stack.set(ModComponents.frequency, frequency);
 	}
 
 	public static MutableComponent text(int frequency) {

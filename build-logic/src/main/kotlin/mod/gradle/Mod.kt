@@ -16,5 +16,5 @@ object Mod {
 	const val DISCORD_URL = "https://discord.gg/4f2sFD53XK"
 	const val REPOSITORY_URL = "https://github.com/Razzokk/wireless-redstone"
 
-	const val JAVA = 17
+	const val JAVA = 21
 }

@@ -3,6 +3,7 @@ package rzk.wirelessredstone.ether;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -25,8 +26,7 @@ public class RedstoneEther extends SavedData
 
 	private RedstoneEther() {}
 
-	private RedstoneEther(CompoundTag tag)
-	{
+	private RedstoneEther(CompoundTag tag, HolderLookup.Provider provider) {
 		ListTag channelTags = tag.getList("channels", Tag.TAG_COMPOUND);
 
 		for (var channelTag : channelTags)
@@ -37,8 +37,7 @@ public class RedstoneEther extends SavedData
 	}
 
 	@Override
-	public CompoundTag save(CompoundTag tag)
-	{
+	public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
 		var channelTags = new ListTag();
 		for (var channel : channels.values())
 			channelTags.add(channel.save());

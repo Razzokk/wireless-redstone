@@ -37,11 +37,6 @@ public class RedstoneChannel
 		ListTag transmitterTags = tag.getList("transmitters", Tag.TAG_INT_ARRAY);
 		for (var transmitterTag : transmitterTags)
 			transmitters.add(WRUtils.readBlockPos(transmitterTag));
-
-		// Deprecated
-		transmitterTags = tag.getList("transmitters", Tag.TAG_COMPOUND);
-		for (var transmitterTag : transmitterTags)
-			transmitters.add(WRUtils.readBlockPos(transmitterTag));
 	}
 
 	public CompoundTag save()

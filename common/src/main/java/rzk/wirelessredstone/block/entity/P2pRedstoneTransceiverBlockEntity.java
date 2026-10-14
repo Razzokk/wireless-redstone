@@ -1,6 +1,7 @@
 package rzk.wirelessredstone.block.entity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
@@ -144,8 +145,7 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	public CompoundTag getUpdateTag()
-	{
+	public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
 		CompoundTag tag = new CompoundTag();
 		if (link == null) return tag;
 		tag.put("link", WRUtils.writeBlockPos(link));
@@ -153,17 +153,15 @@ public abstract class P2pRedstoneTransceiverBlockEntity extends BlockEntity {
 	}
 
 	@Override
-	protected void saveAdditional(CompoundTag tag)
-	{
-		super.saveAdditional(tag);
+	protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.saveAdditional(tag, registries);
 		if (link == null) return;
 		tag.put("link", WRUtils.writeBlockPos(link));
 	}
 
 	@Override
-	public void load(CompoundTag tag)
-	{
-		super.load(tag);
+	protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+		super.loadAdditional(tag, registries);
 		if (!tag.contains("link")) return;
 		link = WRUtils.readBlockPos(tag.get("link"));
 	}

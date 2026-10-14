@@ -10,6 +10,6 @@ public class WorldOverlayRendererFabric
 		var cameraPosition = worldRenderContext.camera().getPosition();
 		var matrixStack = worldRenderContext.matrixStack();
 		var tickDelta = worldRenderContext.tickDelta();
-		WorldOverlayRenderer.render(world, cameraPosition, matrixStack, tickDelta);
+		WorldOverlayRenderer.render(world, cameraPosition, matrixStack.last().pose(), tickDelta);
 	}
 }

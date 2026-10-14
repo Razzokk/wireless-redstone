@@ -1,9 +1,6 @@
 package rzk.wirelessredstone.network;
 
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.event.network.CustomPayloadEvent;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.SimpleChannel;
@@ -14,62 +11,56 @@ import rzk.wirelessredstone.client.screen.ModScreens;
 import rzk.wirelessredstone.item.FrequencyItem;
 import rzk.wirelessredstone.misc.Frequency;
 
-import java.util.function.BiConsumer;
-
 public class ModNetworking
 {
 	public static final SimpleChannel INSTANCE = ChannelBuilder
 		.named(new ResourceLocation(WirelessRedstone.MOD_ID, "main"))
 		.simpleChannel();
 
-	private static <T extends Packet> void registerMessage(Class<T> clazz, Packet.Type<T> type, NetworkDirection direction, BiConsumer<T, CustomPayloadEvent.Context> consumer) {
-		INSTANCE.messageBuilder(clazz, direction)
-			.encoder(Packet::write)
-			.decoder(type.reader())
-			.consumerMainThread(consumer)
-			.add();
-	}
-
-	private static <T extends Packet> void registerMessage(Class<T> clazz, Packet.Type<T> type, BiConsumer<T, CustomPayloadEvent.Context> consumer) {
-		registerMessage(clazz, type, null, consumer);
-	}
-
 	public static void registerMessages()
 	{
-		registerMessage(FrequencyBlockPacket.class, FrequencyBlockPacket.TYPE, (packet, context) -> {
-			var pos = packet.pos();
-			var frequency = packet.frequency();
+		INSTANCE.messageBuilder(FrequencyBlockPacket.class)
+			.codec(FrequencyBlockPacket.STREAM_CODEC)
+			.consumerMainThread(
+				(packet, ctx) -> {
+					if (ctx.isClientSide()) {
+						ctx.enqueueWork(() -> ModScreens.openBlockFrequencyScreen(packet.frequency(), packet.pos()));
+					}
+					else if (ctx.isServerSide()) {
+						ctx.enqueueWork(() -> {
+							var level = ctx.getSender().level();
+							var pos = packet.pos();
+							if (level.isLoaded(pos) && level.getBlockState(pos).getBlock() instanceof RedstoneTransceiverBlock block)
+								block.setFrequency(level, pos, packet.frequency());
+						});
+					}
+				}
+			)
+			.add();
 
-			if (context.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-				var level = context.getSender().level();
-				if (level.isLoaded(pos) && level.getBlockState(pos).getBlock() instanceof RedstoneTransceiverBlock block)
-					block.setFrequency(level, pos, frequency);
-			}
-			else {
-				DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ModScreens.openBlockFrequencyScreen(frequency, pos));
-			}
-		});
+		INSTANCE.messageBuilder(FrequencyItemPacket.class)
+			.codec(FrequencyItemPacket.STREAM_CODEC)
+			.consumerMainThread(
+				(packet, ctx) -> {
+					if (ctx.isClientSide()) {
+						ctx.enqueueWork(() -> ModScreens.openItemFrequencyScreen(packet.frequency(), packet.hand()));
+					}
+					else if (ctx.isServerSide()) {
+						ctx.enqueueWork(() -> {
+							var stack = ctx.getSender().getItemInHand(packet.hand());
+							if (stack.getItem() instanceof FrequencyItem)
+								Frequency.set(stack, packet.frequency());
+						});
+					}
+				}
+			)
+			.add();
 
-		registerMessage(FrequencyItemPacket.class, FrequencyItemPacket.TYPE, (packet, context) -> {
-			var hand = packet.hand();
-			var frequency = packet.frequency();
-
-			if (context.getDirection() == NetworkDirection.PLAY_TO_SERVER) {
-				var player = context.getSender();
-				var stack = player.getItemInHand(hand);
-				if (stack.getItem() instanceof FrequencyItem)
-					Frequency.set(stack, frequency);
-			}
-			else {
-				DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ModScreens.openItemFrequencyScreen(frequency, hand));
-			}
-		});
-
-		registerMessage(SnifferHighlightPacket.class, SnifferHighlightPacket.TYPE, NetworkDirection.PLAY_TO_CLIENT, (packet, context) -> {
-			var timestamp = packet.timestamp();
-			var hand = packet.hand();
-			var coords = packet.coords();
-			DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> WRClientEventsForge.handleSnifferHighlightPacket(timestamp, hand, coords));
-		});
+		INSTANCE.messageBuilder(SnifferHighlightPacket.class, NetworkDirection.PLAY_TO_CLIENT)
+			.codec(SnifferHighlightPacket.STREAM_CODEC)
+			.consumerMainThread((packet, ctx) ->
+				ctx.enqueueWork(() -> WRClientEventsForge.handleSnifferHighlightPacket(packet.timestamp(), packet.hand(), packet.coords()))
+			)
+			.add();
 	}
 }

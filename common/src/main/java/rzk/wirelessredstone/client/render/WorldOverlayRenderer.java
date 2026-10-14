@@ -3,7 +3,6 @@ package rzk.wirelessredstone.client.render;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
@@ -13,18 +12,20 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Matrix4f;
+import rzk.wirelessredstone.config.WRConfig;
 import rzk.wirelessredstone.item.LinkerItem;
 import rzk.wirelessredstone.item.SnifferItem;
-import rzk.wirelessredstone.config.WRConfig;
+import rzk.wirelessredstone.registry.ModItems;
 
 public class WorldOverlayRenderer
 {
-	public static void render(Level level, Vec3 cameraPosition, PoseStack poseStack, float tickDelta)
+	public static void render(Level level, Vec3 cameraPosition, Matrix4f matrix, float tickDelta)
 	{
 		var player = Minecraft.getInstance().player;
 		var stack = player.getMainHandItem();
-		renderSnifferHighlights(level, player, stack, cameraPosition, poseStack);
-		renderLinkerTarget(level, player, stack, cameraPosition, poseStack, tickDelta);
+		if (stack.is(ModItems.frequencySniffer)) renderSnifferHighlights(level, player, stack, cameraPosition, matrix);
+		if (stack.is(ModItems.linker)) renderLinkerTarget(level, player, stack, cameraPosition, matrix, tickDelta);
 	}
 
 	private static Tesselator renderLinesPre()
@@ -49,7 +50,7 @@ public class WorldOverlayRenderer
 		GlStateManager._depthMask(true);
 	}
 
-	private static void renderSnifferHighlights(Level level, Player player, ItemStack stack, Vec3 cameraPosition, PoseStack poseStack)
+	private static void renderSnifferHighlights(Level level, Player player, ItemStack stack, Vec3 cameraPosition, Matrix4f matrix)
 	{
 		var coords = SnifferItem.getHighlightedBlocks(stack);
 		if (coords == null) coords = SnifferItem.getHighlightedBlocks(player.getOffhandItem());
@@ -63,21 +64,19 @@ public class WorldOverlayRenderer
 		var builder = tesselator.getBuilder();
 		builder.begin(VertexFormat.Mode.LINES, DefaultVertexFormat.POSITION_COLOR_NORMAL);
 
-		var pose = poseStack.last();
-
 		for (var pos : coords)
 		{
 			if (!player.shouldRender(pos.getX(), pos.getY(), pos.getZ())) continue;
 
 			var state = level.getBlockState(pos);
 			var shape = state.getShape(level, pos);
-			RenderUtils.drawOutlineShape(builder, pose, cameraPosition, shape, pos, red, green, blue, 1);
+			RenderUtils.drawOutlineShape(builder, matrix, cameraPosition, shape, pos, red, green, blue, 1);
 		}
 
 		renderLinesPost(tesselator);
 	}
 
-	private static void renderLinkerTarget(Level level, Player player, ItemStack stack, Vec3 cameraPosition, PoseStack poseStack, float tickDelta)
+	private static void renderLinkerTarget(Level level, Player player, ItemStack stack, Vec3 cameraPosition, Matrix4f poseStack, float tickDelta)
 	{
 		BlockPos target = LinkerItem.getTarget(stack);
 		if (target == null) target = LinkerItem.getTarget(player.getOffhandItem());
@@ -107,8 +106,7 @@ public class WorldOverlayRenderer
 
 		var state = level.getBlockState(target);
 		var shape = state.getShape(level, target);
-		var pose = poseStack.last();
-		RenderUtils.drawOutlineShape(builder, pose, cameraPosition, shape, target, red, green, blue, alpha);
+		RenderUtils.drawOutlineShape(builder, poseStack, cameraPosition, shape, target, red, green, blue, alpha);
 
 		renderLinesPost(tesselator);
 	}

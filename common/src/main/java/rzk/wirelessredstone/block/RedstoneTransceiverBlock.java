@@ -6,8 +6,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.BlockGetter;
@@ -58,18 +59,18 @@ public abstract class RedstoneTransceiverBlock extends Block implements EntityBl
 	}
 
 	@Override
-	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
-	{
-		var item = player.getItemInHand(hand).getItem();
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (stack.getItem() instanceof FrequencyItem)
+			return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+		return super.useItemOn(stack, state, level, pos, player, hand, hit);
+	}
 
-		if (item instanceof FrequencyItem)
-			return InteractionResult.PASS;
-
+	@Override
+	protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
 		if (!level.isClientSide) {
 			var packet = new FrequencyBlockPacket(getFrequency(level, pos), pos);
 			WirelessRedstone.PLATFORM.sendPacket((ServerPlayer) player, packet);
 		}
-
 		return InteractionResult.SUCCESS;
 	}
 
@@ -80,9 +81,8 @@ public abstract class RedstoneTransceiverBlock extends Block implements EntityBl
 	}
 
 	@Override
-	public void appendHoverText(ItemStack stack, @Nullable BlockGetter level, List<Component> tooltip, TooltipFlag flag)
-	{
-		int frequency = Frequency.get(BlockItem.getBlockEntityData(stack));
+	public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+		int frequency = Frequency.get(stack);//TODO
 		if (!Frequency.isValid(frequency)) return;
 		tooltip.add(Frequency.tooltip(frequency));
 	}

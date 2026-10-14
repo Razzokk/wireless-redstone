@@ -24,7 +24,7 @@ public class WRClientEventsNeo
 	{
 		if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) return;
 		var level = Minecraft.getInstance().level;
-		WorldOverlayRenderer.render(level, event.getCamera().getPosition(), event.getPoseStack(), event.getPartialTick());
+		WorldOverlayRenderer.render(level, event.getCamera().getPosition(), event.getPoseStack().last().pose(), event.getPartialTick());
 	}
 
 	@SubscribeEvent

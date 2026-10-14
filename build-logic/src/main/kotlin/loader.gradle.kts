@@ -98,7 +98,7 @@ tasks {
 
 		// Expand the above properties in matching files
 		inputs.properties(expandProps)
-		filesMatching(setOf("fabric.mod.json", "META-INF/mods.toml", "*.mixins.json", "pack.mcmeta")) {
+		filesMatching(setOf("fabric.mod.json", "META-INF/mods.toml", "META-INF/neoforge.mods.toml", "*.mixins.json", "pack.mcmeta")) {
 			expand(expandProps)
 		}
 

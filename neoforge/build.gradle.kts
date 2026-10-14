@@ -48,6 +48,12 @@ neoForge {
 			programArgument("--nogui")
 		}
 	}
+
+	mods {
+		register(Mod.ID) {
+			sourceSet(sourceSets.main.get())
+		}
+	}
 }
 
 publishMods {

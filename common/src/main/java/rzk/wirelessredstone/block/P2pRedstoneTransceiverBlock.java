@@ -5,8 +5,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -67,45 +68,39 @@ public abstract class P2pRedstoneTransceiverBlock extends Block implements Entit
 	protected abstract boolean canLink(BlockState targetState, Level level, Player player);
 
 	@Override
-	public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit)
-	{
-		if (player.isShiftKeyDown()) return InteractionResult.PASS;
-
-		var stack = player.getItemInHand(hand);
-		if (!stack.is(ModItems.linker)) return InteractionResult.PASS;
+	protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+		if (player.isShiftKeyDown() || !stack.is(ModItems.linker))
+			return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
 		var target = LinkerItem.getTarget(stack);
-		if (target == null) return InteractionResult.PASS;
-		if (target == pos) return InteractionResult.FAIL;
+		if (target == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+		if (target == pos) return ItemInteractionResult.FAIL;
 
-		if (!level.isLoaded(target) && !level.isClientSide)
-		{
+		if (!level.isLoaded(target) && !level.isClientSide) {
 			var targetText = WRUtils.positionText(target);
 			WRUtils.appendTeleportCommandIfAllowed(targetText, player, target);
 			var text = Component.translatable(TranslationKeys.MESSAGE_P2P_TARGET_UNLOADED, targetText).withStyle(ChatFormatting.RED);
 			player.sendSystemMessage(text);
-			return InteractionResult.FAIL;
+			return ItemInteractionResult.FAIL;
 		}
 
 		var targetState = level.getBlockState(target);
-		if (!canLink(targetState, level, player)) return InteractionResult.FAIL;
+		if (!canLink(targetState, level, player)) return ItemInteractionResult.FAIL;
 
 		var blockEntity = level.getBlockEntity(pos);
-		if (!(blockEntity instanceof P2pRedstoneTransceiverBlockEntity p2pEntity)) return InteractionResult.PASS;
+		if (!(blockEntity instanceof P2pRedstoneTransceiverBlockEntity p2pEntity)) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
 
 		var success = p2pEntity.link(target, player);
-		return success ? InteractionResult.SUCCESS : InteractionResult.FAIL;
+		return success ? ItemInteractionResult.SUCCESS : ItemInteractionResult.FAIL;
 	}
 
 	@Override
-	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
-	{
+	protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
 		builder.add(LINKED, POWERED);
 	}
 
 	@Override
-	public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction)
-	{
+	public boolean canConnectRedstone(BlockState state, BlockGetter level, BlockPos pos, @Nullable Direction direction) {
 		return direction != null;
 	}
 }

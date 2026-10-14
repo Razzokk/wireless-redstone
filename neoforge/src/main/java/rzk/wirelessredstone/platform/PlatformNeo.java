@@ -1,10 +1,10 @@
 package rzk.wirelessredstone.platform;
 
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.network.PacketDistributor;
-import rzk.wirelessredstone.network.Packet;
 
 import java.io.File;
 
@@ -25,7 +25,7 @@ public class PlatformNeo implements Platform {
 	}
 
 	@Override
-	public void sendPacket(ServerPlayer player, Packet packet) {
-		PacketDistributor.PLAYER.with(player).send(packet);
+	public void sendPacket(ServerPlayer player, CustomPacketPayload packet) {
+		PacketDistributor.sendToPlayer(player, packet);
 	}
 }

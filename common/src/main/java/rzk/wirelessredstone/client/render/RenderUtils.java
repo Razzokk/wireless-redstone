@@ -1,16 +1,14 @@
 package rzk.wirelessredstone.client.render;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import org.joml.Matrix4f;
 
-public class RenderUtils
-{
-	public static void drawLine(BufferBuilder builder, PoseStack.Pose pose, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, float red, float green, float blue, float alpha)
-	{
+public class RenderUtils {
+	public static void drawLine(BufferBuilder builder, Matrix4f matrix, float minX, float minY, float minZ, float maxX, float maxY, float maxZ, float red, float green, float blue, float alpha) {
 		var lenX = maxX - minX;
 		var lenY = maxY - minY;
 		var lenZ = maxZ - minZ;
@@ -20,21 +18,21 @@ public class RenderUtils
 		lenY /= len;
 		lenZ /= len;
 
-		builder.vertex(pose.pose(), minX, minY, minZ)
+		// TODO: replace with more efficient normal variant (no calc with sqrt)
+		builder.vertex(matrix, minX, minY, minZ)
 			.color(red, green, blue, alpha)
-			.normal(pose.normal(), lenX, lenY, lenZ)
+			.normal(lenX, lenY, lenZ)
 			.endVertex();
 
-		builder.vertex(pose.pose(), maxX, maxY, maxZ)
+		builder.vertex(matrix, maxX, maxY, maxZ)
 			.color(red, green, blue, alpha)
-			.normal(pose.normal(), lenX, lenY, lenZ)
+			.normal(lenX, lenY, lenZ)
 			.endVertex();
 	}
 
-	public static void drawOutlineShape(BufferBuilder builder, PoseStack.Pose pose, Vec3 cameraPos, VoxelShape shape, BlockPos pos, float red, float green, float blue, float alpha)
-	{
+	public static void drawOutlineShape(BufferBuilder builder, Matrix4f matrix, Vec3 cameraPos, VoxelShape shape, BlockPos pos, float red, float green, float blue, float alpha) {
 		shape.forAllEdges((minX, minY, minZ, maxX, maxY, maxZ) ->
-			drawLine(builder, pose,
+			drawLine(builder, matrix,
 				(float) (pos.getX() + minX - cameraPos.x),
 				(float) (pos.getY() + minY - cameraPos.y),
 				(float) (pos.getZ() + minZ - cameraPos.z),

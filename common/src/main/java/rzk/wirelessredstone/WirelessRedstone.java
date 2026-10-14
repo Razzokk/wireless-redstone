@@ -40,6 +40,6 @@ public final class WirelessRedstone {
 		.build();
 
 	public static void registerCreativeTab() {
-		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, new ResourceLocation(WirelessRedstone.MOD_ID, WirelessRedstone.MOD_ID), CREATIVE_MODE_TAB);
+		Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB, new ResourceLocation(MOD_ID, MOD_ID), CREATIVE_MODE_TAB);
 	}
 }

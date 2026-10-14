@@ -1,28 +1,28 @@
 [versions]
-minecraft = "1.20.4"
-parchment = "2024.04.14"
+minecraft = "1.20.6"
+parchment = "2024.06.16"
 
 fabric-loader = "0.19.3"
-fabric-api = "0.97.2+1.20.4"
-fabric-range-minecraft = "1.20.4"
+fabric-api = "0.100.8+1.20.6"
+fabric-range-minecraft = "1.20.6"
 fabric-range-loader = ">=0.17"
 
-neoforge-loader = "20.4.249"
+neoforge-loader = "20.6.139"
 neoforge-range-loader = "[1,)"
-neoforge-range-minecraft = "[1.20.4,1.20.5)"
-neoform = "1.20.4-20240627.114801"
+neoforge-range-minecraft = "[1.20.5,1.20.7)"
+neoform = "1.20.6-20240627.102356"
 
-forge-loader = "1.20.4-49.2.0"
-forge-range-loader = "[49,)"
-forge-range-minecraft = "[1.20.4,1.20.5)"
+forge-loader = "1.20.6-50.2.0"
+forge-range-loader = "[50,)"
+forge-range-minecraft = "[1.20.5,1.20.7)"
 
 mixin = "0.8.7"
 mixin-fabric = "0.16.3+mixin.0.8.7"
 mixin-extras = "0.5.4"
 
 # Dependencies (optional)
-clothconfig = "13.0.138"
-modmenu = "9.0.0"
+clothconfig = "14.0.139"
+modmenu = "10.0.0"
 
 [libraries]
 minecraft = { module = "com.mojang:minecraft", version.ref = "minecraft" }
@@ -57,5 +57,3 @@ moddev = { id = "net.neoforged.moddev", version = "2.0.147" }
 loom = { id = "net.fabricmc.fabric-loom-remap", version = "1.18-SNAPSHOT" }
 
 forge-gradle = { id = "net.minecraftforge.gradle", version = "[7.0.40,8)" }
-# Only for Minecraft 1.20.4 or lower:
-forge-renamer = { id = "net.minecraftforge.renamer", version = "1.1.8" }

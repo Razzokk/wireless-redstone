@@ -3,6 +3,8 @@ package rzk.wirelessredstone.item;
 import net.minecraft.ChatFormatting;
 import net.minecraft.SharedConstants;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
@@ -15,14 +17,15 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import rzk.wirelessredstone.WirelessRedstone;
+import rzk.wirelessredstone.config.WRConfig;
 import rzk.wirelessredstone.ether.RedstoneEther;
 import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.NbtKeys;
 import rzk.wirelessredstone.misc.TranslationKeys;
-import rzk.wirelessredstone.config.WRConfig;
 import rzk.wirelessredstone.misc.WRUtils;
 import rzk.wirelessredstone.network.SnifferHighlightPacket;
 import rzk.wirelessredstone.registry.ModItems;
@@ -41,9 +44,10 @@ public class SnifferItem extends FrequencyItem
 	{
 		if (!stack.is(ModItems.frequencySniffer)) return null;
 
-		var tag = stack.getTag();
-		if (tag == null) return null;
+		var data = stack.get(DataComponents.CUSTOM_DATA);
+		if (data == null) return null;
 
+		var tag = data.copyTag();
 		var list = tag.getList(NbtKeys.HIGHLIGHTS, Tag.TAG_INT_ARRAY);
 		if (list.isEmpty()) return null;
 
@@ -58,22 +62,21 @@ public class SnifferItem extends FrequencyItem
 	{
 		if (!stack.is(ModItems.frequencySniffer)) return;
 
-		var tag = stack.getOrCreateTag();
+		var tag = new CompoundTag();
 		tag.putLong(NbtKeys.TIMESTAMP, timestamp);
 
 		var list = new ListTag();
 		for (var pos : coords)
 			list.add(WRUtils.writeBlockPos(pos));
 		tag.put(NbtKeys.HIGHLIGHTS, list);
+		CustomData.set(DataComponents.CUSTOM_DATA, stack, tag);
 	}
 
 	private static void removeHighlightBlocks(ItemStack stack)
 	{
-		var tag = stack.getTag();
-		if (tag == null) return;
-
-		tag.remove("timestamp");
-		tag.remove("highlights");
+		var data = stack.get(DataComponents.CUSTOM_DATA);
+		if (data == null) return;
+		stack.remove(DataComponents.CUSTOM_DATA);
 	}
 
 	@Override
@@ -155,10 +158,14 @@ public class SnifferItem extends FrequencyItem
 	@Override
 	public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected)
 	{
-		var tag = stack.getTag();
-		if (!isSelected || !level.isClientSide || tag == null) return;
+		if (!isSelected || !level.isClientSide) return;
 
+		var data = stack.get(DataComponents.CUSTOM_DATA);
+		if (data == null) return;
+
+		var tag = data.copyTag();
 		var timeOffset = (long) WRConfig.highlightTimeSeconds.value * SharedConstants.TICKS_PER_SECOND;
+
 		if (level.getGameTime() >= tag.getLong("timestamp") + timeOffset)
 			removeHighlightBlocks(stack);
 	}

@@ -8,7 +8,6 @@ import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 import rzk.wirelessredstone.misc.Frequency;
 import rzk.wirelessredstone.misc.TranslationKeys;
-import rzk.wirelessredstone.misc.WRUtils;
 
 import java.util.regex.Pattern;
 
@@ -42,7 +41,7 @@ public abstract class FrequencyScreen extends Screen
 				frequency = getInputFrequency();
 
 			frequency += value * (hasShiftDown() ? 100 : 1);
-			frequency = WRUtils.clamp(Frequency.MIN, Frequency.MAX, frequency);
+			frequency = Math.clamp(frequency, Frequency.MIN, Frequency.MAX);
 
 			frequencyInput.setValue(String.valueOf(frequency));
 		}).pos(x, y).size(WIDGET_WIDTH, WIDGET_HEIGHT).build());
